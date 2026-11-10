@@ -54,7 +54,7 @@ import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./fur
   keepOwned({ have: new Set(start.badges), stars: start.stars });
 }
 
-const QUESTIONS_URL = "../data/questions/questions.json?v=20261110f"; // 問題を変えたら、この値と index.html の ?v= を変える
+const QUESTIONS_URL = "../data/questions/questions.json?v=20261110k"; // 問題を変えたら、この値と index.html の ?v= を変える
 const ONI_TAPS = 5; // 表紙のすみのフロリを、この回数押すと、オニ問題が出る
 const IMG = {
   think: "../assets/flori/m/book_pen.png",
@@ -1456,7 +1456,6 @@ async function init() {
     playableQuestions = [...normal, ...hardQuestions];
     allQuestions = questions;
     renderBadgeBackground();
-    for (const theme of THEMES) if (!theme.cover) new Image().src = `../assets/bg/${theme.id}.webp`; // 表紙の背景を、先に読みこむ(着せ替えで変えたとき、すぐ変わるように)
     // 答えたあと・結果で出す、フロリの絵を先に読みこんでおく(すぐ出せるように)
     const preload = [...Object.values(IMG), "../assets/flori/m/wave_nikkori.png", "../assets/flori/m/body_wave.webp"];
     for (const src of preload) new Image().src = src;
@@ -1547,7 +1546,7 @@ $("btn-tutorial").addEventListener("click", (event) => {
   // 最後の場面まで来たら、「ゲームスタート」で、そのまま始められる(「閉じる」なら、オープニングに戻る)
   playTutorial("rpg", (started) => started && closeOpening(), { startLabel: "ゲームスタート" });
 });
-$("btn-tutorial-menu").addEventListener("click", () => playTutorial("rpg"));
+$("btn-tutorial-home").addEventListener("click", () => playTutorial("rpg")); // 遊び方は、ホームに置いた
 
 // ================= 着せ替えの解放(条件は badges.js) =================
 // 条件を数えるための材料
@@ -1717,7 +1716,6 @@ function rewardArt(kind, item) {
   const art = document.createElement("span");
   art.className = `reward-art is-${kind}`;
   if (kind === "color") art.style.background = item.swatch ?? item.tint;
-  else if (kind === "theme") art.style.background = item.preview ?? item.tint;
   else if (item.img) {
     const pic = document.createElement("img");
     pic.src = item.img;
@@ -1772,7 +1770,7 @@ function celebrateUnlocks() {
   $("dlg-unlock").showModal();
   playSe("levelup");
 }
-const KIND_WORD = { color: "フロリの色", head: "頭の飾り", body: "体の飾り", face: "顔の飾り", theme: "背景" };
+const KIND_WORD = { color: "フロリの色", head: "頭の飾り", body: "体の飾り", face: "顔の飾り" };
 async function showUnlock() {
   const [kind, id] = unlockQueue[unlockIndex].split(":");
   const item = DRESS_LISTS[kind].find((entry) => entry.id === id);
@@ -1786,7 +1784,6 @@ async function showUnlock() {
   // フロリに、付けたところを見せる
   const flori = $("unlock-flori");
   const stage = $("unlock-stage");
-  stage.style.background = kind === "theme" ? (item.preview ?? item.tint) : "";
   setDecor("unlock-decor", wornItems(kind === "head" || kind === "body" || kind === "face" ? { [kind]: id } : {}));
   flori.dataset.sample = "1";
   if (kind === "color") {
@@ -2451,7 +2448,7 @@ document.addEventListener("keydown", (event) => {
 
 // ================= 着せ替え・背景 =================
 let dress = loadDress();
-const DRESS_LISTS = { color: COLORS, head: HEADS, body: BODIES, face: FACES, theme: THEMES };
+const DRESS_LISTS = { color: COLORS, head: HEADS, body: BODIES, face: FACES }; // 背景(theme)は、着せ替えから なくした(利用者の指示)
 
 // フロリの絵の上に、頭・体・顔のかざりを重ねる(場所と大きさは、badges.js の pos。うしろに回るものは、フロリのうしろに)
 function setDecor(containerId, items) {
@@ -2480,8 +2477,7 @@ function wornItems(over = {}) {
 }
 
 function applyDress() {
-  const picked = THEMES.find((item) => item.id === dress.theme);
-  const theme = picked ?? THEMES[0];
+  const theme = THEMES[0]; // 背景は、ひとつに固定(着せ替えでは変えられない)
   document.documentElement.dataset.theme = theme.id;
   document.documentElement.style.setProperty("--cover-bg", theme.cover ?? `url("../assets/bg/${theme.id}.webp")`); // 表紙の背景の模様(色ごと。あとから足した背景は、グラデーション)
   // 柄物の背景は、ホーム・図鑑・その他・設定の背景にも、その柄(--cover-pat)を使う(style.css の data-pattern)
@@ -2518,7 +2514,7 @@ function fadeNewMarks(screenId, markSelector, itemClass, onDone) {
   }, 1800);
 }
 
-let dressTab = "color"; // 着せ替えで、いま見ている種類(color / head / body / face / theme)
+let dressTab = "color"; // 着せ替えで、いま見ている種類(color / head / body / face)
 let seenTabs = new Set(); // この見学で、もう開いた種類(タブの NEW を消す)
 let freshKeys = new Set(); // この画面を、あたらしく開いて、初めて見るもの(NEW のしるし)
 
@@ -2540,14 +2536,9 @@ function openDress() {
 // マウスをのせたとき、付ける前に、見ためを、ためせる(かざり・背景)
 function previewDress(kind, item) {
   if (kind === "head" || kind === "body" || kind === "face") setDecor("dress-decor", wornItems({ [kind]: item.id }));
-  if (kind === "theme") $("dress-stage").style.background = item.preview ?? item.tint;
 }
 function endPreview() {
   setDecor("dress-decor", wornItems());
-  {
-    const theme = THEMES.find((item) => item.id === dress.theme);
-    $("dress-stage").style.background = theme?.stage ?? theme?.preview ?? ""; // 虹色は、表紙と同じ、うすい色
-  }
 }
 
 // ロック中のきせかえの、もらい方の吹き出し。画面の上に1つだけ出す(一覧が動いても、切れないように)
@@ -2632,10 +2623,6 @@ function renderDress() {
   $("dress-meter-bar").style.width = `${Math.round((owned / total) * 100)}%`;
   $("dress-meter-text").textContent = `ご褒美 GET ${owned} / ${total}個${owned >= total ? "  全部 コンプリート! 🎉" : ""}`;
   renderRewardCard($("dress-reward"));
-  {
-    const theme = THEMES.find((item) => item.id === dress.theme);
-    $("dress-stage").style.background = theme?.stage ?? theme?.preview ?? ""; // 虹色は、表紙と同じ、うすい色
-  }
   setDecor("dress-decor", wornItems());
   seenTabs.add(dressTab); // いま開いている種類の NEW は、すぐ消える
   for (const tab of document.querySelectorAll("[data-dress-tab]")) {
@@ -2669,8 +2656,8 @@ function renderDress() {
       // 絵だけを見せる(名前や、もらいかたは、押したときや、マウスをのせたときに出す)
       const art = document.createElement("span");
       art.className = `dress-art is-${kind}`;
-      const paint = kind === "color" ? (choice.swatch ?? choice.tint) : kind === "theme" ? (choice.preview ?? choice.tint) : "";
-      if (!open && (kind === "color" || kind === "theme")) {
+      const paint = kind === "color" ? (choice.swatch ?? choice.tint) : "";
+      if (!open && kind === "color") {
         // まだ手に入れていない色・背景は、中身を見せず「？」のパネルにする(図鑑と同じ。感想 No.27)
         art.classList.add("is-mystery");
         art.textContent = "？";
@@ -2681,7 +2668,6 @@ function renderDress() {
         pat.style.background = paint;
         art.append(pat);
       } else if (kind === "color") art.style.background = paint;
-      else if (kind === "theme") art.style.background = paint;
       else if (choice.img) {
         const pic = document.createElement("img");
         pic.addEventListener("load", () => fitIcon(pic)); // 細長いもの・横長のものも、見かけの大きさが、そろうように

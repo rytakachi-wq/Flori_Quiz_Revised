@@ -3669,3 +3669,91 @@ html[data-pattern] :is(#screen-menu, #screen-note, #screen-credits, #screen-dex,
 /* 図鑑・復習ノートのジャンルの札:10ジャンルなので、横にスクロール */
 #screen-dex .dex-filter, #screen-note .dex-filter { overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; padding-bottom: 2px; }
 #screen-dex .dex-filter .dex-tab, #screen-note .dex-filter .dex-tab { flex: 0 0 auto; min-width: 64px; padding: 3px 6px; letter-spacing: 0; }
+
+/* ===== RPG風のデザイン(ホーム・クイズの選択・毎日1問・復習・スタッフクレジット) =====
+   決まり:背景は、ひとつに固定(着せ替えでは変えない)。紺色の「ウィンドウ」(白いふち+紺の外わく)・白い文字・黄色の ▶ カーソル。 */
+:root {
+  --rpg-win: linear-gradient(180deg, #2f4d94, #223a78);
+  --rpg-ring: 0 0 0 3px #223a78, 0 4px 0 3px rgba(20, 30, 70, 0.45);
+  --rpg-sky: radial-gradient(circle at 12% 10%, #fff 0 1.4px, transparent 2.4px), radial-gradient(circle at 70% 18%, #ffe9a8 0 1.2px, transparent 2.2px), radial-gradient(circle at 40% 6%, #fff 0 1px, transparent 2px), linear-gradient(180deg, #141f4d 0%, #2b2a6e 52%, #5a3a86 74%, #2d6a4f 74%, #1f4d3a 100%);
+}
+.rpg-win { background: var(--rpg-win); color: #fff; border: 3px solid #fff; border-radius: 14px; box-shadow: var(--rpg-ring); }
+
+/* --- ホーム --- */
+#screen-cover.cover-home::before { top: 0; height: 100%; background: var(--rpg-sky); background-size: 110px 110px, 170px 170px, 90px 90px, 100% 100%; background-position: 0 0, 40px 30px, 20px 60px, 0 0; transform: none; }
+#screen-cover.cover-home::after { display: none; }
+#screen-cover .home-stage { background: radial-gradient(ellipse at 50% 88%, rgba(255, 233, 168, 0.32) 0 30%, rgba(255, 233, 168, 0) 70%); }
+#screen-cover .home-speech { background: var(--rpg-win); color: #fff; border: 3px solid #fff; border-radius: 14px; box-shadow: var(--rpg-ring); text-align: left; padding-left: 26px; }
+#screen-cover .home-speech::before { border-top-color: #fff; }
+#screen-cover .home-speech::after { border-top-color: #223a78; }
+#screen-cover .home-speech::marker { content: ""; }
+#screen-cover .home-speech .cover-talk { margin: 0; color: #fff; }
+#screen-cover .home-speech { position: relative; }
+#screen-cover .home-speech::after { z-index: 1; }
+#screen-cover .cover-talk::before { content: "▶"; position: absolute; left: 9px; top: 50%; transform: translateY(-50%); font-size: 12px; color: #ffd24a; animation: rcBlink 1s steps(2) infinite; }
+#screen-cover .corner-flori { background: var(--rpg-win); border: 3px solid #fff; box-shadow: var(--rpg-ring); }
+#screen-cover .cover-gear { background: var(--rpg-win); color: #fff; border: 3px solid #fff; border-radius: 12px; box-shadow: var(--rpg-ring); }
+#screen-cover .logo-small { filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.7)); }
+
+/* クイズ=いちばん大きな「コマンド」 */
+#screen-cover .play-btn { background: var(--rpg-win); color: #fff; border: 4px solid #fff; border-radius: 18px; box-shadow: 0 0 0 4px #223a78, 0 7px 0 4px rgba(20, 30, 70, 0.5); }
+#screen-cover .play-btn:active { box-shadow: 0 0 0 4px #223a78, 0 2px 0 4px rgba(20, 30, 70, 0.5); }
+#screen-cover .play-btn .pb-text b { color: #fff; text-shadow: 0 3px 0 #16286a; }
+#screen-cover .play-btn .pb-text small { color: #ffd24a; }
+#screen-cover .play-btn .pb-go { color: #ffd24a; text-shadow: 0 2px 0 #16286a; }
+#screen-cover .play-btn::after { background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.3), transparent); }
+/* 遊び方=ふつうの「コマンド」 */
+.rpg-cmd { display: flex; align-items: center; gap: 8px; flex: none; width: min(100%, 360px); margin: 0 auto 6px; padding: 8px 16px; font: inherit; font-size: 18px; font-weight: bold; color: #fff; background: var(--rpg-win); border: 3px solid #fff; border-radius: 14px; box-shadow: var(--rpg-ring); cursor: pointer; }
+.rpg-cmd .rc-cursor { color: #ffd24a; font-size: 14px; visibility: hidden; }
+.rpg-cmd:hover .rc-cursor, .rpg-cmd:focus-visible .rc-cursor, .rpg-cmd:active .rc-cursor { visibility: visible; animation: rcBlink 1s steps(2) infinite; }
+.rpg-cmd .rc-ico { font-size: 22px; }
+.rpg-cmd:active { transform: translateY(3px); }
+@keyframes rcBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+@media (prefers-reduced-motion: reduce) { .rpg-cmd .rc-cursor, #screen-cover .cover-talk::before { animation: none; } }
+@media (max-height: 640px) { .rpg-cmd { padding: 5px 14px; font-size: 16px; } #screen-cover .play-btn { min-height: 74px; } }
+
+/* --- RPG風:クイズの選択・毎日1問(問題の画面)・復習ノート・その他・スタッフクレジット --- */
+#screen-setup, #screen-note, #screen-menu, #screen-credits, #screen-question { background: var(--rpg-sky) !important; background-size: 110px 110px, 170px 170px, 90px 90px, 100% 100% !important; background-position: 0 0, 40px 30px, 20px 60px, 0 0 !important; color: #fff; }
+:is(#screen-setup, #screen-note, #screen-menu, #screen-credits, #screen-question) .screen-head .title { color: #fff; text-shadow: 0 2px 0 #16286a; }
+:is(#screen-setup, #screen-note, #screen-menu, #screen-credits, #screen-question)::before, :is(#screen-setup, #screen-note, #screen-menu, #screen-credits, #screen-question)::after { background-image: none !important; }
+/* コマンド(RPGクエスト・毎日1問・復習) */
+#screen-setup .mode-btn { color: #fff; background: var(--rpg-win); border: 3px solid #fff; border-radius: 14px; box-shadow: var(--rpg-ring); padding-left: 26px; }
+#screen-setup .mode-btn.m-rpg { box-shadow: var(--rpg-ring), inset 7px 0 0 #e8584f; }
+#screen-setup .mode-btn.m-daily { box-shadow: var(--rpg-ring), inset 7px 0 0 #f08ab4; }
+#screen-setup .mode-btn.m-review { box-shadow: var(--rpg-ring), inset 7px 0 0 #6bb7f0; }
+#screen-setup .mode-btn::before { content: "▶"; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 14px; color: #ffd24a; visibility: hidden; }
+#screen-setup .mode-btn:hover::before, #screen-setup .mode-btn:focus-visible::before, #screen-setup .mode-btn:active::before { visibility: visible; animation: rcBlink 1s steps(2) infinite; }
+#screen-setup .mode-btn .tile-sub { color: #cfe0ff; opacity: 1; }
+#screen-setup .mode-btn.is-done { filter: none; opacity: 0.8; }
+#screen-setup .rules-again { color: #fff; background: var(--rpg-win); border: 3px solid #fff; box-shadow: var(--rpg-ring); }
+/* 復習ノート */
+#screen-note .dex-tab { color: #cfe0ff; background: var(--rpg-win); border: 2px solid #fff; border-radius: 10px; }
+#screen-note .dex-tab.is-on { color: #fff; background: linear-gradient(180deg, #4a6ec4, #2f4d94); border-color: #ffd24a; box-shadow: 0 0 0 2px #223a78, 0 3px 0 2px #ffd24a; }
+#screen-note .dex-tab small { color: #ffd24a; }
+#screen-note #note-count, #screen-note #note-comment, #screen-note .note-count, #screen-note .dex-comment { color: #fff; }
+#screen-note .btn { color: #fff; background: var(--rpg-win); border: 3px solid #fff; box-shadow: var(--rpg-ring); }
+#screen-note .btn:disabled { opacity: 0.55; }
+/* 問題の画面(毎日1問・復習) */
+#screen-question .question, #screen-question .feedback, #screen-question .explanation { color: #fff; background: var(--rpg-win); border: 3px solid #fff; border-left-width: 3px; border-radius: 14px; box-shadow: var(--rpg-ring); }
+#screen-question .choice { color: #fff; background: var(--rpg-win); border: 3px solid #fff; border-radius: 12px; box-shadow: var(--rpg-ring); }
+#screen-question .choice:hover:not(:disabled) { background: linear-gradient(180deg, #4a6ec4, #2f4d94); }
+#screen-question .choice:disabled { color: #fff; }
+#screen-question .choice-no { color: #223a78; background: #ffd24a; }
+#screen-question .choice.is-right { background: linear-gradient(180deg, #3aa86b, #2a7f52); border-color: #fff; }
+#screen-question .choice.is-wrong { background: linear-gradient(180deg, #c8574f, #94342d); border-color: #fff; }
+#screen-question .choice.is-right .choice-no, #screen-question .choice.is-wrong .choice-no { color: #fff; background: rgba(0, 0, 0, 0.28); }
+#screen-question .hint { color: #4a3a00; background: #fff3c4; border-radius: 10px; }
+#screen-question .q-chip, #screen-question .chip { color: #fff; background: var(--rpg-win); border: 2px solid #fff; }
+#screen-question .verdict { color: #fff; }
+/* その他・スタッフクレジット */
+#screen-menu .tile { color: #fff; background: var(--rpg-win); border: 3px solid #fff; box-shadow: var(--rpg-ring); }
+#screen-menu .tile .tile-label { color: #fff; }
+#screen-credits .credits-hud, #screen-credits .credits-result, #screen-credits .credits-msg { color: #fff; background: var(--rpg-win); border: 3px solid #fff; border-radius: 14px; box-shadow: var(--rpg-ring); }
+#screen-credits .credits-score { color: #ffd24a; }
+#screen-credits #credits-roll, #screen-credits .credits-roll { color: #fff; text-shadow: 0 2px 0 rgba(10, 20, 60, 0.7); }
+#screen-credits .cres-score { color: #ffd24a; }
+#credits-stage { background: rgba(10, 20, 60, 0.45) !important; border: 3px solid #fff !important; box-shadow: var(--rpg-ring); }
+#credits-roll, #credits-roll * { color: #fff; }
+#credits-roll .cr-role, #credits-roll h3, #credits-roll .cr-head { color: #ffd24a; }
+#screen-credits #credits-roll .cr-title-main, #screen-credits #credits-roll .cr-section { color: #ffd24a; text-shadow: 0 2px 0 rgba(10, 20, 60, 0.8); }
+#screen-credits #credits-roll .cr-title-sub { color: #fff; }
