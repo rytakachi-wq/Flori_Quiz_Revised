@@ -3669,25 +3669,3 @@ html[data-pattern] :is(#screen-menu, #screen-note, #screen-credits, #screen-dex,
 /* 図鑑・復習ノートのジャンルの札:10ジャンルなので、横にスクロール */
 #screen-dex .dex-filter, #screen-note .dex-filter { overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; padding-bottom: 2px; }
 #screen-dex .dex-filter .dex-tab, #screen-note .dex-filter .dex-tab { flex: 0 0 auto; min-width: 64px; padding: 3px 6px; letter-spacing: 0; }
-
-/* RPGの物語(仮) */
-.story { z-index: 1000; display: grid; place-items: center; padding: 12px; background: rgba(30, 38, 70, 0.8); }
-.story[hidden] { display: none; }
-.story-box { display: flex; flex-direction: column; gap: 8px; width: min(480px, 100%); max-height: calc(calc(100 * var(--dvh)) - 24px); padding: 14px; overflow: hidden auto; background: #fff; border: 4px solid var(--blue); border-radius: 22px; text-align: center; }
-.story-scene { position: relative; display: flex; align-items: flex-end; justify-content: center; gap: 4px; min-height: clamp(130px, calc(24 * var(--dvh)), 200px); background: linear-gradient(180deg, #fff6cf, #cfe9f5); border: 3px solid var(--blue); border-radius: 16px; overflow: hidden; }
-.story-scene[data-scene="captive"] { background: linear-gradient(180deg, #5b4a78, #2b2540); }
-.story-scene[data-scene="go"] { background: linear-gradient(180deg, #ffd9b8, #f4a58a); }
-.fam { position: relative; display: block; width: clamp(66px, calc(14 * var(--dvh)), 108px); flex: none; }
-.fam.fam-main { width: clamp(80px, calc(17 * var(--dvh)), 128px); }
-.fam-img { display: block; width: 100%; height: auto; }
-.fam-hat { position: absolute; transform: translate(-50%, -50%) scale(var(--sx, 1), var(--sy, 1)); pointer-events: none; }
-.fam.is-captive { animation: famShake 0.7s ease-in-out infinite; }
-.fam.is-captive::after { content: "🔒"; position: absolute; right: 0; bottom: 4px; font-size: 24px; }
-.story-boss { align-self: center; font-size: clamp(52px, calc(11 * var(--dvh)), 90px); animation: homeBob 1.6s ease-in-out infinite; }
-.story-spark { position: absolute; top: 6px; right: 12px; font-size: 32px; animation: homeBob 1.2s ease-in-out infinite; }
-.story-who { margin: 0; font-size: 17px; font-weight: bold; color: var(--blue-dark); }
-.story-text { margin: 0; padding: 10px 14px; font-size: 18px; font-weight: bold; line-height: 1.6; background: #fff6cf; border: 3px solid #e0b43a; border-radius: 16px; }
-.story-buttons { display: flex; justify-content: center; gap: 12px; }
-@keyframes famShake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
-@media (prefers-reduced-motion: reduce) { .fam.is-captive, .story-boss, .story-spark { animation: none; } }
-.story-text { text-wrap: balance; overflow-wrap: anywhere; }

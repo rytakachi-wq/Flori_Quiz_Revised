@@ -40,7 +40,6 @@ import { illustrationFor } from "./illustrations.js";
 import { createTalker } from "./talk.js";
 import { initTutorial, openTutorial } from "./tutorial.js";
 import { initRules, openRules as resetRules } from "./rules.js";
-import { initStory, playStory, storyOnce, PROLOGUE, EPILOGUE, STAGE_LINES } from "./story.js";
 import { openCredits, closeCredits } from "./credits.js";
 import { BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js";
 import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js";
@@ -55,7 +54,7 @@ import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./fur
   keepOwned({ have: new Set(start.badges), stars: start.stars });
 }
 
-const QUESTIONS_URL = "../data/questions/questions.json?v=20261110e"; // 問題を変えたら、この値と index.html の ?v= を変える
+const QUESTIONS_URL = "../data/questions/questions.json?v=20261110f"; // 問題を変えたら、この値と index.html の ?v= を変える
 const ONI_TAPS = 5; // 表紙のすみのフロリを、この回数押すと、オニ問題が出る
 const IMG = {
   think: "../assets/flori/m/book_pen.png",
@@ -1224,7 +1223,7 @@ initRules(() => {
 // RPGクエスト:ランダムな問題で、制限時間なし
 $("btn-rpg").addEventListener("click", () => {
   timeLimit = false;
-  storyOnce("story", PROLOGUE, () => startPlay("rpg")); // はじめての1回だけ、お話(ムービー)
+  startPlay("rpg");
 });
 
 // 戻るボタンは、どの画面でも、左上の同じ場所。表紙から、ひとつずつ戻る
@@ -1534,7 +1533,6 @@ function closeOpening() {
 }
 // 遊び方(チュートリアルムービー):オープニングからも、その他からも、見られる
 initTutorial();
-initStory();
 function playTutorial(kind = "rpg", then = null, opts = {}) {
   setScene("tutorial");
   openTutorial((started) => {
@@ -2234,7 +2232,7 @@ function fitRpgWindow() {
 function rpgIntro(stage, retries) {
   const name = stage.kind === "boss" ? `ボス ${stage.name}` : stage.name;
   if (stage.kind === "chest") return "宝箱だ! 正解で ハート回復!";
-  if (retries === 0) return `${stage.icon} ${name}が 現れた! ${STAGE_LINES[RPG_STAGES.indexOf(stage)] ?? ""}`;
+  if (retries === 0) return `${stage.icon} ${name}が 現れた!`;
   const lines = [
     `${name}が にやりと 笑った! もう1度!`,
     `${name}は まだ 立ちはだかっている!`,
@@ -2379,7 +2377,7 @@ function rpgSounds(event) {
 
 function rpgNext() {
   if (play.roundFinished && !play.cleared) showGameOver(); // ゲームオーバーは、専用の画面
-  else if (play.roundFinished) playStory(EPILOGUE, () => announce("クエスト クリア〜!", "result", showResult, "../assets/flori/m/wave_surprised.png")); // ドラゴンを倒して、家族を救う
+  else if (play.roundFinished) announce("クエスト クリア〜!", "result", showResult, "../assets/flori/m/wave_surprised.png");
   else showRpg();
 }
 
