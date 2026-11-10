@@ -64,6 +64,11 @@ const IMG = {
 };
 
 const $ = (id) => document.getElementById(id);
+// 最初の画面(オープニング)は、あとの処理で何かあっても、さわれるように、いちばん先に つなぐ
+$("opening").addEventListener("click", closeOpening);
+$("opening").addEventListener("keydown", (event) => {
+  if (event.target === $("opening") && (event.key === "Enter" || event.key === " ")) closeOpening();
+});
 const SCREENS = ["cover", "rules", "setup", "menu", "credits", "note", "records", "settings", "dex", "dress", "question", "rpg", "gameover", "result", "error"];
 
 let coverTaps = 0;
@@ -1544,7 +1549,7 @@ function closeOpening() {
       playJingle("opening");
     }
     playTutorial(
-      "play",
+      "rpg",
       (started) => {
         if (!started) openingJingleDone = false; // 閉じただけなら、つぎのタッチで、また曲を鳴らす
         if (started) closeOpening();
@@ -1580,13 +1585,9 @@ function closeOpening() {
     talker.start(); // オープニングから表紙に来たときは、ふきだしを、ぱっと出す
   }, length + 600);
 }
-$("opening").addEventListener("click", closeOpening);
-$("opening").addEventListener("keydown", (event) => {
-  if (event.target === $("opening") && (event.key === "Enter" || event.key === " ")) closeOpening();
-});
 // 遊び方(チュートリアルムービー):オープニングからも、その他からも、見られる
 initTutorial();
-function playTutorial(kind = "play", then = null, opts = {}) {
+function playTutorial(kind = "rpg", then = null, opts = {}) {
   setScene("tutorial");
   openTutorial((started) => {
     setScene(sceneOf(currentScreen)); // 閉じたら、もとの画面のBGMに戻る

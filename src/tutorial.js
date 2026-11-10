@@ -1,89 +1,6 @@
 // 遊び方の、チュートリアルムービー。絵と動きで、6つの場面を見せる(動画ファイルではなく、画面の中で動かす)。
 // 場面は、「次へ」ボタンを押したときだけ進む(自動では進まない)。「戻る」「閉じる」も、ボタンで。
 
-import { HEADS } from "./badges.js";
-
-const FLORI = "../assets/flori/m/body_wave.webp";
-
-// 「ご褒美」の場面でかぶせる帽子(キャップ)。場所と大きさは、着せ替えの表(badges.js)と同じものを使う(表を直すと、ここも合う)
-const DEMO_HAT = HEADS.find((item) => item.img.endsWith("/head04.png"));
-function demoHatStyle() {
-  const { x, y, w, r = 0, sx = 1, sy = 1 } = DEMO_HAT.pos;
-  return `left:${x}%;top:${y}%;width:${w}%;--hat-r:${r}deg;--hat-sx:${sx};--hat-sy:${sy}`;
-}
-
-const PLAY_SCENES = [
-  {
-    title: "STEP 1 選ぼう",
-    caption: "「クイズ」を押して、選んで スタート!",
-    html: `
-      <div class="tm-set">
-        <div class="tm-srow"><span class="tm-btn mini c3 is-hit"><i>🗡️</i><small>RPG</small></span><span class="tm-btn mini c2"><i>🎯</i><small>シンプル</small></span></div>
-        <div class="tm-srow"><span class="tm-btn mini c1"><i>🔬</i><small>理系</small></span><span class="tm-btn mini c4"><i>📖</i><small>文系</small></span><span class="tm-btn mini c3"><i>💡</i><small>ひらめき</small></span><span class="tm-btn mini c6"><i>🎲</i><small>ランダム</small></span></div>
-        <div class="tm-srow"><span class="tm-btn mini c5"><i>🌱</i><small>普通</small></span><span class="tm-btn mini c6"><i>🔥</i><small>難しい</small></span></div>
-        <span class="tm-go">▶ スタート!</span>
-      </div>
-      <span class="tm-finger tm-finger-1">👆</span>`,
-  },
-  {
-    title: "STEP 2 難しさと時間",
-    caption: "難しさと 制限時間を 選ぼう。時間をつけると 星がもらえるよ!",
-    html: `
-      <div class="tm-rows">
-        <div class="tm-row"><span class="tm-btn c5"><i>🌱</i><small>普通</small></span><span class="tm-btn c6 is-hit"><i>🔥</i><small>難しい</small></span></div>
-        <div class="tm-row"><span class="tm-btn c7 is-hit2"><i>⏱</i><small>時間あり</small></span><span class="tm-btn c8"><i>🙂</i><small>時間なし</small></span></div>
-      </div>
-      <span class="tm-finger tm-finger-2">👆</span>`,
-  },
-  {
-    title: "STEP 3 答えよう",
-    caption: "4つの答えから1つ選ぼう。正解すると点がもらえるよ!",
-    html: `
-      <div class="tm-q">
-        <div class="tm-qbar"><i>❓</i></div>
-        <div class="tm-choices">
-          <span class="tm-choice">1</span><span class="tm-choice">2</span>
-          <span class="tm-choice is-right">3<b>✔</b></span><span class="tm-choice">4</span>
-        </div>
-        <div class="tm-score">+1点</div>
-      </div>
-      <span class="tm-finger tm-finger-3">👆</span>`,
-  },
-  {
-    title: "STEP 4 困ったら",
-    caption: "「ヒント」を見ると 点が半分になるよ。「分からない」は答えが見られるけど 不正解だよ。",
-    html: `
-      <div class="tm-help">
-        <span class="tm-btn c9 is-hit"><i>💬</i><small>ヒント</small><em>点が半分</em></span>
-        <span class="tm-btn c10"><i>🤷</i><small>分からない</small><em>不正解</em></span>
-      </div>
-      <div class="tm-hint">💡 ヒント:…</div>
-      <span class="tm-finger tm-finger-4">👆</span>`,
-  },
-  {
-    title: "STEP 5 ご褒美",
-    caption: "正解を増やして 色々遊ぶと フロリの着せ替えがもらえるよ!",
-    html: `
-      <div class="tm-reward">
-        <span class="tm-gift">🎁</span>
-        <span class="tm-flori-wrap"><img class="tm-flori" src="${FLORI}" alt=""><img class="tm-hat" src="${DEMO_HAT.img}" alt="" style="${demoHatStyle()}"></span>
-        <span class="tm-star s1">⭐</span><span class="tm-star s2">⭐</span><span class="tm-star s3">⭐</span>
-      </div>`,
-  },
-  {
-    title: "STEP 6 他にも色々",
-    caption: "「その他」では 毎日1問・復習が遊べるよ。",
-    html: `
-      <div class="tm-menu">
-        <span class="tm-btn c1" style="--n:0"><i>📅</i><small>毎日1問</small></span>
-        <span class="tm-btn c2" style="--n:1"><i>📖</i><small>復習</small></span>
-        <span class="tm-btn c4" style="--n:3"><i>📚</i><small>問題図鑑</small></span>
-        <span class="tm-btn c5" style="--n:4"><i>👑</i><small>着せ替え</small></span>
-        <span class="tm-btn c6" style="--n:5"><i>🏆</i><small>成績</small></span>
-      </div>`,
-  },
-];
-
 // 場面の見せ方の部品
 const seq = (items, cls = "") => `<div class="tg-seq ${cls}">${SEQ(items)}</div>`;
 const SEQ = (items) => items.map(([icon, note], n) => `<span class="tg-seq-item" style="--n:${n}"><b>${icon}</b><small>${note}</small></span>`).join("");
@@ -121,19 +38,6 @@ const REVIEW_SCENES = [
   },
 ];
 
-PLAY_SCENES.push(
-  {
-    title: "補足 毎日1問",
-    caption: "「クイズ」の「毎日1問」は 1日に1問だけ出る 今日の問題。毎日続けると ご褒美がもらえるよ。",
-    html: `<div class="tg">${seq([["📅", "1日目"], ["📅", "2日目"], ["📅", "3日目"], ["🎁", "ご褒美"]])}</div>`,
-  },
-  {
-    title: "補足 復習",
-    caption: "「クイズ」の「復習」では 間違えた問題を もう1度 解けるよ。制限時間は付かないよ。",
-    html: `<div class="tg">${seq([["❌", "間違えた"], ["📖", "復習"], ["✅", "正解"], ["✨", "消える"]])}</div>`,
-  },
-);
-
 const RPG_SCENES = [
   {
     title: "RPGクエスト",
@@ -161,8 +65,8 @@ const RPG_SCENES = [
     html: `<div class="tg">${seq([["❌", "間違い"], ["📓", "ノート"], ["🏆", "クリア"]])}</div>`,
   },
 ];
-const SCENE_SETS = { play: PLAY_SCENES, daily: DAILY_SCENES, review: REVIEW_SCENES, rpg: RPG_SCENES };
-let SCENES = PLAY_SCENES;
+const SCENE_SETS = { daily: DAILY_SCENES, review: REVIEW_SCENES, rpg: RPG_SCENES };
+let SCENES = RPG_SCENES;
 
 let index = 0;
 let onClose = null;
@@ -201,7 +105,7 @@ function go(next) {
 export function openTutorial(closed, kind = "play", opts = {}) {
   onClose = closed ?? null;
   options = opts;
-  SCENES = SCENE_SETS[kind] ?? PLAY_SCENES;
+  SCENES = SCENE_SETS[kind] ?? RPG_SCENES;
   index = 0;
   $("tutorial").hidden = false;
   render();
