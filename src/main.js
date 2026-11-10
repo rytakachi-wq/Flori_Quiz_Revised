@@ -55,7 +55,7 @@ import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./fur
   keepOwned({ have: new Set(start.badges), stars: start.stars });
 }
 
-const QUESTIONS_URL = "../data/questions/questions.json?v=20261110d"; // 問題を変えたら、この値と index.html の ?v= を変える
+const QUESTIONS_URL = "../data/questions/questions.json?v=20261110e"; // 問題を変えたら、この値と index.html の ?v= を変える
 const ONI_TAPS = 5; // 表紙のすみのフロリを、この回数押すと、オニ問題が出る
 const IMG = {
   think: "../assets/flori/m/book_pen.png",
@@ -308,14 +308,6 @@ function announce(text, jingle, then, image) {
 function refreshCover() {
   if (playableQuestions.length === 0) return;
   const stats = loadStats();
-  const total = currentTotal(stats);
-  const rank = rankOf(total);
-  $("hud-total").textContent = total;
-  $("hud-rank").textContent = rank.name;
-  $("hud-rank-icon").textContent = rank.icon;
-  $("hud-stars").textContent = stats.stars;
-  $("hud-dress").textContent = dressOwned(stats);
-  $("hud-dress-all").textContent = dressTotal();
   const today = dateKey();
   const dailyDone = stats.dailyLast === today;
   $("btn-daily").querySelector(".tile-label").textContent = "毎日1問";

@@ -133,15 +133,15 @@ let finished = false;
 let resultTimer = 0;
 let last = 0;
 
-function messageFor({ state, best }) {
+function messageFor({ state, best, bestIdeal }) {
   if (state === "ended") return "";
   if (state === "idle") return "画面を タッチして シューティング!\n(ドラッグで フロリを 動かそう)";
-  if (state === "over") return `ゲームオーバー!  最高 ${best}点\nタッチで もう1回`;
+  if (state === "over") return `ゲームオーバー!  最高 ${best}/${bestIdeal}点\nタッチで もう1回`;
   return "";
 }
 
 function render(info) {
-  $("credits-score").textContent = `${info.score}点`;
+  $("credits-score").textContent = `${info.score}/${info.ideal}点`; // 自分の点数 / 理想のMAX点
   $("credits-hearts").textContent = info.state === "idle" ? "" : "💖".repeat(Math.max(0, info.lives));
   const message = messageFor(info);
   const box = $("credits-msg");
@@ -191,11 +191,11 @@ function beginResult() {
 }
 
 function showResult() {
-  const { played, best, kills } = shooter.finish();
+  const { played, best, kills, ideal } = shooter.finish();
   $("credits-hud").hidden = true;
   $("credits-msg").hidden = true;
   $("cres-title").textContent = played ? "シューティング 結果発表!" : "スタッフロール 終わり";
-  $("cres-score").textContent = played ? `${best}点` : "";
+  $("cres-score").textContent = played ? `${best}/${ideal}点` : "";
   $("cres-kills").textContent = played ? `たおした数 ${kills}こ` : "";
   $("credits-result").hidden = false;
   playSe("rollend");

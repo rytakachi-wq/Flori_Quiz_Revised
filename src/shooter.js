@@ -35,13 +35,15 @@ export function createShooter({ stage, canvas, onChange }) {
   let elapsed = 0;
   let invulnerable = 0;
   let best = 0;
+  let ideal = 0; // 理想のMAX点:出てきた落ちものを、ぜんぶ たおしたときの点(この回に出たぶん)
+  let bestIdeal = 0; // 最高点を出した回の、理想のMAX点
   let kills = 0; // たおした数(この画面を開いてからの合計)
   let played = false;
   let pointerId = null;
   let spawning = true; // false のあいだは、新しい落ちものを出さない(スタッフロールの終わり近く)
 
   function emit() {
-    onChange?.({ state, score, lives, best });
+    onChange?.({ state, score, lives, best, ideal, bestIdeal });
   }
 
   function resize() {
@@ -66,6 +68,7 @@ export function createShooter({ stage, canvas, onChange }) {
     spawnTimer = 0.5;
     elapsed = 0;
     invulnerable = 0;
+    ideal = 0;
   }
 
   function start() {
@@ -144,6 +147,16 @@ export function createShooter({ stage, canvas, onChange }) {
       hunter: ENEMY_IMAGES[index] === "bird" && elapsed > 10,
       image: enemyImages[index],
     });
+    const added = enemies[enemies.length - 1];
+    ideal += added.hunter ? 30 : 10 * (added.size > 48 ? 2 : 1); // たおしたときの点(下の score の足し方と同じ)
+  }
+
+  // 最高点の更新(そのときの理想のMAX点も、いっしょに覚える)
+  function commitBest() {
+    if (score >= best) {
+      best = score;
+      bestIdeal = ideal;
+    }
   }
 
   function burst(x, y) {
@@ -218,7 +231,7 @@ export function createShooter({ stage, canvas, onChange }) {
       playSe("cancel3");
       if (lives <= 0) {
         state = "over";
-        best = Math.max(best, score);
+        commitBest();
         playSe("cancel5");
       }
     }
@@ -288,15 +301,16 @@ export function createShooter({ stage, canvas, onChange }) {
     },
     // スタッフロールが終わったとき:成績を返して、遊びを止める
     finish() {
-      if (state === "playing") best = Math.max(best, score);
+      if (state === "playing") commitBest();
       state = "ended";
       emit();
-      return { played, best, kills };
+      return { played, best, kills, ideal: bestIdeal };
     },
     // 画面をひらいたときの、はじめの状態
     open() {
       reset();
       best = 0;
+      bestIdeal = 0;
       kills = 0;
       played = false;
       state = "idle";
