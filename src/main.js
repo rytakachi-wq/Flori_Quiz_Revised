@@ -54,7 +54,7 @@ import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./fur
   keepOwned({ have: new Set(start.badges), stars: start.stars });
 }
 
-const QUESTIONS_URL = "../data/questions/questions.json";
+const QUESTIONS_URL = "../data/questions/questions.json?v=20261110c"; // 問題を変えたら、この値と index.html の ?v= を変える
 const ONI_TAPS = 5; // 表紙のすみのフロリを、この回数押すと、オニ問題が出る
 const IMG = {
   think: "../assets/flori/m/book_pen.png",
