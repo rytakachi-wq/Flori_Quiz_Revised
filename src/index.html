@@ -91,24 +91,18 @@
     </section>
 
     <!-- クイズのモード選択(1つの画面で、ぜんぶ選ぶ) -->
-    <section id="screen-setup" class="screen setup-screen" aria-label="クイズのモード選択" hidden>
+    <section id="screen-setup" class="screen setup-screen" aria-label="クイズ" hidden>
       <header class="screen-head">
         <button id="btn-flow-back" class="back-btn" type="button"><span aria-hidden="true">↩</span> 戻る</button>
-        <h2 class="title">クイズのモード選択</h2>
+        <h2 class="title">クイズ</h2>
       </header>
-      <div class="set-list">
-        <div class="set-row"><span class="set-label"><span aria-hidden="true">📚</span> 分類</span><div id="seg-group" class="seg seg-4"></div></div>
-        <div class="set-row"><span id="set-label-3" class="set-label"></span><div id="seg-third" class="seg"></div></div>
-        <div id="row-level" class="set-row"><span class="set-label"><span aria-hidden="true">⭐</span> 難しさ</span><div id="seg-level" class="seg"></div></div>
-        <div class="set-row"><span class="set-label set-label-time"><span aria-hidden="true">⏱</span> 30秒の制限時間</span><div id="seg-time" class="seg seg-time"></div></div>
+      <div class="mode-list">
+        <button id="btn-rpg" class="mode-btn m-rpg" type="button"><span class="tile-icon" aria-hidden="true">🗡️</span><span class="tile-text"><span class="tile-label">RPGクエスト</span><span class="tile-sub">ランダムな問題で ボスを倒そう</span></span></button>
+        <button id="btn-daily" class="mode-btn m-daily" type="button"><span class="tile-icon" aria-hidden="true">📅</span><span class="tile-text"><span class="tile-label">毎日1問</span><span class="tile-sub">1日に1問だけ</span></span><span class="tile-dot" hidden></span></button>
+        <button id="btn-review" class="mode-btn m-review" type="button"><span class="tile-icon" aria-hidden="true">📖</span><span class="tile-text"><span class="tile-label">復習</span><span class="tile-sub">間違えた問題を もう1度</span></span><span class="tile-dot" hidden></span></button>
       </div>
-      <p id="setup-note" class="setup-note" role="status"></p>
       <button id="btn-show-rules" class="rules-again" type="button">📖 ルールを もう1度 見る</button>
       <div id="flow-reward" class="reward-card" hidden></div>
-      <div class="setup-actions">
-        <button id="btn-recommend" class="reco-btn" type="button"><span aria-hidden="true">✨</span> おすすめで<br>選ぶ</button>
-        <button id="btn-start" class="go-btn is-start" type="button"><span class="ga">準備完了!</span><span aria-hidden="true">▶</span></button>
-      </div>
     </section>
 
     <!-- その他(2ページ目) -->
@@ -124,8 +118,6 @@
         </div>
       </div>
       <div class="menu-grid">
-        <button id="btn-daily" class="tile t-daily" type="button"><span class="tile-icon" aria-hidden="true">📅</span><span class="tile-text"><span class="tile-label">毎日1問</span></span><span class="tile-dot" hidden></span></button>
-        <button id="btn-review" class="tile t-review" type="button"><span class="tile-icon" aria-hidden="true">📖</span><span class="tile-text"><span class="tile-label">復習</span></span><span class="tile-dot" hidden></span></button>
         <button id="btn-tutorial-menu" class="tile t-tutorial" type="button"><span class="tile-icon" aria-hidden="true">🎬</span><span class="tile-text"><span class="tile-label">遊び方</span></span><span class="tile-dot" hidden></span></button>
         <button id="btn-credits" class="tile t-credits" type="button"><span class="tile-icon" aria-hidden="true">🎈</span><span class="tile-text"><span class="tile-label">スタッフクレジット</span></span><span class="tile-dot" hidden></span></button>
       </div>

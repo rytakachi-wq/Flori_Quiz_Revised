@@ -12,7 +12,6 @@ import {
   PracticeRound,
   TIMED_SECONDS,
   QUESTIONS_PER_ROUND,
-  Session,
   RPG_LIVES,
   RPG_STAGES,
   RpgRound,
@@ -31,7 +30,6 @@ import {
   recordBadges,
   recordDaily,
   recordDex,
-  saveCourseKey,
   recordOni,
   recordReview,
   recordWrong,
@@ -262,11 +260,8 @@ let playableQuestions = []; // 普通+難しい問題(復習・毎日1問で使�
 let normalIds = new Set(); // 普通の問題の uid(成績の記録に使う。番号が付けなおされても、変わらない)
 let hardIds = new Set(); // 難しい問題の uid
 let oniIds = new Set(); // オニ問題の uid
-const sessions = new Map(); // 「理系-normal」のような名前 → 普通・難しいモードの遊び(難しさのカウンターを引き継ぐ)
-let activeKey = null; // いま遊んでいる、sessions の名前
-const pick = { group: "理系", level: "rpg", simple: "normal", time: true }; // (制限時間は、はじめから「つける」=おすすめ)設定の画面で選んだ、遊ぶ人・分類・難しさ(人数)・制限時間
 const GROUPS = ["理系", "文系", "ひらめき"];
-const MIN_POOL = 10; // 1つの組み合わせで、最低これだけの問題がないと、他の分類から足す
+const GROUP_ICON = { 理系: "🔬", 文系: "📖", ひらめき: "💡", ランダム: "🎲" };
 let play; // いま遊んでいるもの(session・hardSession・オニ問題など)
 let current = null; // 今出している問題
 let answered = false;
@@ -345,7 +340,6 @@ function startPlay(nextMode, startMessage = null) {
   lastCorrect = null;
   if (mode === "oni") timeLimit = false; // オニ問題には、制限時間はない
   if (mode === "oni") play = new OniRound(oniQuestions);
-  else if (mode === "hard") play = getSession(pick.group, "hard");
   else if (mode === "review") {
     let scope = reviewOnly;
     if (!scope && reviewFromQuiz && reviewScope.length) {
@@ -364,16 +358,13 @@ function startPlay(nextMode, startMessage = null) {
     rpgShownStage = -1;
     announce("クエスト スタート!", "start", showRpg, "../assets/flori/m/body_wave.webp");
     return;
-  } else play = getSession(pick.group, "normal");
-  const resume = (mode === "normal" || mode === "hard") && hasCourseKey(activeKey); // 続きから遊ぶときは、そう知らせる
-  announce(startMessage ?? (resume ? "続きから スタート!" : "それでは スタート!"), "start", showQuestion, "../assets/flori/m/body_wave.webp");
+  }
+  announce(startMessage ?? "それでは スタート!", "start", showQuestion, "../assets/flori/m/body_wave.webp");
 }
 
-// RPGの問題:選んだ分類の、普通・難しい問題(少ないときは、他の分類から足す)
+// RPGの問題:分類を分けずに、普通・難しい問題の全部から、ランダムに出る
 function adventurePool() {
-  const inGroup = pick.group === "ランダム" ? playableQuestions : playableQuestions.filter((q) => groupOf(q) === pick.group);
-  const others = playableQuestions.filter((q) => !inGroup.includes(q)).sort(() => Math.random() - 0.5);
-  return [...inGroup, ...others.slice(0, Math.max(0, 20 - inGroup.length))];
+  return playableQuestions;
 }
 
 function showQuestion() {
@@ -651,7 +642,6 @@ function answer(response) {
   timedOut = false;
   gaveUp = false;
   const correct = play.answer(current, response, hinted);
-  if (mode === "normal" || mode === "hard") persistSession(); // 答えるたびに「続き」を保存(途中でやめても、💾 続き が付く)
   $("btn-hint").disabled = true;
   $("btn-giveup").disabled = true;
   renderers[current.type].mark(current, response, correct);
@@ -1213,136 +1203,13 @@ $("btn-rpg-settings").addEventListener("click", () => {
 $("btn-volume-close").addEventListener("click", () => $("dlg-volume").close());
 
 
-// ================= クイズ:ルール → モード選択(1つの画面で、ぜんぶ選ぶ)→ 確認 → スタート =================
-const GROUP_ICON = { 理系: "🔬", 文系: "📖", ひらめき: "💡", ランダム: "🎲" };
-const SAVE_MARK = "💾 続き"; // 続きから遊べるしるし
-
-// ボタンのならび(絵文字の色に合わせた色は、style.css の .c-○○)。badge:ボタンの角のしるし、sub:文字の下の小さい文
-function renderSeg(el, options, value, onPick) {
-  el.replaceChildren(
-    ...options.map((option) => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = `seg-btn ${option.color}${option.value === value ? " is-on" : ""}${option.small ? " is-small" : ""}`;
-      button.setAttribute("aria-pressed", String(option.value === value));
-      button.innerHTML = '<span class="si" aria-hidden="true"></span><span class="st"></span><span class="ss"></span><span class="sb"></span>';
-      const iconEl = button.querySelector(".si");
-      iconEl.textContent = option.icon;
-      // 絵が2つ以上ならぶときは、小さくして、ボタンに収める(人数の絵)
-      const iconCount = [...option.icon].length;
-      if (iconCount > 1) iconEl.style.fontSize = `${{ 2: 19, 3: 16, 4: 13 }[iconCount] ?? 13}px`;
-      button.querySelector(".st").textContent = option.text;
-      button.querySelector(".ss").textContent = option.sub ?? "";
-      const badge = button.querySelector(".sb");
-      badge.textContent = option.badge ?? "";
-      badge.hidden = !option.badge;
-      if (option.badge) button.setAttribute("aria-label", `${option.text}(${option.badge})`);
-      button.addEventListener("click", () => onPick(option.value));
-      return button;
-    }),
-  );
-}
-
-const LEVEL_TEXT = { normal: "普通", hard: "難しい", rpg: "RPGクエスト" };
-const courseKey = (group = pick.group, level = pick.level) => `${group}-${level}`;
-const anySavedCourse = () => [...GROUPS, "ランダム"].some((group) => ["normal", "hard"].some((level) => hasCourseKey(courseKey(group, level))));
-
+// ================= クイズ:ルール → クイズの選択(RPG・毎日1問・復習)
+// クイズのルール(フリップ)は、はじめて「クイズ」を押したときだけ、ゲームの前に流れる。2回目からは、選ぶ画面へ(「ルールをもう1度見る」で、いつでも見られる)
+const RULES_SEEN_KEY = "floriQuiz.guideSeen.quiz";
 function renderSetup() {
-  renderSeg(
-    $("seg-group"),
-    [
-      { value: "理系", icon: "🔬", text: "理系", color: "c-sky" },
-      { value: "文系", icon: "📖", text: "文系", color: "c-tan" },
-      { value: "ひらめき", icon: "💡", text: "ひらめき", color: "c-yellow" },
-      { value: "ランダム", icon: "🎲", text: "ランダム", color: "c-red" },
-    ].map((option) => ({ ...option, badge: hasCourseKey(courseKey(option.value)) ? SAVE_MARK : "" })),
-    pick.group,
-    (value) => {
-      pick.group = value;
-      renderSetup();
-    },
-  );
-  $("set-label-3").innerHTML = '<span aria-hidden="true">🎮</span> 遊び方';
-  {
-    // 遊び方=シンプル/RPG。シンプルのときだけ、そのつぎの「難しさ」(普通・難しい)を選ぶ(感想 No.20)
-    renderSeg(
-      $("seg-third"),
-      [
-        { value: "rpg", icon: "🗡️", text: "RPG", color: "c-red" },
-        { value: "simple", icon: "🎯", text: "シンプル", color: "c-green" },
-      ],
-      pick.level === "rpg" ? "rpg" : "simple",
-      (value) => {
-        pick.level = value === "rpg" ? "rpg" : pick.simple;
-        renderSetup();
-      },
-    );
-  }
-  const levelOff = pick.level === "rpg";
-  $("row-level").hidden = levelOff; // 難しさは、シンプルのときだけ(感想 No.8・No.20)
-  const setList = document.querySelector("#screen-setup .set-list");
-  setList.classList.toggle("rows-3", levelOff);
-  setList.classList.toggle("rows-4", !levelOff);
-  renderSeg(
-    $("seg-level"),
-    [
-      { value: "normal", icon: "🌱", text: "普通", color: "c-green" },
-      { value: "hard", icon: "🔥", text: "難しい", color: "c-orange" },
-    ].map((option) => ({ ...option, badge: !levelOff && hasCourseKey(courseKey(pick.group, option.value)) ? SAVE_MARK : "" })),
-    levelOff ? null : pick.level,
-    (value) => {
-      pick.simple = value;
-      pick.level = value;
-      renderSetup();
-    },
-  );
-  // 制限時間:「つける」を大きく、「なし」を小さく
-  renderSeg(
-    $("seg-time"),
-    [
-      { value: true, icon: "⏱", text: "つける", sub: "星が もらえる", color: "c-red" },
-      { value: false, icon: "🙂", text: "なし", sub: "ご褒美が なくなるよ", color: "c-gray", small: true },
-    ],
-    pick.time,
-    (value) => {
-      pick.time = value;
-      renderSetup();
-    },
-  );
-  // 説明の文は、みじかく(感想 No.21)
-  $("setup-note").textContent =
-    pick.level === "rpg"
-      ? "ハート4つで ボスを 倒そう!"
-      : hasCourseKey(courseKey())
-        ? "💾 続きから 始まるよ!"
-        : anySavedCourse()
-          ? "初めから。(💾 = 続きあり)"
-          : "初めから 始まるよ。";
+  refreshCover(); // 毎日1問・復習のボタンの文字
   renderRewardCard($("flow-reward"));
 }
-
-// おすすめ:分類・難しさ・制限時間を、まとめて選ぶ(人数選択は、そのまま)。続きがあるときは、いちばん進んでいる続きを選ぶ
-function chooseRecommended() {
-  const courses = loadStats().courses;
-  let best = null;
-  for (const group of [...GROUPS, "ランダム"]) {
-    for (const level of ["normal", "hard"]) {
-      const saved = courses[courseKey(group, level)];
-      const progress = saved ? saved.used.length + saved.counter : 0;
-      if (hasCourseKey(courseKey(group, level)) && (!best || progress > best.progress)) best = { group, level, progress };
-    }
-  }
-  pick.group = best ? best.group : "ランダム";
-  pick.level = best ? best.level : "normal";
-  pick.simple = pick.level;
-  pick.time = true; // 制限時間をつける(星が もらえる)
-  renderSetup();
-}
-
-// クイズのルール(フリップ)は、はじめて「クイズ」を押したときだけ、ゲームの前に流れる。2回目からは、モード選択へ(モード選択の「ルールをもう1度見る」で、いつでも見られる)
-const RULES_SEEN_KEY = "floriQuiz.guideSeen.quiz";
-// いま選んでいる遊び方に合う、ルール(普通・難しい・RPG)
-const rulesKind = () => pick.level;
 function openRules() {
   let seen = false;
   try {
@@ -1356,7 +1223,7 @@ function openRules() {
     show("setup");
     return;
   }
-  resetRules(rulesKind());
+  resetRules("rpg");
   show("rules");
 }
 $("btn-quiz").addEventListener("click", openRules);
@@ -1364,12 +1231,10 @@ initRules(() => {
   renderSetup();
   show("setup");
 });
-$("btn-recommend").addEventListener("click", chooseRecommended);
-// 「準備完了!」で、確認の画面なしに、そのまま始める(感想 No.26)
-$("btn-start").addEventListener("click", () => {
-  timeLimit = pick.time;
-  if (pick.level === "rpg") guideRpg(() => startPlay("rpg")); // RPGは、はじめてのときだけ、先にルール説明
-  else startPlay(pick.level);
+// RPGクエスト:ランダムな問題で、制限時間つき。はじめてのときだけ、先にルール説明
+$("btn-rpg").addEventListener("click", () => {
+  timeLimit = true;
+  guideRpg(() => startPlay("rpg"));
 });
 
 // 戻るボタンは、どの画面でも、左上の同じ場所。表紙から、ひとつずつ戻る
@@ -1380,7 +1245,7 @@ $("btn-rules-back").addEventListener("click", () => {
 });
 $("btn-flow-back").addEventListener("click", () => show("cover", -1));
 $("btn-show-rules").addEventListener("click", () => {
-  resetRules(rulesKind()); // 選んでいる遊び方の、ルール説明
+  resetRules("rpg"); // RPGクエストの、ルール説明
   show("rules");
 });
 // RPGの、はじめてのときだけのルール説明(ルールの画面で見て、最後に、ゲームをはじめる)
@@ -1483,38 +1348,6 @@ $("btn-time-cancel").addEventListener("click", () => closeTimeDialog(null));
 // 普通・難しいモードの遊び。分類(理系・文系・ひらめき)×難しさごとに、ひとつずつ作って、「続きから」を保存する。
 const groupOf = (q) => q.group ?? "ひらめき";
 let uidToIdMap = new Map();
-function getSession(group, kind) {
-  const key = `${group}-${kind}`;
-  activeKey = key;
-  if (sessions.has(key)) return sessions.get(key);
-  const [min, max] = kind === "hard" ? [HARD_MIN_LEVEL, HARD_LEVEL] : [1, MAX_LEVEL];
-  const inBand = playableQuestions.filter((q) => q.level >= min && q.level <= max);
-  let pool = group === "ランダム" ? inBand : inBand.filter((q) => groupOf(q) === group);
-  if (pool.length < MIN_POOL) {
-    // 問題が少ない組み合わせは、他の分類の同じ段階の問題を足して、同じ問題がすぐに戻ってこないようにする
-    const others = inBand.filter((q) => groupOf(q) !== group);
-    pool = [...pool, ...others.slice(0, MIN_POOL - pool.length)];
-  }
-  const s = new Session(pool, Math.random, min, max);
-  const saved = loadStats().courses[key];
-  if (saved) {
-    const valid = new Set(pool.map((q) => q.id));
-    s.restore(saved.counter, saved.used.map((uid) => uidToIdMap.get(uid)).filter((id) => valid.has(id)));
-  }
-  sessions.set(key, s);
-  return s;
-}
-function hasCourseKey(key) {
-  const saved = loadStats().courses[key];
-  return Boolean(saved && (saved.counter > 0 || saved.used.length > 0));
-}
-function persistSession() {
-  const s = sessions.get(activeKey);
-  if (!s) return;
-  saveCourseKey(activeKey, { counter: s.counter, used: [...s.used].map((id) => idToUid.get(id)).filter(Boolean) });
-}
-const persistCourse = persistSession;
-const persistHard = persistSession;
 // セーブデータを消す(設定から):データが消えるので、本当にいいか、聞く
 let restartAction = null;
 function askRestart(action) {
@@ -1606,7 +1439,10 @@ const leaveGame = () => {
     renderSetup();
     show("setup", -1); // クイズから来た復習は、クイズのモード選択へ戻る
   } else if (mode === "review") showNote();
-  else if (mode === "daily") openMenu();
+  else if (mode === "daily") {
+    renderSetup();
+    show("setup", -1);
+  }
   else show("cover", -1);
 };
 $("btn-cover").addEventListener("click", leaveGame);
@@ -1629,7 +1465,6 @@ $("btn-quit-no").addEventListener("click", () => $("dlg-quit").close());
 $("btn-quit-yes").addEventListener("click", () => {
   $("dlg-quit").close();
   play.abandonRound();
-  if (mode === "normal" || mode === "hard") sessions.delete(activeKey); // 保存した続きから、作りなおす
   leaveGame();
 });
 
@@ -1763,9 +1598,9 @@ $("btn-tutorial").addEventListener("click", (event) => {
   unlock();
   introSeen(); // 見たので、はじめての自動表示は、もう出さない
   // 最後の場面まで来たら、「ゲームスタート」で、そのまま始められる(「閉じる」なら、オープニングに戻る)
-  playTutorial("play", (started) => started && closeOpening(), { startLabel: "ゲームスタート" });
+  playTutorial("rpg", (started) => started && closeOpening(), { startLabel: "ゲームスタート" });
 });
-$("btn-tutorial-menu").addEventListener("click", () => playTutorial());
+$("btn-tutorial-menu").addEventListener("click", () => playTutorial("rpg"));
 
 // ================= 着せ替えの解放(条件は badges.js) =================
 // 条件を数えるための材料
@@ -2337,7 +2172,10 @@ function closeNoteCard() {
     big.classList.remove("is-flip-out");
   }, 110);
 }
-$("btn-note-back").addEventListener("click", () => openMenu());
+$("btn-note-back").addEventListener("click", () => {
+  renderSetup();
+  show("setup", -1);
+});
 $("btn-note-guide").addEventListener("click", () => playTutorial("review")); // 復習の説明ムービー(いつでも)
 $("btn-note-review").addEventListener("click", () =>
   guideOnce("review", () => {

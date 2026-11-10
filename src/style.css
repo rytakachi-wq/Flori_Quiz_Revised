@@ -3636,3 +3636,19 @@ html[data-pattern] :is(#screen-menu, #screen-note, #screen-credits, #screen-dex,
 
 /* 仮:リラックスを消したので、遊び方を 横いっぱいに */
 .menu-grid .t-tutorial { grid-column: 1 / -1; flex-direction: row; gap: 10px; }
+
+/* クイズの選択(RPGクエスト・毎日1問・復習) */
+#screen-setup .mode-list { display: grid; gap: clamp(10px, calc(2 * var(--dvh)), 18px); width: min(560px, 100%); flex: 1 1 0; min-height: 0; align-content: center; grid-auto-rows: minmax(0, clamp(64px, calc(14 * var(--dvh)), 104px)); }
+.mode-btn { position: relative; display: flex; align-items: center; gap: 14px; padding: 6px 18px; border: 3px solid var(--line, #4a5560); border-radius: 22px; background: #fff; font: inherit; color: inherit; text-align: left; cursor: pointer; }
+.mode-btn .tile-icon { font-size: clamp(30px, calc(5.5 * var(--dvh)), 44px); line-height: 1; }
+.mode-btn .tile-text { display: grid; gap: 2px; }
+.mode-btn .tile-label { font-weight: bold; font-size: clamp(18px, calc(3.2 * var(--dvh)), 24px); }
+.mode-btn .tile-sub { font-size: clamp(12px, calc(2 * var(--dvh)), 15px); opacity: 0.75; }
+.mode-btn.m-rpg { background: #ffc9c9; }
+.mode-btn.m-daily { background: #ffd0e4; }
+.mode-btn.m-review { background: #cfe8fb; }
+.mode-btn .tile-dot { position: absolute; top: 8px; right: 12px; }
+.mode-btn.is-done { filter: saturate(0.6); }
+/* その他:毎日1問・復習を、クイズに移したので、遊び方とクレジットだけ */
+#screen-menu .menu-grid { grid-template-rows: clamp(64px, calc(11 * var(--dvh)), 96px) clamp(40px, calc(6.5 * var(--dvh)), 52px); }
+.mode-btn .tile-text { flex: 1; text-align: left; justify-items: start; }
