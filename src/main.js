@@ -273,7 +273,7 @@ let hardIds = new Set(); // 難しい問題の uid
 let oniIds = new Set(); // オニ問題の uid
 const sessions = new Map(); // 「理系-normal」のような名前 → 普通・難しいモードの遊び(難しさのカウンターを引き継ぐ)
 let activeKey = null; // いま遊んでいる、sessions の名前
-const pick = { kind: "solo", group: "理系", level: "normal", simple: "normal", time: true, players: 2 }; // (制限時間は、はじめから「つける」=おすすめ)設定の画面で選んだ、遊ぶ人・分類・難しさ(人数)・制限時間
+const pick = { kind: "solo", group: "理系", level: "rpg", simple: "normal", time: true, players: 2 }; // (制限時間は、はじめから「つける」=おすすめ)設定の画面で選んだ、遊ぶ人・分類・難しさ(人数)・制限時間
 const GROUPS = ["理系", "文系", "ひらめき"];
 const MIN_POOL = 10; // 1つの組み合わせで、最低これだけの問題がないと、他の分類から足す
 let versusQuestions = []; // 対戦で使う問題(段階1〜3)
@@ -1334,7 +1334,9 @@ const courseKey = (group = pick.group, level = pick.level) => `${group}-${level}
 const anySavedCourse = () => [...GROUPS, "ランダム"].some((group) => ["normal", "hard"].some((level) => hasCourseKey(courseKey(group, level))));
 
 function renderSetup() {
-  const versus = pick.kind === "versus";
+  pick.kind = "solo"; // 仮:「みんなで」は出さない(コードは残してある)
+  const versus = false;
+  $("seg-kind").closest(".set-row").hidden = true;
   renderSeg(
     $("seg-kind"),
     [
@@ -1378,8 +1380,8 @@ function renderSetup() {
     renderSeg(
       $("seg-third"),
       [
-        { value: "simple", icon: "🎯", text: "シンプル", color: "c-green" },
         { value: "rpg", icon: "🗡️", text: "RPG", color: "c-red" },
+        { value: "simple", icon: "🎯", text: "シンプル", color: "c-green" },
       ],
       pick.level === "rpg" ? "rpg" : "simple",
       (value) => {
@@ -1391,8 +1393,8 @@ function renderSetup() {
   const levelOff = versus || pick.level === "rpg";
   $("row-level").hidden = levelOff; // 難しさは、シンプルのときだけ(感想 No.8・No.20)
   const setList = document.querySelector("#screen-setup .set-list");
-  setList.classList.toggle("rows-4", levelOff);
-  setList.classList.toggle("rows-5", !levelOff);
+  setList.classList.toggle("rows-3", levelOff);
+  setList.classList.toggle("rows-4", !levelOff);
   renderSeg(
     $("seg-level"),
     [

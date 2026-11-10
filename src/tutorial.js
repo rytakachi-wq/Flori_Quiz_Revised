@@ -18,7 +18,7 @@ const PLAY_SCENES = [
     caption: "「クイズ」を押して、選んで スタート!",
     html: `
       <div class="tm-set">
-        <div class="tm-srow"><span class="tm-btn mini c3 is-hit"><i>🙂</i><small>ひとりで</small></span><span class="tm-btn mini c2"><i>👤</i><small>みんなで</small></span></div>
+        <div class="tm-srow"><span class="tm-btn mini c3 is-hit"><i>🗡️</i><small>RPG</small></span><span class="tm-btn mini c2"><i>🎯</i><small>シンプル</small></span></div>
         <div class="tm-srow"><span class="tm-btn mini c1"><i>🔬</i><small>理系</small></span><span class="tm-btn mini c4"><i>📖</i><small>文系</small></span><span class="tm-btn mini c3"><i>💡</i><small>ひらめき</small></span><span class="tm-btn mini c6"><i>🎲</i><small>ランダム</small></span></div>
         <div class="tm-srow"><span class="tm-btn mini c5"><i>🌱</i><small>普通</small></span><span class="tm-btn mini c6"><i>🔥</i><small>難しい</small></span></div>
         <span class="tm-go">▶ スタート!</span>
@@ -72,12 +72,11 @@ const PLAY_SCENES = [
   },
   {
     title: "STEP 6 他にも色々",
-    caption: "「その他」では 毎日1問・復習・リラックスが遊べるよ。",
+    caption: "「その他」では 毎日1問・復習が遊べるよ。",
     html: `
       <div class="tm-menu">
         <span class="tm-btn c1" style="--n:0"><i>📅</i><small>毎日1問</small></span>
         <span class="tm-btn c2" style="--n:1"><i>📖</i><small>復習</small></span>
-        <span class="tm-btn c3" style="--n:2"><i>🌸</i><small>リラックス</small></span>
         <span class="tm-btn c4" style="--n:3"><i>📚</i><small>問題図鑑</small></span>
         <span class="tm-btn c5" style="--n:4"><i>👑</i><small>着せ替え</small></span>
         <span class="tm-btn c6" style="--n:5"><i>🏆</i><small>成績</small></span>
@@ -168,11 +167,6 @@ PLAY_SCENES.push(
     title: "補足 復習",
     caption: "「その他」の「復習」では 間違えた問題を もう1度 解けるよ。制限時間は付かないよ。",
     html: `<div class="tg">${seq([["❌", "間違えた"], ["📖", "復習"], ["✅", "正解"], ["✨", "消える"]])}</div>`,
-  },
-  {
-    title: "補足 リラックス",
-    caption: "「その他」の「リラックス」は 全部を桜の木にする お花畑のパズル。点数も時間もないよ。",
-    html: RELAX_SCENES[1].html,
   },
 );
 
