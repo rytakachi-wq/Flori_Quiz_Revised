@@ -40,6 +40,7 @@ import { illustrationFor } from "./illustrations.js";
 import { createTalker } from "./talk.js";
 import { initTutorial, openTutorial } from "./tutorial.js";
 import { initRules, openRules as resetRules } from "./rules.js";
+import { initStory, playStory, storyOnce, PROLOGUE, EPILOGUE, STAGE_LINES } from "./story.js";
 import { openCredits, closeCredits } from "./credits.js";
 import { BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js";
 import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js";
@@ -54,7 +55,7 @@ import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./fur
   keepOwned({ have: new Set(start.badges), stars: start.stars });
 }
 
-const QUESTIONS_URL = "../data/questions/questions.json?v=20261110c"; // 問題を変えたら、この値と index.html の ?v= を変える
+const QUESTIONS_URL = "../data/questions/questions.json?v=20261110d"; // 問題を変えたら、この値と index.html の ?v= を変える
 const ONI_TAPS = 5; // 表紙のすみのフロリを、この回数押すと、オニ問題が出る
 const IMG = {
   think: "../assets/flori/m/book_pen.png",
@@ -259,14 +260,19 @@ const renderers = {
 let normalQuestions = [];
 let hardQuestions = [];
 let oniQuestions = [];
-const idToUid = new Map(); // 問題の番号 → uid(「続きから」の保存に使う)
 let allQuestions = []; // 全部の問題(オニもふくむ。図鑑で着せ替えの条件で使う)
 let playableQuestions = []; // 普通+難しい問題(復習・毎日1問で使う)
 let normalIds = new Set(); // 普通の問題の uid(成績の記録に使う。番号が付けなおされても、変わらない)
 let hardIds = new Set(); // 難しい問題の uid
 let oniIds = new Set(); // オニ問題の uid
-const GROUPS = ["理系", "文系", "ひらめき"];
-const GROUP_ICON = { 理系: "🔬", 文系: "📖", ひらめき: "💡", ランダム: "🎲" };
+// ジャンル(10)。ふつう=難しさ1〜2、難しい=3〜4。問題データの genre(決めたことは decisions その107)
+const GENRES = ["算数（ふつう）", "数学（難しい）", "理科（ふつう）", "科学（難しい）", "社会（ふつう）", "地理歴史（難しい）", "国語（ふつう）", "言語文化（難しい）", "生活（ふつう）", "水平思考（難しい）"];
+const GENRE_ICON = { "算数（ふつう）": "🔢", "数学（難しい）": "📐", "理科（ふつう）": "🌱", "科学（難しい）": "🔬", "社会（ふつう）": "🗾", "地理歴史（難しい）": "🏯", "国語（ふつう）": "📖", "言語文化（難しい）": "📜", "生活（ふつう）": "🏠", "水平思考（難しい）": "💡" };
+const FIELDS = ["算数・数学", "理科・科学", "社会・地理歴史", "国語・言語文化", "生活・水平思考"]; // 成績では、2つのジャンルをまとめて数える
+const FIELD_ICON = { "算数・数学": "🔢", "理科・科学": "🔬", "社会・地理歴史": "🗾", "国語・言語文化": "📖", "生活・水平思考": "💡" };
+const genreOf = (q) => q.genre ?? "生活（ふつう）";
+const fieldOf = (q) => FIELDS[Math.floor(Math.max(0, GENRES.indexOf(genreOf(q))) / 2)];
+const genreShort = (name) => name.replace(/（.*?）/, ""); // 「算数（ふつう）」→「算数」
 let play; // いま遊んでいるもの(session・hardSession・オニ問題など)
 let current = null; // 今出している問題
 let answered = false;
@@ -870,13 +876,13 @@ function showResult() {
     persistCourse(); // 「続きから」の記録
   }
   setNote.hidden = false;
-  // 制限時間を付けたご褒美:1ラウンドに、星1つ(オニ・RPGは、なし)
+  // ご褒美の星:毎日1問をやったとき・RPGをクリアしたときに、星1つ(制限時間は なくした)
   const reward = $("r-reward");
   reward.hidden = true;
-  if (timeLimit && mode !== "oni" && !adventure) {
+  if (mode === "daily" || (adventure && play.cleared)) {
     const earned = 1;
     const stars = addStars(earned);
-    reward.textContent = `制限時間のご褒美! ⭐ +${earned}(全部で ${stars}個)`;
+    reward.textContent = `ご褒美! ⭐ +${earned}(全部で ${stars}個)`;
     reward.hidden = false;
   }
   awardBadges();
@@ -1073,16 +1079,16 @@ function showRecords() {
     ? `次は ${nextRank.icon}${nextRank.name} あと${nextRank.min - total}点(約${Math.ceil((nextRank.min - total) / perQuestion)}問)`
     : "最高ランク! すごいヨ!";
   const rightIds = new Set(s.right);
-  // 理系・文系・ひらめき・ランダム(=全部)は総合得点の問題。オニ問題は、別に数える
+  // 5つの分野(ふつう+難しい)は総合得点の問題。オニ問題は、別に数える
   const oniRight = new Set(s.oniRight);
-  const groupRows = [...GROUPS, "ランダム", "オニ"].map((group) => {
+  const groupRows = [...FIELDS, "オニ"].map((group) => {
     const oni = group === "オニ";
-    const list = oni ? oniQuestions : group === "ランダム" ? playableQuestions : playableQuestions.filter((q) => groupOf(q) === group);
+    const list = oni ? oniQuestions : playableQuestions.filter((q) => fieldOf(q) === group);
     const got = list.filter((q) => (oni ? oniRight : rightIds).has(q.uid ?? q.id)).length;
     const item = document.createElement("li");
     item.innerHTML = '<span class="gb-name"></span><span class="gb-bar"><i></i></span><b class="gb-num"></b>';
     const hidden = oni && !oniOpened(s); // オニを解放するまでは「？？」
-    item.querySelector(".gb-name").textContent = hidden ? "❓ ？？" : oni ? "👹 オニ" : `${GROUP_ICON[group]} ${group}`;
+    item.querySelector(".gb-name").textContent = hidden ? "❓ ？？" : oni ? "👹 オニ" : `${FIELD_ICON[group]} ${group}`;
     item.querySelector(".gb-bar i").style.width = hidden ? "0%" : `${list.length ? (got / list.length) * 100 : 0}%`;
     item.querySelector(".gb-num").textContent = hidden ? "？？" : oni ? `${got}/${list.length}(${got * ONI_POINTS_PER_CORRECT}点)` : `${got}/${list.length}`;
     return item;
@@ -1209,37 +1215,24 @@ $("btn-volume-close").addEventListener("click", () => $("dlg-volume").close());
 
 
 // ================= クイズ:ルール → クイズの選択(RPG・毎日1問・復習)
-// クイズのルール(フリップ)は、はじめて「クイズ」を押したときだけ、ゲームの前に流れる。2回目からは、選ぶ画面へ(「ルールをもう1度見る」で、いつでも見られる)
-const RULES_SEEN_KEY = "floriQuiz.guideSeen.quiz";
 function renderSetup() {
   refreshCover(); // 毎日1問・復習のボタンの文字
   renderRewardCard($("flow-reward"));
 }
 function openRules() {
-  let seen = false;
-  try {
-    seen = localStorage.getItem(RULES_SEEN_KEY) === "1";
-    localStorage.setItem(RULES_SEEN_KEY, "1");
-  } catch {
-    // 保存できなくても、遊べる(毎回ルールが出るだけ)
-  }
-  if (seen) {
-    renderSetup();
-    show("setup");
-    return;
-  }
-  resetRules("rpg");
-  show("rules");
+  // ムービー(遊び方)は、ゲームを開いた はじめの1回だけ。「クイズ」では、すぐ選ぶ画面へ
+  renderSetup();
+  show("setup");
 }
 $("btn-quiz").addEventListener("click", openRules);
 initRules(() => {
   renderSetup();
   show("setup");
 });
-// RPGクエスト:ランダムな問題で、制限時間つき。はじめてのときだけ、先にルール説明
+// RPGクエスト:ランダムな問題で、制限時間なし
 $("btn-rpg").addEventListener("click", () => {
-  timeLimit = true;
-  guideRpg(() => startPlay("rpg"));
+  timeLimit = false;
+  storyOnce("story", PROLOGUE, () => startPlay("rpg")); // はじめての1回だけ、お話(ムービー)
 });
 
 // 戻るボタンは、どの画面でも、左上の同じ場所。表紙から、ひとつずつ戻る
@@ -1253,23 +1246,6 @@ $("btn-show-rules").addEventListener("click", () => {
   resetRules("rpg"); // RPGクエストの、ルール説明
   show("rules");
 });
-// RPGの、はじめてのときだけのルール説明(ルールの画面で見て、最後に、ゲームをはじめる)
-function guideRpg(then) {
-  const key = "floriQuiz.guideSeen.rpg";
-  let seen = false;
-  try {
-    seen = localStorage.getItem(key) === "1";
-    localStorage.setItem(key, "1");
-  } catch {
-    // 保存できなくても、遊べる(毎回ルールが出るだけ)
-  }
-  if (seen) {
-    then();
-    return;
-  }
-  resetRules("rpg", then, "ゲームスタート");
-  show("rules");
-}
 $("btn-menu-back").addEventListener("click", () => show("cover", -1));
 
 // その他(2ページ目):下のページ点、または、横スワイプで出る(縦にスクロールしても、表紙をさわっても、画面は変わらない)
@@ -1334,27 +1310,6 @@ document.addEventListener(
 );
 document.addEventListener("touchcancel", () => { swipe = null; document.body.classList.remove("is-touching"); }, { passive: true });
 
-// 問題を解く前に、制限時間を付けるかを聞く(普通・難しい・復習・毎日1問)
-let pendingMode = null;
-function chooseTime(nextMode) {
-  pendingMode = nextMode;
-  $("dlg-time").showModal();
-}
-function closeTimeDialog(limit) {
-  $("dlg-time").close();
-  if (limit === null) return;
-  timeLimit = limit;
-  startPlay(pendingMode);
-}
-$("btn-time-yes").addEventListener("click", () => closeTimeDialog(true));
-$("btn-time-no").addEventListener("click", () => closeTimeDialog(false));
-$("btn-time-cancel").addEventListener("click", () => closeTimeDialog(null));
-
-// 普通・難しいモードの遊び。分類(理系・文系・ひらめき)×難しさごとに、ひとつずつ作って、「続きから」を保存する。
-const groupOf = (q) => q.group ?? "ひらめき";
-let uidToIdMap = new Map();
-// セーブデータを消す(設定から):データが消えるので、本当にいいか、聞く
-let restartAction = null;
 function askRestart(action) {
   restartAction = action;
   $("dlg-restart").showModal();
@@ -1382,7 +1337,10 @@ function openDaily() {
     // 今日の分は、もう終わっている
     $("dlg-info-text").textContent = "今日の分はもう終わったヨ。また明日挑戦してネ!";
     $("dlg-info").showModal();
-  } else guideOnce("daily", () => chooseTime("daily"));
+  } else {
+    timeLimit = false;
+    guideOnce("daily", () => startPlay("daily"));
+  }
 }
 $("btn-daily").addEventListener("click", openDaily);
 $("btn-info-close").addEventListener("click", () => $("dlg-info").close());
@@ -1513,9 +1471,6 @@ async function init() {
     for (const src of preload) new Image().src = src;
     setWarmList(preload);
     pruneStats(new Set([...normalIds, ...hardIds, ...oniIds])); // 古い番号の記録を、取りのぞく
-    for (const q of normal) idToUid.set(q.id, q.uid ?? q.id);
-    for (const q of hardQuestions) idToUid.set(q.id, q.uid ?? q.id);
-    uidToIdMap = new Map([...idToUid].map(([id, uid]) => [uid, id]));
     show("cover");
   } catch (error) {
     console.error(error);
@@ -1587,6 +1542,7 @@ function closeOpening() {
 }
 // 遊び方(チュートリアルムービー):オープニングからも、その他からも、見られる
 initTutorial();
+initStory();
 function playTutorial(kind = "rpg", then = null, opts = {}) {
   setScene("tutorial");
   openTutorial((started) => {
@@ -1930,7 +1886,7 @@ function openDexCard(question, label, owned) {
 }
 
 let dexFilter = "全て"; // 図鑑で、いま見ている分類
-const DEX_FILTER_ICON = { 全て: "📚", 理系: "🔬", 文系: "📖", ひらめき: "💡", オニ: "👹" };
+const DEX_FILTER_ICON = { 全て: "📚", ...GENRE_ICON, オニ: "👹" };
 
 function showDex() {
   const stats = loadStats();
@@ -1991,7 +1947,7 @@ function showDex() {
   const numbered = playableList.map((q, i) => ({ q, label: `No.${i + 1}` }));
   const oniOpen = oniList.some((q) => met.has(q.uid ?? q.id)); // オニを解放するまでは「？？」
   const oniAll = oniList.map((q, i) => ({ q, label: oniOpen ? `オニ${i + 1}` : "？？" })); // オニも、全部のカードを並べる(まだのカードは「？」)
-  const rows = dexFilter === "オニ" ? oniAll : dexFilter === "全て" ? [...numbered, ...oniAll] : numbered.filter(({ q }) => groupOf(q) === dexFilter);
+  const rows = dexFilter === "オニ" ? oniAll : dexFilter === "全て" ? [...numbered, ...oniAll] : numbered.filter(({ q }) => genreOf(q) === dexFilter);
   const cards = rows.map(({ q, label }) => card(q, label));
   const everyList = [...playableList, ...oniList];
   const have = everyList.filter((q) => met.has(q.uid ?? q.id)).length;
@@ -1999,8 +1955,8 @@ function showDex() {
   $("dex-count").textContent = `カード ${have} / ${everyList.length}枚(${percent}%)`;
   $("dex-meter-bar").style.width = `${percent}%`;
   // 分類のボタン(いくつ集めたか)
-  const tabs = ["全て", ...GROUPS, "オニ"].map((name) => {
-    const list = name === "全て" ? everyList : name === "オニ" ? oniList : playableList.filter((q) => groupOf(q) === name);
+  const tabs = ["全て", ...GENRES, "オニ"].map((name) => {
+    const list = name === "全て" ? everyList : name === "オニ" ? oniList : playableList.filter((q) => genreOf(q) === name);
     const got = list.filter((q) => met.has(q.uid ?? q.id)).length;
     const button = document.createElement("button");
     button.type = "button";
@@ -2008,7 +1964,7 @@ function showDex() {
     button.dataset.noSe = "";
     button.innerHTML = '<span class="dt-name"></span><small></small>';
     const secret = name === "オニ" && !oniOpen;
-    button.querySelector(".dt-name").textContent = secret ? "❓ ？？" : `${DEX_FILTER_ICON[name]} ${name}`;
+    button.querySelector(".dt-name").textContent = secret ? "❓ ？？" : `${DEX_FILTER_ICON[name]} ${genreShort(name)}`;
     button.querySelector("small").textContent = secret ? "？？" : `${got}/${list.length}`;
     button.addEventListener("click", () => {
       dexFilter = name;
@@ -2091,7 +2047,7 @@ function showNote() {
   const items = noteQuestions();
   const sorted = [...allQuestions].sort((a, b) => a.id.localeCompare(b.id));
   const numberOf = new Map(sorted.filter((q) => q.level <= HARD_LEVEL).map((q, i) => [q.uid ?? q.id, i + 1]));
-  const inFilter = (q) => noteFilter === "全て" || groupOf(q) === noteFilter;
+  const inFilter = (q) => noteFilter === "全て" || genreOf(q) === noteFilter;
   if (noteFilter !== "全て" && !items.some(inFilter)) noteFilter = "全て"; // 見ていた分類が空になったら、全てに戻す
   const cards = items
     .filter(inFilter)
@@ -2130,14 +2086,14 @@ function showNote() {
     });
   $("note-grid").replaceChildren(...cards);
   $("note-grid").scrollTop = 0;
-  const tabs = ["全て", ...GROUPS].map((name) => {
-    const count = name === "全て" ? items.length : items.filter((q) => groupOf(q) === name).length;
+  const tabs = ["全て", ...GENRES].map((name) => {
+    const count = name === "全て" ? items.length : items.filter((q) => genreOf(q) === name).length;
     const button = document.createElement("button");
     button.type = "button";
     button.className = `dex-tab${name === noteFilter ? " is-on" : ""}`;
     button.dataset.noSe = "";
     button.innerHTML = '<span class="dt-name"></span><small></small>';
-    button.querySelector(".dt-name").textContent = `${DEX_FILTER_ICON[name]} ${name}`;
+    button.querySelector(".dt-name").textContent = `${DEX_FILTER_ICON[name]} ${genreShort(name)}`;
     button.querySelector("small").textContent = `${count}`;
     button.addEventListener("click", () => {
       noteFilter = name;
@@ -2147,7 +2103,7 @@ function showNote() {
   });
   $("note-filter").replaceChildren(...tabs);
   $("note-count").textContent = items.length > 0 ? `ノートの問題 ${items.length}問` : "ノートは まっさら!";
-  const byGroup = GROUPS.map((name) => [name, items.filter((q) => groupOf(q) === name).length]);
+  const byGroup = GENRES.map((name) => [genreShort(name), items.filter((q) => genreOf(q) === name).length]);
   const [top, topCount] = byGroup.reduce((a, b) => (b[1] > a[1] ? b : a));
   $("note-comment").textContent =
     items.length === 0
@@ -2286,7 +2242,7 @@ function fitRpgWindow() {
 function rpgIntro(stage, retries) {
   const name = stage.kind === "boss" ? `ボス ${stage.name}` : stage.name;
   if (stage.kind === "chest") return "宝箱だ! 正解で ハート回復!";
-  if (retries === 0) return `${stage.icon} ${name}が 現れた!`;
+  if (retries === 0) return `${stage.icon} ${name}が 現れた! ${STAGE_LINES[RPG_STAGES.indexOf(stage)] ?? ""}`;
   const lines = [
     `${name}が にやりと 笑った! もう1度!`,
     `${name}は まだ 立ちはだかっている!`,
@@ -2431,7 +2387,7 @@ function rpgSounds(event) {
 
 function rpgNext() {
   if (play.roundFinished && !play.cleared) showGameOver(); // ゲームオーバーは、専用の画面
-  else if (play.roundFinished) announce("クエスト クリア〜!", "result", showResult, "../assets/flori/m/wave_surprised.png");
+  else if (play.roundFinished) playStory(EPILOGUE, () => announce("クエスト クリア〜!", "result", showResult, "../assets/flori/m/wave_surprised.png")); // ドラゴンを倒して、家族を救う
   else showRpg();
 }
 
