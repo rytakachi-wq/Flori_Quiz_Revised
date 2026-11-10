@@ -17,10 +17,6 @@ import {
   RPG_STAGES,
   RpgRound,
   TOTAL_POINTS,
-  VERSUS_MAX_PLAYERS,
-  VERSUS_MIN_PLAYERS,
-  VERSUS_ROUNDS,
-  VersusRound,
   dailyQuestion,
   dateKey,
   pickRandom,
@@ -35,14 +31,12 @@ import {
   recordBadges,
   recordDaily,
   recordDex,
-  recordGarden,
   saveCourseKey,
   recordOni,
   recordReview,
   recordWrong,
   recordRpg,
   recordRound,
-  recordVersus,
 } from "./storage.js";
 import { illustrationFor } from "./illustrations.js";
 import { createTalker } from "./talk.js";
@@ -50,7 +44,6 @@ import { initTutorial, openTutorial } from "./tutorial.js";
 import { initRules, openRules as resetRules } from "./rules.js";
 import { openCredits, closeCredits } from "./credits.js";
 import { BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js";
-import { GardenUI } from "./garden.js";
 import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js";
 import { startLiveFlori } from "./live-flori.js";
 import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js";
@@ -73,22 +66,20 @@ const IMG = {
 };
 
 const $ = (id) => document.getElementById(id);
-const SCREENS = ["cover", "rules", "setup", "menu", "credits", "note", "relax", "records", "settings", "dex", "dress", "question", "rpg", "gameover", "result", "error"];
+const SCREENS = ["cover", "rules", "setup", "menu", "credits", "note", "records", "settings", "dex", "dress", "question", "rpg", "gameover", "result", "error"];
 
 let coverTaps = 0;
-let mode = "normal"; // 遊び方:"normal"(普通) "hard"(難しい) "oni"(オニ) "versus"(皆で対戦) "review"(復習) "daily"(毎日1問) "rpg"(RPGクエスト)
+let mode = "normal"; // 遊び方:"normal"(普通) "hard"(難しい) "oni"(オニ) "review"(復習) "daily"(毎日1問) "rpg"(RPGクエスト)
 let timeLimit = false; // この回に、制限時間を付けるか(普通・難しい・復習・毎日1問で、はじめに聞く)
 let hinted = false; // 今の問題で、ヒントを見たか
-let versusPlayers = 2; // 皆で対戦する人数
 
 // 画面ごとのBGMの場面(audio.js の BGM と対応)
 function sceneOf(name) {
   if (name === "rpg") return mode === "rpg" && play?.current?.kind === "boss" ? "rpgboss" : "rpg"; // 画面を出すたびに曲が切りかわって、初めから鳴りなおすのを防ぐ
   if (name === "gameover") return "gameover"; // BGMはなし(ゲームオーバーの音だけ)
   if (name === "question") {
-    return { oni: "oni", hard: "hard", versus: "versus" }[mode] ?? "question";
+    return { oni: "oni", hard: "hard" }[mode] ?? "question";
   }
-  if (name === "relax") return "relax";
   if (name === "result") return "result";
   if (name === "credits") return "credits";
   return name === "error" ? null : "cover";
@@ -273,10 +264,9 @@ let hardIds = new Set(); // 難しい問題の uid
 let oniIds = new Set(); // オニ問題の uid
 const sessions = new Map(); // 「理系-normal」のような名前 → 普通・難しいモードの遊び(難しさのカウンターを引き継ぐ)
 let activeKey = null; // いま遊んでいる、sessions の名前
-const pick = { kind: "solo", group: "理系", level: "rpg", simple: "normal", time: true, players: 2 }; // (制限時間は、はじめから「つける」=おすすめ)設定の画面で選んだ、遊ぶ人・分類・難しさ(人数)・制限時間
+const pick = { group: "理系", level: "rpg", simple: "normal", time: true }; // (制限時間は、はじめから「つける」=おすすめ)設定の画面で選んだ、遊ぶ人・分類・難しさ(人数)・制限時間
 const GROUPS = ["理系", "文系", "ひらめき"];
 const MIN_POOL = 10; // 1つの組み合わせで、最低これだけの問題がないと、他の分類から足す
-let versusQuestions = []; // 対戦で使う問題(段階1〜3)
 let play; // いま遊んでいるもの(session・hardSession・オニ問題など)
 let current = null; // 今出している問題
 let answered = false;
@@ -356,7 +346,6 @@ function startPlay(nextMode, startMessage = null) {
   if (mode === "oni") timeLimit = false; // オニ問題には、制限時間はない
   if (mode === "oni") play = new OniRound(oniQuestions);
   else if (mode === "hard") play = getSession(pick.group, "hard");
-  else if (mode === "versus") play = new VersusRound(versusPool(), versusPlayers);
   else if (mode === "review") {
     let scope = reviewOnly;
     if (!scope && reviewFromQuiz && reviewScope.length) {
@@ -387,21 +376,6 @@ function adventurePool() {
   return [...inGroup, ...others.slice(0, Math.max(0, 20 - inGroup.length))];
 }
 
-// 対戦の問題:選んだ分類の問題。回戦ごとに、人数ぶんの問題がないときは、他の分類から足す
-function versusPool() {
-  const all = allQuestions.filter((q) => q.level <= VERSUS_ROUNDS);
-  if (pick.group === "ランダム") return all;
-  const inGroup = all.filter((q) => groupOf(q) === pick.group);
-  const pool = [...inGroup];
-  for (let level = 1; level <= VERSUS_ROUNDS; level += 1) {
-    const need = versusPlayers - inGroup.filter((q) => q.level === level).length;
-    if (need <= 0) continue;
-    const others = all.filter((q) => q.level === level && groupOf(q) !== pick.group).sort(() => Math.random() - 0.5);
-    pool.push(...others.slice(0, need));
-  }
-  return pool;
-}
-
 function showQuestion() {
   const next = play.nextQuestion();
   const { leveledUp } = next;
@@ -409,27 +383,21 @@ function showQuestion() {
   current = question;
   answered = false;
 
-  const versus = mode === "versus";
   const total = play.total ?? QUESTIONS_PER_ROUND;
   const prefix = {
     normal: "",
     hard: "難しい ",
     oni: "オニ ",
-    versus: "",
     review: "復習 ",
     daily: "毎日1問 ",
   }[mode];
-  $("q-progress").textContent = versus ? `${play.round} / ${VERSUS_ROUNDS}回戦` : `${prefix}第${play.asked + 1}問 / ${total}問`;
+  $("q-progress").textContent = `${prefix}第${play.asked + 1}問 / ${total}問`;
   // 進み具合のバー(感想 No.9):いま何問目かまで、うめる
-  $("q-bar-fill").style.width = `${Math.round(((versus ? play.round : play.asked + 1) / (versus ? VERSUS_ROUNDS : total)) * 100)}%`;
-  renderTurn(versus);
+  $("q-bar-fill").style.width = `${Math.round(((play.asked + 1) / total) * 100)}%`;
+  $("screen-question").dataset.player = ""; // (CSSが、この印を使っている)
   // 星は、せまい枠(文字を大きくしたとき)でも、はみ出さないように、すこし小さく詰めて出す
   const starsHtml = (text) => `<span class="q-stars">${text}</span>`;
-  $("q-level").innerHTML =
-    mode === "oni"
-      ? "難しさ オニ"
-      : versus
-          ? `${starsHtml("★".repeat(play.round) + "☆".repeat(VERSUS_ROUNDS - play.round))} 正解で${play.round}点` : `難しさ ${starsHtml(stars(question.level))}`;
+  $("q-level").innerHTML = mode === "oni" ? "難しさ オニ" : `難しさ ${starsHtml(stars(question.level))}`;
   // 問題に合わせた、イラスト(絵と動きで、場面が分かるように)
   const art = illustrationFor(question);
   $("q-art").innerHTML = art;
@@ -440,9 +408,9 @@ function showQuestion() {
   $("screen-question").classList.remove("is-answered", "is-hinted", "is-tight3");
   $("q-feedback").hidden = true;
 
-  // フロリのセリフ(問題の番号によって変わる。皆で対戦では出さない)
+  // フロリのセリフ(問題の番号によって変わる)
   const message = $("q-message");
-  const coach = versus ? null : coachLine(play.asked, total, leveledUp);
+  const coach = coachLine(play.asked, total, leveledUp);
   if (coach) {
     setFlori(coach.surprised ? IMG.surprised : IMG.think, coach.surprised ? "驚くフロリ" : "本とペンを持つフロリ");
     message.textContent = coach.text;
@@ -674,38 +642,9 @@ function readableQuestion(question) {
   return `${question.text}。${choices}`;
 }
 
-// 対戦のとき:だれの番かを、プレイヤーの色で知らせる案内板と、皆の点数の表
-const PLAYER_NAMES = ["プレイヤー1", "プレイヤー2", "プレイヤー3", "プレイヤー4"];
-
-function renderBoard(list, scores, active) {
-  list.replaceChildren(
-    ...scores.map((score, index) => {
-      const item = document.createElement("li");
-      item.className = `p${index + 1}${index === active ? " is-active" : ""}`;
-      item.textContent = list.classList.contains("big") ? `${PLAYER_NAMES[index]}  ${score}点` : `${score}点`; // 問題の画面は、せまいので、点数だけ(だれかは、色で分かる)
-      return item;
-    }),
-  );
-  list.hidden = false;
-}
-
-function renderTurn(versus) {
-  $("screen-question").dataset.player = versus ? String(play.player + 1) : ""; // 対戦のとき、いま答える人の色で、画面のふちを染める
-  const turn = $("q-player");
-  const board = $("q-board");
-  turn.hidden = !versus;
-  board.hidden = !versus;
-  if (!versus) return;
-  turn.className = `turn p${play.player + 1}`;
-  turn.textContent = `👉 ${PLAYER_NAMES[play.player]}の番!`;
-  renderBoard(board, play.scores, play.player);
-}
-
 function answer(response) {
   if (answered) return;
   answered = true;
-  const answeringPlayer = mode === "versus" ? play.player : 0;
-  const answeringRound = mode === "versus" ? play.round : 0;
   stopTimer();
   const wasTimedOut = timedOut;
   const wasGivenUp = gaveUp;
@@ -715,7 +654,6 @@ function answer(response) {
   if (mode === "normal" || mode === "hard") persistSession(); // 答えるたびに「続き」を保存(途中でやめても、💾 続き が付く)
   $("btn-hint").disabled = true;
   $("btn-giveup").disabled = true;
-  if (mode === "versus") renderBoard($("q-board"), play.scores, answeringPlayer);
   renderers[current.type].mark(current, response, correct);
   playSe(correct ? "correct" : "wrong");
   lastCorrect = correct;
@@ -725,17 +663,15 @@ function answer(response) {
   $("q-message").hidden = true;
   const verdict = $("q-verdict");
   verdict.textContent =
-    mode === "versus" && correct
-      ? `正解! ${PLAYER_NAMES[answeringPlayer]}に${hinted ? `半分の${answeringRound / 2}` : answeringRound}点!`
-      : correct
-        ? hinted
-          ? `正解!(ヒントを使ったので 半分の${fmtPts(POINTS_PER_CORRECT - HINT_COST)}点)`
-          : "正解!"
-        : wasTimedOut
-          ? "時間切れ…"
-          : wasGivenUp
-            ? "答えを見ました…"
-            : "残念…";
+    correct
+      ? hinted
+        ? `正解!(ヒントを使ったので 半分の${fmtPts(POINTS_PER_CORRECT - HINT_COST)}点)`
+        : "正解!"
+      : wasTimedOut
+        ? "時間切れ…"
+        : wasGivenUp
+          ? "答えを見ました…"
+          : "残念…";
   verdict.className = `verdict ${correct ? "is-right" : "is-wrong"}`;
   const rightText = renderers[current.type].correctText(current);
   $("q-explanation").textContent = `正解は「${rightText}」\n${current.explanation}`;
@@ -850,15 +786,12 @@ function currentTotal(stats = loadStats()) {
 
 function showResult() {
   const result = play.finishRound();
-  const versus = mode === "versus";
-  $("screen-result").classList.toggle("is-versus", versus);
   $("btn-again").hidden = false;
   const adventure = mode === "rpg";
   $("r-best-row").querySelector("dt").textContent = adventure ? "最短記録" : "最高得点"; // RPG=いちばん少ない問題数でクリア
   recordDex(result.answers); // 図鑑(どのモードでも)
-  $("r-correct-row").hidden = versus;
-  $("r-board").hidden = true;
-  if (!versus) {
+  $("r-correct-row").hidden = false;
+  {
     $("r-correct").textContent = `${result.correct} / ${result.total}問`;
     $("r-score").textContent =
       mode === "oni"
@@ -867,10 +800,9 @@ function showResult() {
           ? `${fmtPts(result.score)}点`
           : `${fmtPts(result.score)}点(${fmtPts(result.total * POINTS_PER_CORRECT)}点満点)`;
   }
-  $("r-score-row").hidden = versus; // 対戦のときは、1人の得点は出さない
   $("r-comment").textContent =
-    mode === "oni" ? oniComment(result.correct, result.total) : versus ? versusComment(result) : adventure ? adventureComment(result) : comment(result.correct, result.total);
-  celebrateResult(result, versus);
+    mode === "oni" ? oniComment(result.correct, result.total) : adventure ? adventureComment(result) : comment(result.correct, result.total);
+  celebrateResult(result);
 
   const setNote = $("r-set");
   const before = currentTotal();
@@ -879,17 +811,7 @@ function showResult() {
     const gained = currentTotal() - before;
     return gained > 0 ? `総合得点が${gained}点増えたヨ!` : "総合得点は 新しく正解したり ヒントなしで正解し直した時だけ増えるヨ。";
   };
-  if (versus) {
-    // 皆で対戦した結果は、1人で遊ぶ記録(遊んだ回数、正解率、総合得点など)には入れない。
-    recordVersus();
-    $("r-title").textContent = "対戦の結果!";
-    $("r-best-row").hidden = true;
-    $("r-record").hidden = true;
-    renderBoard($("r-board"), result.scores, -1);
-    result.winners.forEach((index) => $("r-board").children[index].classList.add("is-winner"));
-    setNote.textContent = "";
-    $("btn-again").textContent = "もう1度対戦";
-  } else if (mode === "review") {
+  if (mode === "review") {
     // 復習:間違えた問題の一覧だけが変わる。成績の回数や、総合得点には入れない。
     const leftAll = recordReview(result.answers);
     // クイズから来た復習は、その回の問題だけを数える(「もう1度復習」も、その回の問題だけ)
@@ -953,10 +875,10 @@ function showResult() {
     persistCourse(); // 「続きから」の記録
   }
   setNote.hidden = false;
-  // 制限時間を付けたご褒美:1ラウンドに、星1つ(オニと対戦は、なし)
+  // 制限時間を付けたご褒美:1ラウンドに、星1つ(オニ・RPGは、なし)
   const reward = $("r-reward");
   reward.hidden = true;
-  if (timeLimit && !versus && mode !== "oni" && !adventure) {
+  if (timeLimit && mode !== "oni" && !adventure) {
     const earned = 1;
     const stars = addStars(earned);
     reward.textContent = `制限時間のご褒美! ⭐ +${earned}(全部で ${stars}個)`;
@@ -966,7 +888,7 @@ function showResult() {
   renderNews();
   renderRewardCard($("r-next-reward"));
   // すぐ復習:1人の普通・難しいモードで、間違えた問題・ヒントを見た問題があるとき
-  const toReview = !versus && (mode === "normal" || mode === "hard") ? result.answers.filter((a) => !a.correct || a.hinted).map((a) => a.id) : [];
+  const toReview = (mode === "normal" || mode === "hard") ? result.answers.filter((a) => !a.correct || a.hinted).map((a) => a.id) : [];
   reviewNow = toReview;
   $("btn-r-review").hidden = toReview.length === 0;
   $("btn-r-review").textContent = `📖 間違えた問題を すぐ 復習(${toReview.length}問)`;
@@ -1001,18 +923,17 @@ function stopResultSound() {
   resultSound?.stop();
   resultSound = null;
 }
-function celebrateResult(result, versus) {
+function celebrateResult(result) {
   stopResultSound();
   const screen = $("screen-result");
-  const ratio = versus ? 1 : result.total > 0 ? result.correct / result.total : 0;
+  const ratio = result.total > 0 ? result.correct / result.total : 0;
   const mood = ratio === 1 ? "perfect" : ratio >= 0.6 ? "good" : ratio > 0 ? "ok" : "low";
-  screen.dataset.mood = versus ? "perfect" : mood;
+  screen.dataset.mood = mood;
   screen.classList.remove("is-celebrate", "is-reveal");
   void screen.offsetWidth;
   screen.classList.add("is-celebrate"); // フロリは、すぐ、はねて登場
   const stars = $("r-stars");
-  if (versus) stars.replaceChildren();
-  else {
+  {
     const filled = Math.round(ratio * 5);
     stars.replaceChildren(
       ...Array.from({ length: 5 }, (_, i) => {
@@ -1027,7 +948,7 @@ function celebrateResult(result, versus) {
   // 紙ふぶき(盛り上がるほど、多く)。発表のときに、降る
   const icons = ["🎉", "⭐", "✨", "🎊", "🌟", "💖"];
   // 紙ふぶき:画面のあちこちに、まばらに ぽんと出て、ゆっくり、ひらひら、散っていく(1人でも皆でも同じ)
-  const count = ratio === 0 && !versus ? 0 : versus || mood === "perfect" ? 30 : 22;
+  const count = ratio === 0 ? 0 : mood === "perfect" ? 30 : 22;
   $("r-fx").replaceChildren(
     ...Array.from({ length: count }, (_, i) => {
       const bit = document.createElement("span");
@@ -1047,12 +968,12 @@ function celebrateResult(result, versus) {
   const scoreText = scoreEl.textContent;
   const scoreTail = scoreText.slice(scoreText.indexOf("点"));
   const oni = mode === "oni";
-  if (!versus && result.score > 0 && !scoreEl.hidden) scoreEl.textContent = `0${scoreTail}`;
+  if (result.score > 0 && !scoreEl.hidden) scoreEl.textContent = `0${scoreTail}`;
   resultTimers.push(
     setTimeout(() => {
       resultSound = playSe("rollend");
       screen.classList.add("is-reveal");
-      if (!versus && result.score > 0 && !scoreEl.hidden) {
+      if (result.score > 0 && !scoreEl.hidden) {
         let n = 0;
         const step = Math.max(60, Math.floor(900 / result.score));
         const timer = setInterval(() => {
@@ -1071,13 +992,6 @@ function comment(correct, total = QUESTIONS_PER_ROUND) {
   if (correct >= total - 2 && total > 1) return "いいね! よくひらめいたネ!";
   if (correct >= 1) return "ナイスチャレンジ! 次はもっと取れるヨ!";
   return "大丈夫! 考えるのが楽しいんだヨ!";
-}
-
-function versusComment(result) {
-  const names = result.winners.map((index) => PLAYER_NAMES[index]);
-  if (result.winners.length === result.players) return "全員同点! 引き分けだヨ!";
-  if (result.winners.length > 1) return `${names.join("と")}の同点トップ! 皆よく頑張ったネ!`;
-  return `${names[0]}の勝ち! おめでとう!`;
 }
 
 function oniComment(correct, total) {
@@ -1145,7 +1059,7 @@ function showRecords() {
   // 総合得点は、100点満点(普通+難しい問題、1問2点)
   $("s-total").textContent = `${currentTotal(s)}点 / ${TOTAL_POINTS}点`;
   $("s-total-bar").style.width = `${(currentTotal(s) / TOTAL_POINTS) * 100}%`;
-  $("s-plays").textContent = `${s.plays}回(対戦${s.versusPlays}回)`;
+  $("s-plays").textContent = `${s.plays}回`;
   $("s-dress").textContent = `${dressOwned(s)} / ${dressTotal()}個`;
   $("s-stars").textContent = `⭐ ${s.stars}個`;
   // 毎日1問:きのうか今日やっていれば、続けた日数。それより前なら、0日(とぎれた)
@@ -1334,21 +1248,6 @@ const courseKey = (group = pick.group, level = pick.level) => `${group}-${level}
 const anySavedCourse = () => [...GROUPS, "ランダム"].some((group) => ["normal", "hard"].some((level) => hasCourseKey(courseKey(group, level))));
 
 function renderSetup() {
-  pick.kind = "solo"; // 仮:「みんなで」は出さない(コードは残してある)
-  const versus = false;
-  $("seg-kind").closest(".set-row").hidden = true;
-  renderSeg(
-    $("seg-kind"),
-    [
-      { value: "solo", icon: "🙂", text: "ひとりで", color: "c-yellow" },
-      { value: "versus", icon: "👤👤", text: "みんなで", color: "c-blue" },
-    ],
-    pick.kind,
-    (value) => {
-      pick.kind = value;
-      renderSetup();
-    },
-  );
   renderSeg(
     $("seg-group"),
     [
@@ -1356,26 +1255,15 @@ function renderSetup() {
       { value: "文系", icon: "📖", text: "文系", color: "c-tan" },
       { value: "ひらめき", icon: "💡", text: "ひらめき", color: "c-yellow" },
       { value: "ランダム", icon: "🎲", text: "ランダム", color: "c-red" },
-    ].map((option) => ({ ...option, badge: !versus && hasCourseKey(courseKey(option.value)) ? SAVE_MARK : "" })),
+    ].map((option) => ({ ...option, badge: hasCourseKey(courseKey(option.value)) ? SAVE_MARK : "" })),
     pick.group,
     (value) => {
       pick.group = value;
       renderSetup();
     },
   );
-  // 3つめの行は、1人のときは「遊び方」(シンプル/RPG)、皆のときは「皆の人数」(場所と高さは、同じ)
-  $("set-label-3").innerHTML = versus ? '<span aria-hidden="true">🔢</span> 皆の人数' : '<span aria-hidden="true">🎮</span> 遊び方';
-  if (versus) {
-    renderSeg(
-      $("seg-third"),
-      [2, 3, 4].map((n) => ({ value: n, icon: "👤".repeat(n), text: `${n}人`, color: "c-blue" })),
-      pick.players,
-      (value) => {
-        pick.players = value;
-        renderSetup();
-      },
-    );
-  } else {
+  $("set-label-3").innerHTML = '<span aria-hidden="true">🎮</span> 遊び方';
+  {
     // 遊び方=シンプル/RPG。シンプルのときだけ、そのつぎの「難しさ」(普通・難しい)を選ぶ(感想 No.20)
     renderSeg(
       $("seg-third"),
@@ -1390,7 +1278,7 @@ function renderSetup() {
       },
     );
   }
-  const levelOff = versus || pick.level === "rpg";
+  const levelOff = pick.level === "rpg";
   $("row-level").hidden = levelOff; // 難しさは、シンプルのときだけ(感想 No.8・No.20)
   const setList = document.querySelector("#screen-setup .set-list");
   setList.classList.toggle("rows-3", levelOff);
@@ -1422,9 +1310,8 @@ function renderSetup() {
     },
   );
   // 説明の文は、みじかく(感想 No.21)
-  $("setup-note").textContent = versus
-    ? "1台で 順番に 答えるよ。"
-    : pick.level === "rpg"
+  $("setup-note").textContent =
+    pick.level === "rpg"
       ? "ハート4つで ボスを 倒そう!"
       : hasCourseKey(courseKey())
         ? "💾 続きから 始まるよ!"
@@ -1445,7 +1332,7 @@ function chooseRecommended() {
       if (hasCourseKey(courseKey(group, level)) && (!best || progress > best.progress)) best = { group, level, progress };
     }
   }
-  pick.group = best && pick.kind !== "versus" ? best.group : "ランダム";
+  pick.group = best ? best.group : "ランダム";
   pick.level = best ? best.level : "normal";
   pick.simple = pick.level;
   pick.time = true; // 制限時間をつける(星が もらえる)
@@ -1454,8 +1341,8 @@ function chooseRecommended() {
 
 // クイズのルール(フリップ)は、はじめて「クイズ」を押したときだけ、ゲームの前に流れる。2回目からは、モード選択へ(モード選択の「ルールをもう1度見る」で、いつでも見られる)
 const RULES_SEEN_KEY = "floriQuiz.guideSeen.quiz";
-// いま選んでいる遊び方に合う、ルール(普通・難しい・RPG・皆で対戦)
-const rulesKind = () => (pick.kind === "versus" ? "versus" : pick.level);
+// いま選んでいる遊び方に合う、ルール(普通・難しい・RPG)
+const rulesKind = () => pick.level;
 function openRules() {
   let seen = false;
   try {
@@ -1481,10 +1368,7 @@ $("btn-recommend").addEventListener("click", chooseRecommended);
 // 「準備完了!」で、確認の画面なしに、そのまま始める(感想 No.26)
 $("btn-start").addEventListener("click", () => {
   timeLimit = pick.time;
-  if (pick.kind === "versus") {
-    versusPlayers = Math.min(VERSUS_MAX_PLAYERS, Math.max(VERSUS_MIN_PLAYERS, pick.players));
-    startPlay("versus");
-  } else if (pick.level === "rpg") guideRpg(() => startPlay("rpg")); // RPGは、はじめてのときだけ、先にルール説明
+  if (pick.level === "rpg") guideRpg(() => startPlay("rpg")); // RPGは、はじめてのときだけ、先にルール説明
   else startPlay(pick.level);
 });
 
@@ -1688,32 +1572,7 @@ function showHint() {
   if (readAloud()) speak(`ヒント。${current.hint}`); // ヒントも読み上げる
 }
 
-// リラックス:お花畑(点数も時間もない)
-let garden = null;
-let gardenSize = 3;
-
-function startGarden(size = gardenSize) {
-  gardenSize = size;
-  $("garden-message").textContent = "ボタンを押した回数:0回";
-  garden = new GardenUI($("garden"), {
-    size,
-    onChange: ({ moves }) => {
-      $("garden-message").textContent = `ボタンを押した回数:${moves}回`;
-    },
-    onSolved: (moves) => {
-      $("garden-message").textContent = `全部桜の木になったヨ!${moves}回で完成。すごいネ!`;
-      playSe("correct");
-      recordGarden();
-      awardBadges();
-      setTimeout(celebrateUnlocks, 1400); // 着せ替えが、ふえていたら、お祝いの画面
-    },
-  });
-  show("relax");
-}
-
-// リラックスを選ぶと、説明・遊び方・コツのムービーを見てから、お花畑へ進む
-// (ムービーは、はじめて選んだときだけ。あとは、「遊び方・コツ」ボタンで、いつでも見られる)
-// 毎日1問・復習・リラックスのムービーは、はじめて選んだときだけ、ゲームの前に流れる
+// 毎日1問・復習のムービーは、はじめて選んだときだけ、ゲームの前に流れる
 const GUIDE_SEEN_KEYS = ["daily", "review", "relax", "rpg", "intro"].map((kind) => `floriQuiz.guideSeen.${kind}`);
 function guideOnce(kind, then) {
   const key = `floriQuiz.guideSeen.${kind}`;
@@ -1727,21 +1586,6 @@ function guideOnce(kind, then) {
   if (seen) then();
   else playTutorial(kind, then);
 }
-$("btn-relax").addEventListener("click", () => guideOnce("relax", () => startGarden()));
-$("btn-relax-back").addEventListener("click", () => openMenu());
-$("btn-garden-hint").addEventListener("click", () => garden?.hint()); // 光る木を教える
-// リセット:配置が変わるので、確認してから
-$("btn-garden-again").addEventListener("click", () => $("dlg-garden-reset").showModal());
-$("btn-garden-reset-yes").addEventListener("click", () => {
-  $("dlg-garden-reset").close();
-  startGarden();
-});
-$("btn-garden-reset-no").addEventListener("click", () => $("dlg-garden-reset").close());
-$("btn-garden-guide").addEventListener("click", () => playTutorial("relax")); // 説明・遊び方・コツ(ムービー)
-for (const button of document.querySelectorAll("[data-garden]")) {
-  button.addEventListener("click", () => startGarden(Number(button.dataset.garden)));
-}
-
 $("btn-records-back").addEventListener("click", () => show("cover", -1));
 $("btn-settings").addEventListener("click", () => PAGE_OPEN.settings());
 $("btn-settings-back").addEventListener("click", () => show("cover", -1));
@@ -1816,7 +1660,6 @@ async function init() {
     const normal = questions.filter((q) => q.level <= MAX_LEVEL);
     normalQuestions = normal;
     hardQuestions = questions.filter((q) => q.level >= HARD_MIN_LEVEL && q.level <= HARD_LEVEL);
-    versusQuestions = questions.filter((q) => q.level <= VERSUS_ROUNDS);
     oniQuestions = questions.filter((q) => q.level > HARD_LEVEL);
     normalIds = new Set(normal.map((q) => q.uid ?? q.id));
     hardIds = new Set(hardQuestions.map((q) => q.uid ?? q.id));
@@ -2135,7 +1978,7 @@ let unlockQueue = [];
 let unlockIndex = 0;
 function celebrateUnlocks() {
   if ($("dlg-unlock").open || announcing) return;
-  if (currentScreen !== "result" && currentScreen !== "relax" && currentScreen !== "gameover") return; // 結果・お花畑の画面を出たあとは、出さない(クイズの画面に出てしまっていた)
+  if (currentScreen !== "result" && currentScreen !== "gameover") return; // 結果の画面を出たあとは、出さない(クイズの画面に出てしまっていた)
   const base = noticeBase();
   const pending = openDressKeys(loadStats()).filter((key) => !base.celebrated.includes(key));
   if (pending.length === 0) return;

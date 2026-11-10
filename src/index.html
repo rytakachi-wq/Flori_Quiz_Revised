@@ -97,7 +97,6 @@
         <h2 class="title">クイズのモード選択</h2>
       </header>
       <div class="set-list">
-        <div class="set-row"><span class="set-label"><span aria-hidden="true">👤</span> プレイ人数</span><div id="seg-kind" class="seg"></div></div>
         <div class="set-row"><span class="set-label"><span aria-hidden="true">📚</span> 分類</span><div id="seg-group" class="seg seg-4"></div></div>
         <div class="set-row"><span id="set-label-3" class="set-label"></span><div id="seg-third" class="seg"></div></div>
         <div id="row-level" class="set-row"><span class="set-label"><span aria-hidden="true">⭐</span> 難しさ</span><div id="seg-level" class="seg"></div></div>
@@ -127,7 +126,6 @@
       <div class="menu-grid">
         <button id="btn-daily" class="tile t-daily" type="button"><span class="tile-icon" aria-hidden="true">📅</span><span class="tile-text"><span class="tile-label">毎日1問</span></span><span class="tile-dot" hidden></span></button>
         <button id="btn-review" class="tile t-review" type="button"><span class="tile-icon" aria-hidden="true">📖</span><span class="tile-text"><span class="tile-label">復習</span></span><span class="tile-dot" hidden></span></button>
-        <button id="btn-relax" class="tile t-relax" type="button" hidden style="display:none"><span class="tile-icon" aria-hidden="true">🌸</span><span class="tile-text"><span class="tile-label">リラックス</span></span><span class="tile-dot" hidden></span></button>
         <button id="btn-tutorial-menu" class="tile t-tutorial" type="button"><span class="tile-icon" aria-hidden="true">🎬</span><span class="tile-text"><span class="tile-label">遊び方</span></span><span class="tile-dot" hidden></span></button>
         <button id="btn-credits" class="tile t-credits" type="button"><span class="tile-icon" aria-hidden="true">🎈</span><span class="tile-text"><span class="tile-label">スタッフクレジット</span></span><span class="tile-dot" hidden></span></button>
       </div>
@@ -221,23 +219,6 @@
       <p class="note dress-note">制限時間を付けて遊ぶと ご褒美の星 ⭐ がもらえるヨ。今 ⭐ <span id="dress-stars">0</span>個</p>
     </section>
 
-
-    <!-- リラックス:お花畑 -->
-    <section id="screen-relax" class="screen" aria-label="リラックス" hidden>
-      <header class="screen-head">
-        <button id="btn-relax-back" class="back-btn" type="button"><span aria-hidden="true">↩</span> 戻る</button>
-        <h2 class="title">お花畑</h2>
-      </header>
-      <p id="garden-message" class="bubble"></p>
-      <div id="garden"></div>
-      <div class="buttons">
-        <button class="btn btn-main" type="button" data-garden="3">易しい(3×3)</button>
-        <button class="btn btn-main" type="button" data-garden="4">普通(4×4)</button>
-        <button id="btn-garden-hint" class="btn btn-sub" type="button">ヒント</button>
-        <button id="btn-garden-again" class="btn btn-sub" type="button">リセット</button>
-        <button id="btn-garden-guide" class="btn btn-sub" type="button">🎬 遊び方・コツ</button>
-      </div>
-    </section>
 
     <!-- 成績 -->
     <section id="screen-records" class="screen" aria-label="成績" hidden>
@@ -337,8 +318,6 @@
         </div>
         <div class="q-bar" aria-hidden="true"><span id="q-bar-fill"><i>⭐</i></span></div>
       </header>
-      <ol id="q-board" class="board" hidden></ol>
-      <p id="q-player" class="turn" hidden></p>
 
       <div id="q-timer" class="timer" hidden><div class="timer-track"><span id="q-timer-bar" class="timer-bar"></span></div><span id="q-timer-text" class="timer-text"></span></div>
       <div id="q-art" class="q-art" aria-hidden="true" hidden></div>
@@ -442,7 +421,6 @@
         <div id="r-score-row"><dt>得点</dt><dd id="r-score"></dd></div>
         <div id="r-best-row"><dt>最高得点</dt><dd id="r-best"></dd></div>
       </dl>
-      <ol id="r-board" class="board big" hidden></ol>
       <p id="r-record" class="record" hidden>新記録!</p>
       <p id="r-set" class="note" hidden></p>
       <p id="r-reward" class="reward-news" hidden></p>
@@ -524,13 +502,6 @@
       <button id="btn-time-yes" class="btn btn-main btn-mid-big" type="button">付ける<small>(ご褒美あり)</small></button>
       <button id="btn-time-no" class="btn btn-plain btn-mid" type="button">付けない</button>
       <button id="btn-time-cancel" class="btn btn-plain btn-small" type="button">やめる</button>
-    </div>
-  </dialog>
-  <dialog id="dlg-garden-reset" class="dialog" aria-labelledby="dlg-garden-reset-text">
-    <p id="dlg-garden-reset-text">🔄 <b>リセット</b>すると 木の配置が 新しく変わります。今の育ち具合は なくなります。</p>
-    <div class="buttons buttons-choice">
-      <button id="btn-garden-reset-yes" class="btn btn-main btn-mid-big" type="button">リセットする</button>
-      <button id="btn-garden-reset-no" class="btn btn-plain btn-small" type="button">やめる</button>
     </div>
   </dialog>
   <dialog id="dlg-restart" class="dialog" aria-labelledby="dlg-restart-text">

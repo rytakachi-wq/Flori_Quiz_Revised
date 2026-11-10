@@ -1,10 +1,8 @@
 // クイズのルール:フリップ(めくる板)形式。遊び方のチュートリアルと同じように、「次へ」を押すと次の場面へ進む。
-// 選んだ遊び方に合わせて、場面が変わる:普通(黄色)・難しい(オレンジ)・RPGクエスト(赤)・皆で対戦(薄紫)。画面の色も、遊び方で変わる。
+// 選んだ遊び方に合わせて、場面が変わる:普通(黄色)・難しい(オレンジ)・RPGクエスト(赤)。画面の色も、遊び方で変わる。
 
 const Q = '<div class="rf-q"><span class="rf-qn">Q</span> りんご3こ+みかん2こ=?</div>';
 const CH = (cls = "") => `<div class="rf-ch ${cls}"><span>4こ</span><span class="rf-ok">5こ</span><span>6こ</span></div>`;
-const PLAYER = (n, face) => `<span class="rf-pl p${n}" style="--n:${n - 1}"><i>${face}</i><b>プレイヤー${n}</b></span>`;
-const ROUND = (n) => `<span class="rf-rd r${n}" style="--n:${n - 1}"><b>${n}回戦</b><em>${"★".repeat(n)}${"☆".repeat(3 - n)}</em><strong>${n}点</strong></span>`;
 
 const COMMON = [
   {
@@ -39,19 +37,6 @@ const SOLO = [
     title: "② 続くと 難しく",
     caption: "正解が 続くと 問題が 難しく。全部の問題で 100点満点の 総合得点を 目指そう!",
     html: `<div class="rf-ladder"><span class="l1">難しさ ★☆☆☆</span><span class="l2">難しさ ★★☆☆</span><span class="l3">難しさ ★★★☆</span></div><div class="rf-chain"><span>⭕</span><span>⭕</span><span>⭕</span><em>⬆ 難しく!</em></div><span class="rf-total t100">🏆 総合得点 100点満点</span>`,
-  },
-];
-
-const VS = [
-  {
-    title: "① 順番に 1問ずつ",
-    caption: "1台の画面を 皆で 使って 順番に 1問ずつ 答えるよ。ヒントも 使えるよ。",
-    html: `<div class="rf-players">${PLAYER(1, "🙂")}${PLAYER(2, "😀")}${PLAYER(3, "😎")}${PLAYER(4, "🤗")}</div><span class="rf-turn">👉 順番に 答える</span>`,
-  },
-  {
-    title: "② 3回戦で 勝負",
-    caption: "後の回戦ほど 点が 大きいよ。合計点が 1番 高い人の 勝ち!",
-    html: `<div class="rf-rounds">${ROUND(1)}${ROUND(2)}${ROUND(3)}</div><span class="rf-crown">👑 合計点が 1番の人が 勝ち!</span>`,
   },
 ];
 
@@ -111,7 +96,6 @@ const KINDS = {
   normal: { theme: "solo", tag: "🌱 1人で 普通", scenes: () => [...COMMON, ...SOLO] },
   hard: { theme: "hard", tag: "🔥 1人で 難しい", scenes: () => [...COMMON, SOLO[0], ...HARD] },
   rpg: { theme: "rpg", tag: "🗡️ RPGクエスト", scenes: () => RPG },
-  versus: { theme: "vs", tag: "👤👤 皆で 対戦", scenes: () => [...COMMON, ...VS] },
 };
 let kind = "normal";
 let SCENES = [];
@@ -125,7 +109,7 @@ function render() {
   const scene = SCENES[index];
   const screen = $("screen-rules");
   const info = KINDS[kind];
-  screen.classList.remove("rf-solo", "rf-hard", "rf-rpg", "rf-vs");
+  screen.classList.remove("rf-solo", "rf-hard", "rf-rpg");
   screen.classList.add(`rf-${info.theme}`);
   $("rf-tag").textContent = info.tag;
   $("rf-title").textContent = `${CIRCLED[index] ?? ""} ${scene.title.replace(/^[①-⑩]\s*/, "")}`; // 番号は、場面の順につける
@@ -147,7 +131,7 @@ function render() {
   $("btn-rules-next").innerHTML = index === SCENES.length - 1 ? `${lastEndLabel} <span aria-hidden="true">▶</span>` : '次へ <span aria-hidden="true">▶</span>';
 }
 
-// 遊び方(normal・hard・rpg・versus)に合わせた、ルールを開く。done:最後まで見たとき・とばしたとき(なければ、はじめに渡したもの)
+// 遊び方(normal・hard・rpg)に合わせた、ルールを開く。done:最後まで見たとき・とばしたとき(なければ、はじめに渡したもの)
 export function openRules(nextKind = "normal", done = null, endLabel = "クイズのモード選択へ") {
   lastEndLabel = endLabel;
   kind = KINDS[nextKind] ? nextKind : "normal";

@@ -34,11 +34,6 @@ export const MAX_SCORE = QUESTIONS_PER_ROUND * POINTS_PER_CORRECT;
 export const TIMED_SECONDS = 30; // 制限時間をつけたときの、1問の制限時間(秒)
 export const HINT_COST = 1; // ヒントを見ると、その問題の点が半分になる(正解したとき、2点→1点)
 
-// みんなで対戦。2〜4人が、1台の画面で、順番に答えて点数を競う。3回戦(段階1・2・3)で、1回戦は1点、2回戦は2点、3回戦は3点。
-export const VERSUS_MIN_PLAYERS = 2;
-export const VERSUS_MAX_PLAYERS = 4;
-export const VERSUS_ROUNDS = 3;
-
 // 総合得点(100点満点)。ふつう・難しい問題の、問題ごとの、これまでの最高の点(ヒントなし=2点、ヒントあり=1点)を足して、
 // 全部の問題を、ヒントなしで正解したときの点(2点×問題数)を、100点として、割合で出す。問題の数が、増えても減っても、満点は、100点のまま。
 // オニ問題は、総合得点には入れない(オニの記録は、別に数える)。
@@ -433,76 +428,4 @@ export function dailyQuestion(questions, key) {
   const [y, m, d] = key.split("-").map(Number);
   const day = Math.floor(Date.UTC(y, m - 1, d) / 86400000); // 1970年からの日数
   return sorted[((day % sorted.length) + sorted.length) % sorted.length];
-}
-
-// みんなで対戦。各回戦(段階1→2→3)で、全員に、同じ段階の、別々の問題を出す。ふつうモードの問題から、ランダムに選ぶ。
-// 正解すると、回戦の数だけ点が入る(1回戦は1点、2回戦は2点、3回戦は3点。ヒントを見たら、その半分)。最後に、点数が一番高い人が勝ち(同点は引き分け)。
-export class VersusRound {
-  constructor(questions, players, rng = Math.random) {
-    this.players = players;
-    this.sequence = [];
-    for (let round = 1; round <= VERSUS_ROUNDS; round += 1) {
-      const pool = questions.filter((q) => q.level === round);
-      for (let player = 0; player < players && pool.length > 0; player += 1) {
-        const question = pool.splice(Math.floor(rng() * pool.length), 1)[0];
-        this.sequence.push({ question, round, player });
-      }
-    }
-    this.startRound();
-  }
-
-  startRound() {
-    this.asked = 0;
-    this.scores = Array(this.players).fill(0);
-    this.roundAnswers = []; // 図鑑のために、出た問題をおぼえる(成績には入れない)
-  }
-
-  get current() {
-    return this.sequence[this.asked] ?? this.sequence[this.sequence.length - 1];
-  }
-
-  get player() {
-    return this.current.player;
-  }
-
-  get round() {
-    return this.current.round;
-  }
-
-  get total() {
-    return this.sequence.length;
-  }
-
-  nextQuestion() {
-    return { question: this.current.question, leveledUp: false };
-  }
-
-  // ヒントを見たときは、その問題の点が半分(1回戦は0.5点、2回戦は1点、3回戦は1.5点)
-  answer(question, response, hinted = false) {
-    const correct = judge(question, response);
-    this.roundAnswers.push({ id: question.uid ?? question.id, correct, points: 0, hinted });
-    if (correct) this.scores[this.current.player] += this.current.round * (hinted ? 0.5 : 1);
-    this.asked += 1;
-    return correct;
-  }
-
-  get roundFinished() {
-    return this.asked >= this.sequence.length;
-  }
-
-  abandonRound() {
-    this.startRound();
-  }
-
-  finishRound() {
-    const best = Math.max(...this.scores);
-    const result = {
-      scores: [...this.scores],
-      winners: this.scores.flatMap((score, index) => (score === best ? [index] : [])),
-      players: this.players,
-      answers: [...this.roundAnswers],
-    };
-    this.startRound();
-    return result;
-  }
 }

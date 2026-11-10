@@ -15,7 +15,7 @@ const EMPTY = {
   seen: [], // 出会ったことのある問題の番号
   right: [], // 正解したことのある問題の番号
   oniRight: [], // 正解したことのあるオニ問題の番号(総合得点にだけ使う)
-  versusPlays: 0, // みんなで対戦した回数
+  versusPlays: 0, // みんなで対戦した回数(機能は消した。古い記録のために、残してある)
   wrong: [], // まちがえて、まだ正解していない問題の番号(おさらい用)
   dailyLast: "", // 毎日1問を、最後にやった日
   dailyStreak: 0, // 毎日1問を、続けている日数
@@ -28,7 +28,7 @@ const EMPTY = {
   reviewClears: 0, // おさらいを、全部クリアした回数
   timedPlays: 0, // 制限時間をつけて遊んだ回数
   timedPerfect: 0, // 制限時間をつけて、全問正解した回数
-  gardenClears: 0, // お花畑を完成させた回数
+  gardenClears: 0, // お花畑を完成させた回数(機能は消した。古い記録のために、残してある)
   rpgClears: 0, // RPGをクリアした回数
   rpgNoDamage: 0, // RPGを、ノーダメージでクリアした回数
   rpgBoss: 0, // RPGで、ボス戦まで進んだ回数
@@ -208,13 +208,6 @@ export function recordOni(answers = []) {
   return stats.oniRight.length - before;
 }
 
-// みんなで対戦した結果を記録する。ひとりで遊ぶ記録(遊んだ回数・正解率・総合得点など)には、入れない。
-export function recordVersus() {
-  const stats = loadStats();
-  stats.versusPlays += 1;
-  save(stats);
-}
-
 // おさらいの結果を記録する。まちがえた問題の一覧だけが変わる(成績の回数や、総合得点には入れない)。
 export function recordReview(answers = []) {
   const stats = loadStats();
@@ -319,12 +312,6 @@ export function addStars(count) {
   return stats.stars;
 }
 
-// お花畑を完成させた回数
-export function recordGarden() {
-  const stats = loadStats();
-  stats.gardenClears += 1;
-  save(stats);
-}
 
 // 記録の中から、いまの問題にない番号(古い形式の番号や、なくなった問題)を取りのぞく。
 export function pruneStats(validIds) {

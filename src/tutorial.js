@@ -84,45 +84,9 @@ const PLAY_SCENES = [
   },
 ];
 
-// リラックス(お花畑)の説明・遊び方・コツ
+// 場面の見せ方の部品
 const seq = (items, cls = "") => `<div class="tg-seq ${cls}">${SEQ(items)}</div>`;
 const SEQ = (items) => items.map(([icon, note], n) => `<span class="tg-seq-item" style="--n:${n}"><b>${icon}</b><small>${note}</small></span>`).join("");
-const cell = (mod = "", a = "🌱", b = "🌿") => `<span class="tg-c ${mod}"><b class="a">${a}</b><b class="b">${b}</b></span>`;
-const RELAX_SCENES = [
-  {
-    title: "お花畑って?",
-    caption: "木を育てて 全部を桜の木にする パズルだよ。点数も時間もないから のんびり遊んでね。",
-    html: `<div class="tg">${seq([["🌱", "芽"], ["🌿", "枝"], ["🌳", "木"], ["🌸", "桜の木"]])}</div>`,
-  },
-  {
-    title: "遊び方 1",
-    caption: "木を押すと その木と 上下左右の木が 1つずつ育つよ。",
-    html: `<div class="tg"><div class="tg-grid">
-      ${cell("s")}${cell("up")}${cell("s")}
-      ${cell("up")}<span class="tg-c up tap"><b class="a">🌱</b><b class="b">🌿</b><span class="tg-finger">👆</span></span>${cell("up")}
-      ${cell("s")}${cell("up")}${cell("s")}
-    </div></div>`,
-  },
-  {
-    title: "遊び方 2",
-    caption: "桜の木の次は 芽に戻るよ。全部を桜の木にしたらクリア!",
-    html: `<div class="tg">${seq([["🌳", "木"], ["🌸", "桜の木"], ["🌱", "芽に戻る"]], "wide")}<span class="tg-clear">✨ クリア! ✨</span></div>`,
-  },
-  {
-    title: "コツ 1",
-    caption: "上の段から順に そろえよう。上の木を育てたい時は そのすぐ下の木を押すよ。",
-    html: `<div class="tg"><div class="tg-grid">
-      ${cell("s", "🌸", "🌸")}${cell("up", "🌿", "🌳")}${cell("s", "🌸", "🌸")}
-      ${cell("s", "🌳", "🌳")}<span class="tg-c up tap"><b class="a">🌳</b><b class="b">🌸</b><span class="tg-finger">👆</span></span>${cell("s", "🌳", "🌳")}
-      ${cell("s", "🌱", "🌱")}${cell("up", "🌸", "🌱")}${cell("s", "🌱", "🌱")}
-    </div></div>`,
-  },
-  {
-    title: "コツ 2",
-    caption: "同じ木は3回まで。4回押すと戻るよ。困ったら「ヒント」で 押す木が光るよ。",
-    html: `<div class="tg">${seq([["🌱", "0回"], ["🌿", "1回"], ["🌳", "2回"], ["🌸", "3回"], ["🌱", "4回で戻る"]], "tight")}<span class="tg-bulb">💡 ヒント</span></div>`,
-  },
-];
 
 // 毎日1問の説明
 const DAILY_SCENES = [
@@ -197,7 +161,7 @@ const RPG_SCENES = [
     html: `<div class="tg">${seq([["❌", "間違い"], ["📓", "ノート"], ["🏆", "クリア"]])}</div>`,
   },
 ];
-const SCENE_SETS = { play: PLAY_SCENES, relax: RELAX_SCENES, daily: DAILY_SCENES, review: REVIEW_SCENES, rpg: RPG_SCENES };
+const SCENE_SETS = { play: PLAY_SCENES, daily: DAILY_SCENES, review: REVIEW_SCENES, rpg: RPG_SCENES };
 let SCENES = PLAY_SCENES;
 
 let index = 0;
