@@ -3627,3 +3627,8 @@ html[data-pattern] :is(#screen-menu, #screen-note, #screen-credits, #screen-dex,
 }
 @keyframes op-pop { from { transform: scale(0.1); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .opening .logo, .opening-title span { animation: none; } }
+/* さわったとき:ロゴと文字が、ぽん・ぽん・ぽんと はねる(音といっしょ) */
+.opening.is-hit .logo { animation: op-hit 0.5s ease-out both; }
+.opening.is-hit .opening-title span { animation: op-hit 0.45s ease-out calc(0.08s + var(--i) * 0.05s) both; }
+@keyframes op-hit { 0% { transform: scale(1); } 40% { transform: scale(1.22) rotate(-3deg); } 100% { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .opening.is-hit .logo, .opening.is-hit .opening-title span { animation: none; } }

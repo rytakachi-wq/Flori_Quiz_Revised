@@ -42,6 +42,8 @@ const SE = {
   rpgPunch: { file: "se-rpg-punch.mp3", boost: 1.8 }, // RPG:こうげきが当たった
   rpgGuard: { file: "se-rpg-guard.mp3", boost: 1.8 }, // RPG:敵のこうげきを受けた
   rpgDing: { file: "se-rpg-ding.mp3", boost: 1.5 }, // RPG:たからばこで回復
+  openPa: { file: "se-pa.mp3", boost: 2 }, // オープニング:ロゴ・フロリが ぽんと出るとき
+  openPetta: { file: "se-petta.mp3", boost: 2 }, // オープニング:フロリが ぺたっと着地
   cancel3: { file: "se-cancel3.mp3", boost: 1.5 }, // シューティング:フロリが当たった
   cancel4: { file: "se-cancel4.mp3", boost: 1.5 }, // シューティング:大きい敵に1回当たった
   cancel5: { file: "se-cancel5.mp3", boost: 1.5 }, // シューティング:ゲームオーバー

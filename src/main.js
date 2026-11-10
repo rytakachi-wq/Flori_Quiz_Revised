@@ -1879,7 +1879,7 @@ function closeOpening() {
     playJingle("opening");
     setTimeout(() => {
       opening.hidden = true;
-      opening.classList.remove("is-idle", "is-leaving");
+      opening.classList.remove("is-idle", "is-leaving", "is-hit");
       setScene("cover"); // 表紙にもどったら、表紙のBGM
       startCoverIdle();
       talker.start();
@@ -1887,6 +1887,9 @@ function closeOpening() {
     return;
   }
   opening.classList.add("is-playing"); // フロリが、動いて登場する
+  opening.classList.add("is-hit"); // ロゴ・文字が、ぽんと はねる
+  // 動きに合わせた音(ブラウザの決まりで、画面をさわるまで音は出せないので、さわったときに、鳴らす)
+  for (const [ms, name] of [[0, "openPa"], [90, "rpgAppear"], [320, "rpgAppear"], [560, "openPa"], [980, "openPetta"]]) setTimeout(() => playSe(name), ms);
   opening.querySelector(".opening-flori").hidden = false;
   const length = Math.max(2600, (openingJingleDone ? 0 : playJingle("opening")) + 400);
   openingJingleDone = false;
