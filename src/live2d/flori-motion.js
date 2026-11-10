@@ -60,6 +60,7 @@ const pxToR = px => (px >= 0 ? -px / 25 : -px / 16), pxToL = px => (px >= 0 ? -p
 const eyePx = (g, base, [toLeft, toRight]) => (g >= 0 ? base + (-toLeft - base) * g : base + (toRight - base) * -g);
 
 // opts.mood = 表情の名前(EXPRESSIONS の name)。ずっと その表情のまま、目・腕だけ動かす(ポーズつきの絵の代わり:困った顔・驚いた顔など)
+// opts.onEvent = (種類) => {}:動きが はじまるたびに呼ぶ(音をつけるため。種類は、hop / stretch / cheer / wave / flap / expr / brow など)
 // opts.noArms = true:腕は、動かさない(着せ替え画面。腕のかざりが、ずれないように)
 export function createMotion(model, opts = {}) {
   const moodExpr = opts.mood ? EXPRESSIONS.find(x => x.name === opts.mood) : null;
@@ -139,7 +140,7 @@ export function createMotion(model, opts = {}) {
     for (const i of I.lids) V[i] = -b;
 
     // イベントの進行
-    if (!hopping && !ev && t >= waitUntil) ev = nextEvent(t);
+    if (!hopping && !ev && t >= waitUntil) { ev = nextEvent(t); opts.onEvent?.(ev.kind); }
     let browSeq = 0, gaze = 0, x = null, e = 0, dir = 1, k = 0, a = 0;
     if (ev) {
       a = t - ev.t0;
@@ -225,5 +226,5 @@ export function createMotion(model, opts = {}) {
     return out;
   }
 
-  return { update, hop(now) { const t = now / 1000; if (t - hopT0 >= HOP_SECONDS) hopT0 = t; } };
+  return { update, hop(now) { const t = now / 1000; if (t - hopT0 >= HOP_SECONDS) { hopT0 = t; opts.onEvent?.('hop'); } } };
 }

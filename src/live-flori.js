@@ -5,6 +5,7 @@
 //  - 出さない画面:クイズ(問題・RPG)。表紙は、クリックで ぴょん。着せ替え画面でも、腕を動かす。
 import { draw, loadModel } from "./live2d/live2d.js";
 import { createMotion } from "./live2d/flori-motion.js";
+import { playSe } from "./audio.js";
 import { getFloriColor, recolorCanvas } from "./flori-color.js";
 
 // ポーズつきの絵のうち、動くフロリにかえるもの(かざりの位置が合う絵。decor-overlay.js の POSE と同じ)
@@ -134,6 +135,18 @@ function mount(img) {
   return item;
 }
 
+// フロリの動きに合わせた音。よく起こる小さな動き(表情・眉)は、ときどきだけ、鳴らす。つづけて鳴らさない
+const MOVE_SOUND = { hop: ["floriHop", 1, 0], stretch: ["floriStretch", 1, 2500], cheer: ["floriCheer", 1, 2500], wave: ["floriWave", 1, 2500], expr: ["floriTouch", 0.3, 4000], brow: ["floriTouch", 0.25, 4000] };   // [音, 鳴らす確率, 前の音からの、あける時間(ms)]
+let lastMoveSound = 0;
+function moveSound(item, kind) {
+  const entry = MOVE_SOUND[kind];
+  if (!entry || document.hidden || reduced || item.box.closest("#opening")) return;   // オープニングは、専用の音がある
+  const now = performance.now();
+  if (now - lastMoveSound < entry[2] || Math.random() > entry[1]) return;
+  lastMoveSound = now;
+  playSe(entry[0]);
+}
+
 function configure(img, item) {
   const src = originalSrc(img);
   const mood = MOOD[(/(wave_\w+)\.png$/.exec(src) ?? [])[1]] ?? null;
@@ -141,7 +154,7 @@ function configure(img, item) {
   const key = `${mood}|${noArms}`;
   if (item.key === key) return;
   item.key = key;
-  item.motion = createMotion(model, { mood, noArms });
+  item.motion = createMotion(model, { mood, noArms, onEvent: (kind) => moveSound(item, kind) });
 }
 
 let last = 0;

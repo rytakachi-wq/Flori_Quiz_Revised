@@ -44,6 +44,11 @@ const SE = {
   rpgDing: { file: "se-rpg-ding.mp3", boost: 1.5 }, // RPG:たからばこで回復
   openPa: { file: "se-pa.mp3", boost: 2 }, // オープニング:ロゴ・フロリが ぽんと出るとき
   openPetta: { file: "se-petta.mp3", boost: 2 }, // オープニング:フロリが ぺたっと着地
+  floriHop: { file: "se-flori-puyon.mp3", boost: 2.4 }, // フロリ:ぴょんと跳ねる(ぷよん)
+  floriStretch: { file: "se-flori-nyu3.mp3", boost: 2.4 }, // フロリ:つま先立ちで伸びる(ニュッ)
+  floriCheer: { file: "se-flori-nyu2.mp3", boost: 2 }, // フロリ:ばんざい(ニュッ)
+  floriWave: { file: "se-flori-cute.mp3", boost: 2.2 }, // フロリ:手を振る(かわいい動作)
+  floriTouch: { file: "se-flori-touch.mp3", boost: 2.2 }, // フロリ:表情・眉の、ちょこっとした動き
   cancel3: { file: "se-cancel3.mp3", boost: 1.5 }, // シューティング:フロリが当たった
   cancel4: { file: "se-cancel4.mp3", boost: 1.5 }, // シューティング:大きい敵に1回当たった
   cancel5: { file: "se-cancel5.mp3", boost: 1.5 }, // シューティング:ゲームオーバー
