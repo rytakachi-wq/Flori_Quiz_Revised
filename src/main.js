@@ -315,6 +315,16 @@ function refreshCover() {
   const left = stats.wrong.filter((id) => playableIds().has(id)).length;
   $("btn-review").querySelector(".tile-label").textContent = left > 0 ? `復習(${left}問)` : "復習(なし)";
   refreshNoticeDots();
+  renderQuest();
+}
+
+// ぼうけんの きろく(ホーム):総合得点と、つぎの ものがたり
+function renderQuest() {
+  const total = currentTotal();
+  $("quest-score").textContent = `${total} / 100点`;
+  $("quest-fill").style.width = `${Math.min(100, total)}%`;
+  const next = MOVIE_INFO.find((m) => m.need > total);
+  $("quest-next").textContent = next ? `つぎの ものがたりまで あと ${next.need - total}点!` : "ぜんぶの ものがたりが 見られるヨ!";
 }
 
 // 難しさの星(全部で4段階)
@@ -1654,7 +1664,9 @@ $("btn-tutorial").addEventListener("click", (event) => {
   // 最後の場面まで来たら、「ゲームスタート」で、そのまま始められる(「閉じる」なら、オープニングに戻る)
   playTutorial("rpg", (started) => started && closeOpening(), { startLabel: "ゲームスタート" });
 });
-$("btn-tutorial-home").addEventListener("click", () => playTutorial("rpg")); // 遊び方は、ホームに置いた
+$("btn-tutorial-home").addEventListener("click", () => playTutorial("rpg"));
+$("btn-story-home").addEventListener("click", () => $("btn-story-movie").click());
+$("btn-daily-home").addEventListener("click", () => $("btn-daily").click()); // 遊び方は、ホームに置いた
 
 // ================= 着せ替えの解放(条件は badges.js) =================
 // 条件を数えるための材料

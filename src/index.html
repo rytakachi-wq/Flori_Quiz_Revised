@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
   <link rel="stylesheet" href="style.css?v=20261112b">
+  <link rel="stylesheet" href="story-skin.css?v=6">
 </head>
 <body>
   <div id="badge-bg" class="badge-bg" aria-hidden="true"></div>
@@ -61,6 +62,12 @@
         <button id="btn-settings" class="cover-gear" type="button" aria-label="設定"><span aria-hidden="true">⚙️</span> 設定</button>
       </header>
       <h1 class="sr-only">Flori_Quiz</h1>
+      <!-- ぼうけんの きろく(総合得点と、つぎの ものがたり) -->
+      <div id="quest-panel" class="quest-panel" aria-label="ぼうけんの きろく">
+        <div class="quest-head"><span class="quest-ttl">ぼうけんの きろく</span><b id="quest-score" class="quest-score">0 / 100点</b></div>
+        <div class="quest-bar" aria-hidden="true"><i id="quest-fill"></i><u style="left:20%"></u><u style="left:40%"></u><u style="left:60%"></u><u style="left:80%"></u><u style="left:100%"></u></div>
+        <p id="quest-next" class="quest-next"></p>
+      </div>
       <div class="home-stage">
         <div class="speech home-speech">
           <p id="cover-talk" class="cover-talk">ヤア! ボクはフロリだヨ!</p>
@@ -73,7 +80,11 @@
         </div>
       </div>
       <button id="btn-quiz" class="play-btn" type="button"><span class="gi" aria-hidden="true">🎯</span><span class="pb-text"><b>クイズ</b><small>スタート!</small></span><span class="pb-go" aria-hidden="true">▶</span></button>
-      <button id="btn-tutorial-home" class="home-help" type="button"><span class="rc-ico" aria-hidden="true">🎬</span><span>遊び方</span></button>
+      <div class="home-sub">
+        <button id="btn-tutorial-home" class="home-help" type="button"><span class="rc-ico" aria-hidden="true">🎬</span><span>遊び方</span></button>
+        <button id="btn-story-home" class="home-help" type="button"><span class="rc-ico" aria-hidden="true">📜</span><span>ものがたり</span></button>
+        <button id="btn-daily-home" class="home-help" type="button"><span class="rc-ico" aria-hidden="true">📅</span><span>毎日1問</span></button>
+      </div>
     </section>
 
     <!-- クイズのルール(クイズを押したとき、はじめに出る) -->
