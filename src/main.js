@@ -1672,7 +1672,6 @@ const HUBS = {
       { label: "遊び方", sub: "ムービーで 見る", icon: "clapper", go: () => playTutorial("rpg") },
       { label: "ものがたり", sub: "フロリ家族の おはなし", icon: "scroll", go: () => { renderMoviePick(); $("movie-pick").hidden = false; } },
       { label: "スタッフクレジット", sub: "つくった みんな", icon: "star_fill", go: () => showCredits() },
-      { label: "設定", sub: "音・文字の大きさなど", icon: "gear", go: () => PAGE_OPEN.settings() },
     ],
   },
   records: {
@@ -1712,15 +1711,8 @@ function openHub(key) {
   $("hub").hidden = false;
 }
 $("btn-hub-story").addEventListener("click", () => openHub("story"));
-// 着せ替え:まんなかのボタン。おすと、画面が 下から 上へ あがってくる
-$("btn-hub-dress").addEventListener("click", () => {
-  PAGE_OPEN.dress();
-  const screen = $("screen-dress");
-  screen.classList.remove("slide-up");
-  void screen.offsetWidth;
-  screen.classList.add("slide-up");
-  screen.addEventListener("animationend", () => screen.classList.remove("slide-up"), { once: true });
-});
+// 着せ替え:まんなかのボタン
+$("btn-hub-dress").addEventListener("click", () => PAGE_OPEN.dress());
 // 成績・総合得点:右のボタン
 $("btn-hub-records").addEventListener("click", () => openHub("records"));
 $("hub-close").addEventListener("click", () => {
