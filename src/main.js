@@ -310,7 +310,6 @@ function refreshCover() {
   const today = dateKey();
   const dailyDone = stats.dailyLast === today;
   $("btn-daily").querySelector(".tile-label").textContent = "毎日1問";
-  $("btn-daily").querySelector(".tile-icon").textContent = dailyDone ? "✅" : "📅"; // 今日の分をやったら、チェック
   $("btn-daily").classList.toggle("is-done", dailyDone);
   const left = stats.wrong.filter((id) => playableIds().has(id)).length;
   $("btn-review").querySelector(".tile-label").textContent = left > 0 ? `復習(${left}問)` : "復習(なし)";
@@ -324,7 +323,7 @@ function renderQuest() {
   $("quest-score").textContent = `${total} / 100点`;
   $("quest-fill").style.width = `${Math.min(100, total)}%`;
   const next = MOVIE_INFO.find((m) => m.need > total);
-  $("quest-next").textContent = next ? `つぎの ものがたりまで あと ${next.need - total}点!` : "ぜんぶの ものがたりが 見られるヨ!";
+  document.querySelector(".quest-ttl").textContent = next ? `つぎの ものがたりまで あと ${next.need - total}点!` : "ぜんぶの ものがたりが 見られるヨ!";
 }
 
 // 難しさの星(全部で4段階)
@@ -1664,12 +1663,70 @@ $("btn-tutorial").addEventListener("click", (event) => {
   // 最後の場面まで来たら、「ゲームスタート」で、そのまま始められる(「閉じる」なら、オープニングに戻る)
   playTutorial("rpg", (started) => started && closeOpening(), { startLabel: "ゲームスタート" });
 });
-$("btn-tutorial-home").addEventListener("click", () => playTutorial("rpg"));
-$("btn-story-home").addEventListener("click", () => $("btn-story-movie").click());
-$("btn-daily-home").addEventListener("click", () => $("btn-daily").click()); // 遊び方は、ホームに置いた
+// ホームの3つのボタン:えらぶ画面(おはなし・コレクション・おたのしみ)
+const HUBS = {
+  story: {
+    title: "フロリの おはなし",
+    items: [
+      { label: "遊び方", sub: "ムービーで 見る", icon: "clapper", go: () => playTutorial("rpg") },
+      { label: "ものがたり", sub: "フロリ家族の おはなし", icon: "scroll", go: () => { renderMoviePick(); $("movie-pick").hidden = false; } },
+    ],
+  },
+  collection: {
+    title: "コレクション",
+    items: [
+      { label: "着せ替え", sub: "フロリを おしゃれに", icon: "crown", go: () => PAGE_OPEN.dress() },
+      { label: "成績", sub: "総合得点・記録", icon: "trophy", go: () => PAGE_OPEN.records() },
+      { label: "問題図鑑", sub: "出会った 問題カード", icon: "books", go: () => PAGE_OPEN.dex() },
+    ],
+  },
+  fun: {
+    title: "おたのしみ",
+    items: [
+      { label: "毎日1問", sub: "1日に1問だけ", icon: "daycal", go: () => $("btn-daily").click() },
+      { label: "復習", sub: "間違えた問題を もう1度", icon: "notebook", go: () => $("btn-review").click() },
+      { label: "スタッフクレジット", sub: "つくった みんな", icon: "star_fill", go: () => showCredits() },
+    ],
+  },
+};
+function openHub(key) {
+  const hub = HUBS[key];
+  $("hub-title").textContent = hub.title;
+  $("hub-list").replaceChildren(
+    ...hub.items.map((item) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "hub-item";
+      const icon = document.createElement("img");
+      icon.className = "hub-ico";
+      icon.alt = "";
+      icon.src = `../assets/illust/${item.icon}.webp`;
+      const text = document.createElement("span");
+      const strong = document.createElement("b");
+      strong.textContent = item.label;
+      const small = document.createElement("small");
+      small.textContent = item.sub;
+      text.append(strong, small);
+      button.append(icon, text);
+      button.addEventListener("click", () => {
+        $("hub").hidden = true;
+        item.go();
+      });
+      return button;
+    }),
+  );
+  $("hub").hidden = false;
+}
+$("btn-hub-story").addEventListener("click", () => openHub("story"));
+$("btn-hub-collection").addEventListener("click", () => openHub("collection"));
+$("btn-hub-fun").addEventListener("click", () => openHub("fun"));
+$("hub-close").addEventListener("click", () => {
+  $("hub").hidden = true;
+}); // 遊び方は、ホームに置いた
 
 // ================= 着せ替えの解放(条件は badges.js) =================
 // 条件を数えるための材料
+const groupOf = (q) => q.group ?? "ひらめき"; // 問題の分類(理系・文系・ひらめき)
 function badgeContext(stats = loadStats()) {
   // ジャンル別(理系・文系・ひらめき)に、挑戦した(答えたことのある)問題の数
   const seen = new Set(stats.seen);
@@ -2293,19 +2350,35 @@ function renderRpgHearts() {
 }
 
 // stage:画面に出す敵のマス(答えた直後は、倒した敵を出したいので、答える前のマスを渡す)
+// 敵の絵:ものがたり(ムービー)の絵にそろえる
+const FOE_ART = {
+  ネズミ: { key: "mouse", src: "../assets/movie/mouse_run1.webp" },
+  カエル: { key: "frog", src: "../assets/movie/frog_crouch.webp" },
+  宝箱: { key: "chest", src: "../assets/illust/gift.webp" },
+  サソリ: { key: "scorpion", src: "../assets/movie/scorpion_guard.webp" },
+  ドラゴン: { key: "dragon", src: "../assets/movie/dragon_1.webp" },
+};
+function foeImage(stage) {
+  const img = document.createElement("img");
+  img.className = "foe-img";
+  img.alt = stage.name;
+  img.src = FOE_ART[stage.name]?.src ?? "../assets/movie/mouse_run1.webp";
+  return img;
+}
 function renderRpgStatus(stage = play.current, foeHp = play.hp) {
   renderRpgHearts();
   $("rpg-path").replaceChildren(
     ...RPG_STAGES.map((stage, index) => {
       const item = document.createElement("li");
-      item.textContent = stage.icon;
+      item.replaceChildren(foeImage(stage));
       item.title = stage.name;
       if (index < play.stage) item.className = "is-done";
       else if (index === play.stage) item.className = "is-now";
       return item;
     }),
   );
-  $("rpg-foe-icon").textContent = stage.icon;
+  $("rpg-foe-icon").replaceChildren(foeImage(stage));
+  $("rpg-field").dataset.foe = FOE_ART[stage.name]?.key ?? "mouse"; // 背景も、ものがたりの絵にそろえる
   $("rpg-foe-name").textContent = stage.kind === "chest" ? "宝箱" : stage.kind === "boss" ? `ボス ${stage.name}` : stage.name;
   $("rpg-foe-hp").textContent = stage.kind === "chest" ? "正解で ハート回復" : `${"💗".repeat(Math.max(0, foeHp))}${"🤍".repeat(stage.hp - Math.max(0, foeHp))}`;
 }
