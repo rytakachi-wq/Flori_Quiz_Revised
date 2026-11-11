@@ -337,7 +337,15 @@ const fmtPts = (internal) => {
 };
 const pickOf = (list) => list[Math.floor(Math.random() * list.length)];
 
+// ゲームを始める前に、見られるようになった ものがたり(ムービー)があれば、先に見せる
 function startPlay(nextMode, startMessage = null) {
+  if (dueMovie()) {
+    showDueMovies().then(() => startPlayNow(nextMode, startMessage));
+    return;
+  }
+  startPlayNow(nextMode, startMessage);
+}
+function startPlayNow(nextMode, startMessage = null) {
   mode = nextMode;
   lastCorrect = null;
   if (mode === "oni") timeLimit = false; // オニ問題には、制限時間はない
@@ -1250,15 +1258,70 @@ function showCredits() {
   openCredits();
 }
 $("btn-credits").addEventListener("click", showCredits);
-// ものがたり(ムービー):画面の上に重ねる。ムービーの「とじる」で、もどる
+// ものがたり(ムービー):画面の上に重ねる。ムービーの「とじる」で、もどる。
+// プロローグは、はじめて開いたとき、だれにでも見せる。①〜⑤は、総合得点が 20・40・60・80・100点になったあと、つぎにゲームを始める前に、1回だけ見せる。
+// 「その他」の「ものがたり」では、見られるようになったものを、いつでも見られる。
+const MOVIE_SEEN_KEY = "floriQuiz.movieSeen";
+const MOVIE_VER = "20261112a";
+const MOVIE_INFO = [
+  { id: "pro", need: 0 },
+  { id: "ep1", need: 20 },
+  { id: "ep2", need: 40 },
+  { id: "ep3", need: 60 },
+  { id: "ep4", need: 80 },
+  { id: "epi", need: 100 },
+];
+function movieSeen() {
+  try {
+    return new Set(JSON.parse(localStorage.getItem(MOVIE_SEEN_KEY) || "[]"));
+  } catch {
+    return new Set();
+  }
+}
+function markMovieSeen(id) {
+  const seen = movieSeen();
+  seen.add(id);
+  try {
+    localStorage.setItem(MOVIE_SEEN_KEY, JSON.stringify([...seen]));
+  } catch {
+    // 保存できなくても、見るのには 困らない(つぎに開いたとき、もういちど出る)
+  }
+}
+function unlockedMovies() {
+  const total = allQuestions.length ? currentTotal() : 0;
+  return MOVIE_INFO.filter((m) => m.need <= total).map((m) => m.id);
+}
+function dueMovie() {
+  if (allQuestions.length === 0) return null;
+  const seen = movieSeen();
+  const open = new Set(unlockedMovies());
+  return MOVIE_INFO.find((m) => open.has(m.id) && !seen.has(m.id)) ?? null;
+}
+let movieDone = null;
+function openMovie(query) {
+  return new Promise((resolve) => {
+    movieDone = resolve;
+    $("story-movie-frame").src = `./live2d/story-movie.html?v=${MOVIE_VER}&${query}`;
+    $("story-movie").hidden = false;
+  });
+}
+async function showDueMovies(onlyPrologue = false) {
+  for (let m = dueMovie(); m; m = dueMovie()) {
+    if (onlyPrologue && m.id !== "pro") break;
+    markMovieSeen(m.id);
+    await openMovie(`mode=story&play=${m.id}`);
+  }
+}
 $("btn-story-movie").addEventListener("click", () => {
-  $("story-movie-frame").src = `./live2d/story-movie.html?v=20261111a`;
-  $("story-movie").hidden = false;
+  openMovie(`mode=gallery&unlocked=${unlockedMovies().join(",")}`);
 });
 window.addEventListener("message", (event) => {
   if (event.data !== "close-story-movie") return;
   $("story-movie").hidden = true;
   $("story-movie-frame").src = "about:blank"; // 止める
+  const done = movieDone;
+  movieDone = null;
+  done?.();
 });
 $("btn-credits-back").addEventListener("click", () => show("menu", -1));
 const PAGE_OPEN = {
@@ -1317,7 +1380,7 @@ function askRestart(action) {
 }
 // 消すのは、成績・図鑑・着せ替え・続き。音の大きさ・ふりがな・文字の大きさなどの設定は、のこす。
 function eraseSaveData() {
-  for (const key of ["floriQuiz.stats", "floriQuiz.dress", "floriQuiz.dexViewed", "floriQuiz.notice", "floriQuiz.bestScore", "floriQuiz.relaxGuideSeen", ...GUIDE_SEEN_KEYS]) {
+  for (const key of ["floriQuiz.stats", "floriQuiz.dress", "floriQuiz.dexViewed", "floriQuiz.notice", "floriQuiz.bestScore", "floriQuiz.relaxGuideSeen", "floriQuiz.movieSeen", ...GUIDE_SEEN_KEYS]) {
     try {
       localStorage.removeItem(key);
     } catch {
@@ -1472,6 +1535,7 @@ async function init() {
     setWarmList(preload);
     pruneStats(new Set([...normalIds, ...hardIds, ...oniIds])); // 古い番号の記録を、取りのぞく
     show("cover");
+    showDueMovies(true); // はじめて開いたとき、プロローグを、だれにでも見せる
   } catch (error) {
     console.error(error);
     show("error");

@@ -1,27 +1,32 @@
-// フロリの ものがたり(ムービー)。動くフロリ(Live2D)を3体(フロリ・パパフロリ・ママフロリ)出して、お話を見せる。
-// ・パパ・ママは、同じモデルに(濃い)色をつけて、着せ替えの帽子(シルクハット・リボン)をのせたもの。
-// ・大胆な表情は、動くフロリの「表情」(びっくり・しょんぼり など)で出す。腕は、動くフロリのまま動く。表情の絵への置きかえは しない。
-// ・絵文字は使わない。敵・背景の絵は、アプリの絵(assets/illust)を使う。
-import { loadModel, draw } from './live2d.js';
-import { createMotion } from './flori-motion.js';
+// フロリの ものがたり(ムービー)その2:演出しなおし版(試作・ここだけ)。
+// ・動くフロリ(Live2D)3体。顔は「はりつけ → とる → 動くフロリの表情が動く → つぎの絵を はりつけ…」をくりかえす(はりつけは 顔より上・腕より下の層)。
+// ・見切れない:大きさは、画面の たて・よこの小さいほうに合わせる(--u)。カメラ(ズーム・パン)で、寄り・引きをつくる。
+// ・動きは場面に合わせる:かなしい場面は腕を動かさない(noArms)。ぴょん・ぶるぶるは、ここぞというときだけ。歩くときは、上下にゆれる。
+// ・単調にならない:広い絵・寄りの絵・切りかえ(暗転)・走る/追う/はねる 動き・ふきだしの順番。
+import { loadModel, draw } from './live2d.js?v=patch1';
+import { createMotion } from './flori-motion.js?v=hand1';
 import { recolorCanvas } from '../flori-color.js';
 import { HEADS } from '../badges.js';
-import { startFurigana } from '../furigana.js';
+import { startFurigana } from '../furigana.js?v=fm4';
+import { MOVIES } from './storyboard.js?v=20261112a';
 
 startFurigana();
 
-const model = await loadModel('./');
+const model = await loadModel(new URL('./', import.meta.url).href);
 const bgMesh = model.meshes.findIndex(m => m.name === 'BG');
 const TINT_PARTS = /^(体|顔|右足|左足|右手(コブシ|バンザイ)|左手(コブシ|バンザイ))$/;
-const FRAME = { w: 800, h: 1003 }, S = 0.362, X0 = 304, Y0 = 861, MARGIN = { x: 0.06, y: 0.03 };
-const FOOT = { px: 1455, py: 3470 };
+const FRAME = { w: 800, h: 1003 }, S = 0.362, X0 = 304, Y0 = 861, MARGIN = { x: 0.06, y: 0.03, top: 0.16 };   // top:帽子・リボン・ジャンプが見切れないよう、上に余白
+const FOOT = { px: 1455, py: 3470 }, PIVOT = { x: 1459.5, y: 1696.5 };
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const SRC = new URL('../', import.meta.url);   // src/
-const ART = {   // 絵(アプリの絵)。src/live2d/ から見た場所
+const ART = {   // 絵(アプリの絵。assets/illust)
   dragon: '../assets/illust/dragon.webp', mouse: '../assets/illust/mouse.webp', frog: '../assets/illust/frog.webp', scorpion: '../assets/illust/scorpion.webp',
   house: '../assets/illust/house.webp', sun: '../assets/illust/sun.webp', moon: '../assets/illust/moon.webp', cloud: '../assets/illust/cloud.webp', castle: '../assets/illust/castle.webp',
-  hat: '../assets/illust/tophat.webp', ribbon: '../assets/dress/head01.png',
+  tree: '../assets/illust/tree.webp', hat: '../assets/illust/tophat.webp', ribbon: '../assets/dress/head01.png',
+  sparkle: '../assets/illust/sparkle.webp', bulb: '../assets/illust/bulb.webp', key: '../assets/illust/key.webp', heart: '../assets/illust/heart.webp', star: '../assets/illust/star_fill.webp', sweat: '../assets/illust/sweat.webp', fire: '../assets/illust/fire.webp',
 };
+const artUrl = name => new URL(ART[name] ?? `../assets/movie/${name}.webp`, SRC).href;   // ART にないものは、assets/movie/ の絵
+const BGFILE = { home: 'bg_home_hd', night: 'bg_night_hd', castle: 'bg_castle_hd', sunrise: 'bg_sunrise_hd', dusk: 'bg_dusk', forest: 'bg_forest', swamp: 'bg_swamp', gate: 'bg_gate', alert: 'bg_alert' };   // 背景の絵(_hd=高画質。ないものは、小さな見本を のばして使う=仮)
 const loadImg = src => new Promise(ok => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => ok(im); im.src = new URL(src, SRC).href; });
 
 // ---- 登場人物(パパ・ママは、色を濃くした) ----
@@ -48,187 +53,264 @@ for (const [id, r] of Object.entries(ROLE)) {
   el.className = 'actor';
   el.innerHTML = '<canvas></canvas><span class="bubble"></span>';
   document.getElementById('actors').append(el);
-  // 表情ごとの動き(ずっと同じ表情のまま、目・腕だけ動く)。使うときに作る
-  actors[id] = { id, m, imgs, hatItem, hatImg, motions: {}, el, cv: el.querySelector('canvas'), bubble: el.querySelector('.bubble') };
+  actors[id] = { id, m, imgs, hatItem, hatImg, motions: {}, phase: Math.random() * 4, el, cv: el.querySelector('canvas'), bubble: el.querySelector('.bubble') };
 }
-const motionOf = (a, mood) => (a.motions[mood || 'normal'] ??= createMotion(a.m, mood ? { mood } : {}));
+if (!draw.toString().includes('opts.patch')) document.title = '(古い live2d.js です。Ctrl+F5 で読みこみなおして)';
+
+// ---- 顔の絵(表情の絵 wave_*.png の顔の部分を、動くフロリの顔に はりつける。端は ぼかさない) ----
+const FACE = { cx: 415, cy: 312, rx: 255, ry: 130 };
+const POSE_IMG = {};
+for (const k of ['surprised', 'wrong', 'nikkori', 'smile']) POSE_IMG[k] = await loadImg(`../assets/flori/m/wave_${k}.png`);
+const patchCache = {};
+const patchOf = key => patchCache[key] ??= (() => {
+  const c = document.createElement('canvas'); c.width = FACE.rx * 2; c.height = FACE.ry * 2;
+  const g = c.getContext('2d');
+  g.drawImage(POSE_IMG[key], FACE.cx - FACE.rx, FACE.cy - FACE.ry, c.width, c.height, 0, 0, c.width, c.height);
+  g.globalCompositeOperation = 'destination-in';
+  g.beginPath(); g.ellipse(FACE.rx, FACE.ry, FACE.rx, FACE.ry, 0, 0, Math.PI * 2); g.fillStyle = '#000'; g.fill();
+  return c;
+})();
+function faceAngle(m) {
+  const d = m.deformers.find(x => x.binds.length === 1 && m.params[x.binds[0].param].name === '顔');
+  if (!d) return 0;
+  const v = m.values[d.binds[0].param], k = d.binds[0].keys;
+  if (v <= k[0]) return d.forms[0].angle;
+  if (v >= k[k.length - 1]) return d.forms[k.length - 1].angle;
+  let i = 0; while (v > k[i + 1]) i++;
+  const t = (v - k[i]) / (k[i + 1] - k[i]);
+  return d.forms[i].angle + (d.forms[i + 1].angle - d.forms[i].angle) * t;
+}
+// 気持ち(mood)ごとに はりつける絵。ないもの(ぷんぷん など)は、動くフロリの表情のまま
+const PASTE_OF = { びっくり: ['surprised'], しょんぼり: ['wrong'], こまった: ['wrong'], あはは: ['smile', 'nikkori'], にっこり: ['nikkori', 'smile'] };
+const PASTE_SEC = 3.4, FREE_SEC = 1.6;   // はりつけの時間(のばした)/ とっている時間
+const motionOf = (a, mood, calm, tilt, side) => (a.motions[`${calm ? 'c' : 'n'}|${mood || ''}|${tilt || ''}|${side || ''}`] ??= createMotion(a.m, { ...(mood ? { mood } : {}), ...(side ? { waveSide: side } : {}), ...(calm ? { noArms: true } : {}), ...(tilt === 'none' ? { noTilt: true } : tilt ? { tiltDir: tilt === 'right' ? 1 : -1 } : {}) }));
 
 function view(b) {
-  const mx = MARGIN.x * FRAME.w, my = MARGIN.y * FRAME.h;
-  return { x: X0 - mx / S, y: Y0 - my / S + b, w: (FRAME.w + 2 * mx) / S, h: (FRAME.h + 2 * my) / S };
+  const mx = MARGIN.x * FRAME.w, my = MARGIN.y * FRAME.h, mt = MARGIN.top * FRAME.h;
+  return { x: X0 - mx / S, y: Y0 - mt / S + b, w: (FRAME.w + 2 * mx) / S, h: (FRAME.h + mt + my) / S };
 }
 function shadow(ctx, b) {
   ctx.save(); ctx.fillStyle = 'rgba(0,0,0,0.22)'; ctx.beginPath(); ctx.ellipse(1455, 3485 + b, 520, 105, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
 }
-function drawActor(a, now, mood) {
+function drawActor(a, now, d, sceneT) {
+  const mood = d.mood, calm = d.calm;
   const dpr = Math.min(devicePixelRatio || 1, 2);
   const w = Math.max(2, Math.round(Math.min(a.cv.clientWidth * dpr, 640)));
-  const h = Math.round((w * (1 + 2 * MARGIN.y) * FRAME.h) / ((1 + 2 * MARGIN.x) * FRAME.w));
+  const h = Math.round((w * (1 + MARGIN.top + MARGIN.y) * FRAME.h) / ((1 + 2 * MARGIN.x) * FRAME.w));
   if (a.cv.width !== w || a.cv.height !== h) { a.cv.width = w; a.cv.height = h; }
-  const motion = motionOf(a, mood);
+  const list = PASTE_OF[mood];
+  let pasteKey = null, useMood = mood, pasteAlpha = 1;
+  if (d.faces) {   // 顔の指定(絵コンテの faces):はりつける絵・動くフロリの表情を、時間で指定する
+    const f = d.faces.find(q => sceneT >= q.at && sceneT < (q.to ?? 99));
+    pasteKey = f?.pose || null; if (f?.fadeOut && f.to !== undefined) pasteAlpha = Math.min(1, Math.max(0, (f.to - sceneT) / f.fadeOut));   // fadeOut:貼った絵を、ゆっくり うすくして とる(秒)
+    useMood = f?.mood ?? (f?.pose ? d.mood : null);   // 貼る絵を かえるときも、動きの入れもの(motion)は かえない(ジャンプが途中で切れるため)
+  } else if (list) {
+    const cycle = PASTE_SEC + FREE_SEC, t = (sceneT + a.phase) % cycle;
+    if (t < PASTE_SEC) pasteKey = list[Math.floor((sceneT + a.phase) / cycle) % list.length];
+    useMood = null;
+  }
+  const motion = motionOf(a, useMood, calm, d.tilt, d.handSide);
   const m = reduced ? { bounce: 0, sx: 1, sy: 1 } : motion.update(now);
   const ctx = a.cv.getContext('2d');
-  draw(a.m, ctx, view(m.bounce), { hide: new Set([bgMesh]), squash: { sx: m.sx, sy: m.sy, ...FOOT }, imgs: a.imgs, before: c => shadow(c, m.bounce) });
+  const patch = pasteKey ? (c) => {
+    const pc = patchOf(pasteKey);
+    c.save(); c.globalAlpha = pasteAlpha;
+    c.translate(PIVOT.x, PIVOT.y); c.rotate(faceAngle(a.m) * Math.PI / 180); c.translate(-PIVOT.x, -PIVOT.y);
+    c.drawImage(pc, X0 + (FACE.cx - FACE.rx) / S, Y0 + (FACE.cy - FACE.ry) / S, pc.width / S, pc.height / S);
+    c.restore();
+  } : undefined;
+  draw(a.m, ctx, view(m.bounce), { hide: new Set([bgMesh]), squash: { sx: m.sx, sy: m.sy, ...FOOT }, imgs: a.imgs, before: c => shadow(c, m.bounce), patch });
   if (a.hatImg) {
     const p = a.hatItem.pos, cx = X0 + (p.x / 100 * FRAME.w) / S, cy = Y0 + (p.y / 100 * FRAME.h) / S;
     const hw = (p.w / 100 * FRAME.w) / S * (p.sx ?? 1), hh = (p.w / 100 * FRAME.w) / S * (a.hatImg.naturalHeight / a.hatImg.naturalWidth) * (p.sy ?? 1);
     ctx.drawImage(a.hatImg, cx - hw / 2, cy - hh / 2, hw, hh);
   }
+  window.__flags = window.__flags || {}; window.__flags[a.id] = pasteKey || '';
   return motion;
 }
 
-// ---- お話の台本 ----
-// actors[id] = { x(%), y(vh), a, s, mood(びっくり・しょんぼり・にっこり・あはは・ぷんぷん・こまった・きりっ), anim(shock|sad|joy|angry = 体ぜんたいの大げさな動き), to:{x,y,a,s}, say }
-// foes = [{ art: 絵の名前, h: 高さ(vh), from:[x%,y%], to:[x%,y%], shake }]  props = [[絵の名前, x%, y(vh), 高さ(vh)]]
-// hops = [{ at, who }](ぴょん=両腕を上げて跳ねる)  flash = 秒(白くひかる)
-const A = (x, extra = {}) => ({ x, y: 0, a: 1, s: 1, ...extra });
-const SURPRISE = { mood: 'びっくり', anim: 'shock' }, SAD = { mood: 'しょんぼり', anim: 'sad' }, JOY = { mood: 'あはは', anim: 'joy' }, SMILE = { mood: 'にっこり', anim: 'joy' }, ANGRY = { mood: 'ぷんぷん', anim: 'angry' }, GRIT = { mood: 'ぐぬぬ', anim: 'angry' };
-const PROLOGUE = { id: 'pro', label: 'プロローグ', scenes: [
-  { dur: 4.4, bg: 'home', props: [['house', 4, 30, 24], ['sun', 80, 4, 16]], text: 'フロリは、パパフロリ・ママフロリと、なかよく くらしていました。', hops: [{ at: 1.2, who: 'flori' }, { at: 2.4, who: 'papa' }, { at: 3, who: 'mama' }],
-    actors: { papa: A(22, { mood: 'にっこり' }), flori: A(50, { mood: 'にっこり' }), mama: A(78, { mood: 'にっこり' }) } },
-  { dur: 4.6, bg: 'dusk', props: [['cloud', 6, 6, 14], ['cloud', 70, 12, 14]], text: 'ところが ある日、空が まっくらに…! ドラゴンが 現れました!', hops: [{ at: 1, who: 'papa' }, { at: 1.2, who: 'mama' }],
-    foes: [{ art: 'dragon', h: 24, from: [130, 8], to: [66, 24] }], flash: 3.2,
-    actors: { papa: A(22, SURPRISE), flori: A(50, SURPRISE), mama: A(78, SURPRISE) } },
-  { dur: 4.6, bg: 'night', props: [['moon', 80, 6, 14]], text: 'ドラゴンは、パパとママを つれさってしまったのです!',
-    foes: [{ art: 'dragon', h: 24, from: [66, 24], to: [-30, 10] }],
-    actors: { papa: A(22, { ...SURPRISE, to: { x: -25, y: 18, a: 0, s: 0.6 } }), flori: A(50, SAD), mama: A(78, { ...SURPRISE, to: { x: -10, y: 16, a: 0, s: 0.6 } }) } },
-  { dur: 3.6, bg: 'castle', props: [['castle', 70, 8, 22]], who: 'パパフロリ', text: 'フロリ、たすけてくれ〜!', hops: [{ at: 1.2, who: 'papa' }],
-    actors: { flori: A(30, SAD), papa: A(80, { y: 4, s: 0.55, mood: 'こまった', say: 'フロリ、たすけて〜!' }) } },
-  { dur: 3.6, bg: 'castle', props: [['castle', 70, 8, 22]], who: 'ママフロリ', text: 'ひらめきの 力を 信じてネ!', hops: [{ at: 1.2, who: 'mama' }],
-    actors: { flori: A(30, SAD), papa: A(70, { y: 4, s: 0.5, mood: 'こまった' }), mama: A(88, { y: 4, s: 0.5, mood: 'こまった', say: 'ひらめきの 力を 信じてネ!' }) } },
-  { dur: 5.2, bg: 'sunrise', props: [['sun', 78, 4, 16]], who: 'フロリ', text: 'まかせて! ひらめきクイズで ドラゴンを たおして、パパとママを たすけるヨ!', flash: 0.5, hops: [{ at: 0.8, who: 'flori' }, { at: 2.6, who: 'flori' }],
-    actors: { flori: A(50, { mood: 'きりっ', anim: 'joy' }) } },
-  { dur: 3, bg: 'title', title: 'RPGクエスト<br>スタート!', hops: [{ at: 0.4, who: 'flori' }], actors: { flori: A(50, { mood: 'にっこり' }) } },
-] };
-const EP1 = { id: 'ep1', label: '①ネズミ', scenes: [
-  { dur: 4, bg: 'forest', text: '第1話「ネズミと パパの 帽子」 フロリは ドラゴンの お城を めざして 出発!',
-    actors: { flori: A(-10, { mood: 'にっこり', to: { x: 34 } }) }, hops: [{ at: 2.4, who: 'flori' }] },
-  { dur: 4.2, bg: 'forest', text: 'ネズミが 現れた! …あれ? パパの 帽子を くわえているヨ!',
-    foes: [{ art: 'mouse', h: 14, from: [120, 56], to: [68, 56] }, { art: 'hat', h: 9, from: [120, 46], to: [66, 44] }],
-    actors: { flori: A(34, SURPRISE) } },
-  { dur: 4.2, bg: 'forest', text: 'ひらめきクイズで しょうぶ! 正解して ネズミを おいはらえ!', flash: 2.2, hops: [{ at: 1, who: 'flori' }],
-    foes: [{ art: 'mouse', h: 14, from: [68, 56], to: [92, 56], shake: true }, { art: 'hat', h: 9, from: [66, 44], to: [60, 40] }],
-    actors: { flori: A(34, GRIT) } },
-  { dur: 5, bg: 'forest', who: 'フロリ', text: 'パパの 帽子を 取りかえしたヨ! 待っててネ、パパ!', hops: [{ at: 0.6, who: 'flori' }, { at: 2.4, who: 'flori' }],
-    foes: [{ art: 'hat', h: 12, from: [60, 40], to: [34, 20] }],
-    actors: { flori: A(34, JOY) } },
-] };
-const EP2 = { id: 'ep2', label: '②カエル', scenes: [
-  { dur: 4, bg: 'swamp', text: '第2話「カエルと ママの リボン」 つぎは じめじめの 沼地!',
-    actors: { flori: A(-10, { mood: 'にっこり', to: { x: 30 } }) }, hops: [{ at: 2.4, who: 'flori' }] },
-  { dur: 4.2, bg: 'swamp', text: 'ぴょーん! カエルが とびだした! リボンが 頭に のっているヨ!',
-    foes: [{ art: 'frog', h: 15, from: [110, 56], to: [70, 52] }, { art: 'ribbon', h: 8, from: [110, 44], to: [70, 42] }],
-    actors: { flori: A(30, SURPRISE) } },
-  { dur: 4.4, bg: 'swamp', text: 'カエルは けろけろ 笑って にげまわる! フロリは ぷんぷん!', foes: [{ art: 'frog', h: 15, from: [70, 52], to: [40, 30], shake: true }, { art: 'ribbon', h: 8, from: [70, 42], to: [40, 20] }],
-    actors: { flori: A(30, ANGRY) }, flash: 1.6 },
-  { dur: 5, bg: 'swamp', who: 'フロリ', text: 'ひらめきで つかまえた! ママの リボン、ぶじだったヨ!', hops: [{ at: 0.6, who: 'flori' }, { at: 2.4, who: 'flori' }],
-    foes: [{ art: 'ribbon', h: 12, from: [40, 20], to: [30, 22] }],
-    actors: { flori: A(30, JOY) } },
-] };
-const EP3 = { id: 'ep3', label: '③決戦前', scenes: [   // (宝箱の話は、カットした)
-  { dur: 4.2, bg: 'gate', props: [['castle', 74, 8, 22]], text: '第3話「決戦の 前に」 お城の 門の前に、サソリの 門番が ふさがっている!',
-    foes: [{ art: 'scorpion', h: 16, from: [110, 56], to: [70, 56] }], actors: { flori: A(30, SURPRISE) } },
-  { dur: 4.2, bg: 'gate', text: 'ひらめきを ぜんぶ ぶつけて… えいっ!', flash: 2, hops: [{ at: 1.5, who: 'flori' }],
-    foes: [{ art: 'scorpion', h: 16, from: [70, 56], to: [100, 56], shake: true }], actors: { flori: A(30, GRIT) } },
-  { dur: 4.4, bg: 'alert', text: '警告! 奥から ドラゴンの 声が ひびく…!', flash: 0.3,
-    foes: [{ art: 'dragon', h: 34, from: [72, 40], to: [72, 36], shake: true }], actors: { flori: A(24, SURPRISE) } },
-  { dur: 5, bg: 'alert', who: 'フロリ', text: 'ドラゴン! パパと ママを 返してもらうヨ!', flash: 0.6, hops: [{ at: 1.2, who: 'flori' }],
-    foes: [{ art: 'dragon', h: 34, from: [72, 36], to: [72, 36], shake: true }], actors: { flori: A(24, ANGRY) } },
-] };
-const ENDING = { id: 'epi', label: 'エンディング', scenes: [
-  { dur: 4, bg: 'castle', props: [['castle', 74, 8, 22]], who: 'ドラゴン', text: 'まいった…! ひらめきの 力には かなわないヨ。',
-    foes: [{ art: 'dragon', h: 20, from: [66, 28], to: [66, 36], shake: true }],
-    actors: { flori: A(28, JOY), papa: A(70, { s: 0.55, y: 2, mood: 'こまった' }), mama: A(88, { s: 0.55, y: 2, mood: 'こまった' }) } },
-  { dur: 4.4, bg: 'sunrise', props: [['sun', 78, 4, 16]], who: 'パパフロリ', text: 'フロリ、ありがとう! さすが ボクたちの 子だ!', hops: [{ at: 1, who: 'papa' }, { at: 1.4, who: 'mama' }, { at: 2, who: 'flori' }],
-    actors: { papa: A(120, { ...JOY, to: { x: 24 } }), flori: A(50, SURPRISE), mama: A(120, { ...JOY, to: { x: 76 } }) } },
-  { dur: 4.4, bg: 'sunrise', props: [['house', 4, 30, 24]], who: 'ママフロリ', text: 'ひらめきの 力、かっこよかったわ!', hops: [{ at: 0.6, who: 'flori' }, { at: 1.4, who: 'papa' }, { at: 2.2, who: 'mama' }],
-    actors: { papa: A(24, SMILE), flori: A(50, JOY), mama: A(76, SMILE) } },
-  { dur: 4.6, bg: 'home', props: [['house', 4, 30, 24], ['sun', 80, 4, 16]], text: 'こうして フロリたち 家族は、また なかよく くらしました。おしまい。', hops: [{ at: 1.2, who: 'flori' }, { at: 2.4, who: 'papa' }, { at: 3.2, who: 'mama' }],
-    actors: { papa: A(22, { mood: 'にっこり' }), flori: A(50, { mood: 'にっこり' }), mama: A(78, { mood: 'にっこり' }) } },
-] };
-const MOVIES = [PROLOGUE, EP1, EP2, EP3, ENDING];
+// ================= お話の台本は、storyboard.js =================
+const GROUND = 34;   // 地面の高さ(u。画面の下から)。ふきだしの文字の枠より上
+const PROLOGUE = MOVIES[0];
 
-// ---- 再生 ----
-const stage = document.getElementById('stage'), props = document.getElementById('props'), foesEl = document.getElementById('foes');
-const who = document.getElementById('who'), line = document.getElementById('line'), title = document.getElementById('title'), prog = document.getElementById('prog'), flashEl = document.getElementById('flash');
+
+// ================= 再生 =================
+const marksEl = document.getElementById('marks'), cardEl = document.getElementById('card'), koma = document.getElementById('koma'), phone = document.getElementById('phone'), stage = document.getElementById('stage'), world = document.getElementById('world');
+const props = document.getElementById('props'), foesEl = document.getElementById('foes'), partsEl = document.getElementById('parts'), bgsEl = document.getElementById('bgs');
+const who = document.getElementById('who'), line = document.getElementById('line'), title = document.getElementById('title'), prog = document.getElementById('prog');
+const flashEl = document.getElementById('flash'), fadeEl = document.getElementById('fade');
+const css = document.createElement('style');
+css.textContent = '.part.rise{animation:partRise 3.6s ease-out forwards}.part.fall{animation:partFall 3.2s linear forwards}@keyframes partRise{from{transform:translateY(0) scale(.6);opacity:0}15%{opacity:1}to{transform:translateY(calc(var(--u)*-62)) scale(1.1);opacity:0}}@keyframes partFall{from{transform:translateY(calc(var(--u)*-6)) rotate(0);opacity:0}15%{opacity:1}to{transform:translateY(calc(var(--u)*92)) rotate(240deg);opacity:0}}';
+document.head.append(css);
 const ease = x => x * x * (3 - 2 * x);
 const lerp = (a, b, t) => a + (b - a) * t;
-let movie = PROLOGUE, t0 = performance.now(), sceneIdx = -1, fired = new Set(), finished = false, chain = false;
 const total = list => list.reduce((s, c) => s + c.dur, 0);
-const artUrl = name => new URL(ART[name], SRC).href;
+const bgNames = [...new Set(MOVIES.flatMap(mv => mv.scenes.map(sc => sc.bg)))];
+for (const n of bgNames) { const d = document.createElement('div'); d.className = `bg bgs-${n}`; d.dataset.bg = n; d.style.opacity = 0; if (BGFILE[n]) { d.style.backgroundImage = `url(${artUrl(BGFILE[n])})`; d.style.backgroundSize = 'cover'; d.style.backgroundPosition = 'center bottom'; } bgsEl.append(d); }
 
+let auto = false, autoKey = '', want = 0, sceneStart = 0, movie = PROLOGUE, sceneIdx = -1, fired = new Set(), chain = false, lastPart = 0, lastLine = -1, prevBg = '';
+// モード:story=ゲームの中で、じどうで出るとき(1本だけ。とじるでゲームへ)/ それ以外=「その他」の ものがたり(見られるものを えらべる)
+const STORY_CLOSING = false;
+const params = new URLSearchParams(location.search);
+const STORY = params.get('mode') === 'story';
+const UNLOCKED = new Set((params.get('unlocked') || '').split(',').filter(Boolean));
+const NEED = { pro: 0, ep1: 20, ep2: 40, ep3: 60, ep4: 80, epi: 100 };   // 見られるようになる、総合得点
+const isOpen = id => STORY || UNLOCKED.size === 0 || UNLOCKED.has(id);
 const bar = document.getElementById('bar');
-for (const mv of MOVIES) {
-  const b = document.createElement('button'); b.textContent = mv.label; b.dataset.id = mv.id; b.onclick = () => { chain = false; play(mv); }; bar.append(b);
+const closeAll = () => parent.postMessage('close-story-movie', '*');
+const xBtn = document.getElementById('x'); xBtn.textContent = STORY ? 'とばす' : 'とじる'; xBtn.onclick = closeAll;
+if (!params.get('debug')) koma.style.display = 'none';
+if (STORY) bar.style.display = 'none';
+else {
+  for (const mv of MOVIES) {
+    const b = document.createElement('button'); b.dataset.id = mv.id;
+    if (isOpen(mv.id)) { b.textContent = mv.label; b.onclick = () => { chain = false; play(mv); }; }
+    else { b.textContent = `${mv.label}(${NEED[mv.id]}点で)`; b.disabled = true; }
+    bar.append(b);
+  }
+  const autoBtn = document.createElement('button'); autoBtn.textContent = 'じどうで すすむ:なし'; autoBtn.onclick = () => { auto = !auto; autoKey = ''; autoBtn.textContent = auto ? 'じどうで すすむ:あり' : 'じどうで すすむ:なし'; autoBtn.classList.toggle('on', auto); }; bar.append(autoBtn);
+  const allBtn = document.createElement('button'); allBtn.textContent = '▶ 全部つづけて'; allBtn.onclick = () => { chain = true; play(MOVIES.find(m => isOpen(m.id))); }; bar.append(allBtn);
 }
-const allBtn = document.createElement('button'); allBtn.textContent = '▶ 全部つづけて'; allBtn.onclick = () => { chain = true; play(PROLOGUE); }; bar.append(allBtn);
-if (parent !== window) {   // アプリの中(別の画面の上)で開いたとき:「とじる」で、もどる
-  const close = document.createElement('button'); close.textContent = 'とじる'; close.onclick = () => parent.postMessage('close-story-movie', '*'); bar.append(close);
-}
+const nextOpen = from => { for (let i = from; i < MOVIES.length; i++) if (isOpen(MOVIES[i].id)) return i; return -1; };
 
 function play(mv) {
-  movie = mv; t0 = performance.now(); sceneIdx = -1; finished = false; fired = new Set();
+  movie = mv; want = 0; sceneIdx = -1; fired = new Set(); prevBg = '';
   for (const b of bar.querySelectorAll('button[data-id]')) b.classList.toggle('on', b.dataset.id === mv.id);
 }
-addEventListener('pointerdown', e => { if (finished && !e.target.closest('#bar')) play(movie); });
+addEventListener('pointerdown', e => { if (!e.target.closest('#bar')) goScene(want + 1); });
 
 function setScene(i) {
-  sceneIdx = i;
+  sceneIdx = i; lastLine = -1;
   const sc = movie.scenes[i];
-  stage.dataset.bg = sc.bg;
-  props.innerHTML = (sc.props || []).map(([art, x, y, h]) => `<img class="prop" alt="" src="${artUrl(art)}" style="left:${x}%;top:${y}vh;height:${h}vh">`).join('');
-  who.textContent = sc.who || '';
-  line.textContent = sc.text || '';
-  title.innerHTML = sc.title || '';
-  title.classList.toggle('on', Boolean(sc.title));
-  document.getElementById('cap').style.visibility = sc.text ? 'visible' : 'hidden';
-  foesEl.innerHTML = (sc.foes || []).map(f => `<img alt="" src="${artUrl(f.art)}" style="height:${f.h}vh">`).join('');
-  for (const a of Object.values(actors)) { a.bubble.classList.remove('on'); a.bubble.textContent = ''; a.el.className = 'actor'; }
+  for (const d of bgsEl.children) d.style.opacity = d.dataset.bg === sc.bg ? 1 : 0;
+  // 場面が かわるときの 暗転は、やめた(利用者の指示)   // 場面が かわるとき、暗転ぎみに つなぐ
+  prevBg = sc.bg;
+  props.innerHTML = (sc.props || []).map(([art, x, y, h, o]) => `<img class="prop" alt="" src="${artUrl(art)}" style="left:${x}%;${o?.ground !== undefined ? `bottom:calc(var(--u)*${GROUND + o.ground})` : `top:calc(var(--u)*${y})`};height:calc(var(--u)*${h})">`).join('');
+  koma.textContent = `${movie.code}${i + 1}`;
+  title.innerHTML = sc.titleArt ? `<img alt="" src="${artUrl(sc.titleArt)}">` : (sc.title || '');
+  title.classList.toggle('on', Boolean(sc.title || sc.titleArt));
+  cardEl.style.display = sc.card ? 'block' : 'none';
+  if (sc.card) { cardEl.src = artUrl(sc.card); cardEl.style.opacity = 0; }
+  marksEl.innerHTML = (sc.marks || []).map(m => `<img class="mark" alt="" src="${artUrl(m.art)}" style="left:${m.x}%;top:calc(var(--u)*${m.y});height:calc(var(--u)*${m.h})">`).join('');
+  document.getElementById('cap').style.visibility = sc.lines ? 'visible' : 'hidden';
+  foesEl.innerHTML = (sc.foes || []).map(f => `<img class="foe" alt="" src="${artUrl(f.art)}">`).join('');
+  partsEl.innerHTML = '';
+  for (const a of Object.values(actors)) { a.bubble.classList.remove('on'); a.el.className = 'actor'; }
   for (const [id, d] of Object.entries(sc.actors || {})) {
-    if (d.say) { actors[id].bubble.textContent = d.say; actors[id].bubble.classList.add('on'); }
-    if (d.anim) { void actors[id].el.offsetWidth; actors[id].el.classList.add(`a-${d.anim}`); }
+    if (d.say) actors[id].bubble.textContent = d.say;
+    if (d.anim && d.animAt === undefined) { void actors[id].el.offsetWidth; actors[id].el.classList.add(`a-${d.anim}`); }
   }
 }
 
-function frame(now) {
-  const el = (now - t0) / 1000, sum = total(movie.scenes);
-  let acc = 0, i = 0;
-  while (i < movie.scenes.length - 1 && el >= acc + movie.scenes[i].dur) { acc += movie.scenes[i].dur; i++; }
-  if (el >= sum && !finished) {
-    finished = true;
-    if (chain) { const n = MOVIES.indexOf(movie) + 1; if (n < MOVIES.length) play(MOVIES[n]); else chain = false; }
+function goScene(n) {   // クリックで、つぎのコマへ(さいごのコマでクリック: とじる / つぎのムービー / もういちど)
+  if (n >= movie.scenes.length) {
+    if (STORY) { closeAll(); return; }
+    const m = nextOpen(MOVIES.indexOf(movie) + 1);
+    if ((chain || auto) && m >= 0) { play(MOVIES[m]); return; }
+    play(movie); return;   // ひとつ目に もどって くりかえす
   }
-  const k = finished ? movie.scenes.length - 1 : i;
-  if (sceneIdx !== k) setScene(k);
-  const sc = movie.scenes[k];
-  const lt = finished ? sc.dur : el - acc, p = ease(Math.min(1, lt / sc.dur));
-  prog.style.width = `${Math.min(1, el / sum) * 100}%`;
+  want = n;
+}
+function frame(now) {
+  if (sceneIdx !== want) { setScene(want); sceneStart = now; fired = new Set(); }
+  const k = want, sc = movie.scenes[k];
+  const lt = (now - sceneStart) / 1000, p = ease(Math.min(1, lt / sc.dur)), pl = Math.min(1, lt / sc.dur);   // コマの動きは さいごで止まり、クリックまで そのまま
+  if (k === movie.scenes.length - 1 && lt >= sc.dur + 6 && !STORY_CLOSING) { play(movie); requestAnimationFrame(frame); return; }   // 何も押さないと、はじめにもどって くりかえす
+  prog.style.width = `${(k + 1) / movie.scenes.length * 100}%`;
+  if (auto && lt >= sc.dur + 1.2 && autoKey !== `${movie.id}:${k}`) { autoKey = `${movie.id}:${k}`; goScene(k + 1); }   // じどうで すすむ:読みおわったら、つぎのコマ・つぎのムービーへ
   if (sc.flash !== undefined && lt >= sc.flash && !fired.has(`${k}:flash`)) { fired.add(`${k}:flash`); flashEl.classList.remove('on'); void flashEl.offsetWidth; flashEl.classList.add('on'); }
+  // ズームは しない。ゆれ(shake)だけ
+  let sx = 0, sy = 0;
+  if (sc.shake && lt >= sc.shake[0] && lt < sc.shake[0] + sc.shake[1]) { const q = 1 - (lt - sc.shake[0]) / sc.shake[1]; sx = Math.sin(now / 22) * 5 * q; sy = Math.cos(now / 27) * 4 * q; }
+  world.style.transform = `translate(${sx}px,${sy}px)`;
+  // 話数の札:はじめは はっきり出して、フロリが 画面に入ってきたら、じわじわ 消す
+  if (sc.card) { const fadeAt = 1.0, fadeLen = 2.0; cardEl.style.opacity = Math.min(1, lt / 0.4) * (1 - ease(Math.min(1, Math.max(0, (lt - fadeAt) / fadeLen)))); }   // 札:1秒見せて、2秒で消える。そのあとに、つぎが出る
+  // ふきだしの文
+  if (sc.lines) {
+    let li = 0; for (let n = 0; n < sc.lines.length; n++) if (lt >= sc.lines[n].at) li = n;
+    if (li !== lastLine) { lastLine = li; who.textContent = sc.lines[li].who || ''; line.textContent = sc.lines[li].text; }
+  }
+  // 人
   for (const a of Object.values(actors)) {
     const d = (sc.actors || {})[a.id];
     if (!d) { a.el.style.display = 'none'; continue; }
     a.el.style.display = '';
     const to = d.to || {};
-    a.el.style.left = `${lerp(d.x, to.x ?? d.x, p)}%`;
-    a.el.style.bottom = `calc(17vh + ${lerp(d.y, to.y ?? d.y, p)}vh)`;
+    const dl = d.delay || 0, pa = ease(Math.min(1, Math.max(0, (lt - dl) / Math.max(0.1, d.len ?? (sc.dur - dl))))), pla = Math.min(1, Math.max(0, (lt - dl) / Math.max(0.1, d.len ?? (sc.dur - dl))));   // delay:登場を、おくらせる(秒)
+    const walking = d.walk && pla < 0.96 && lt >= dl;
+    const bob = walking && !reduced ? Math.abs(Math.sin(now / 130)) * 1.5 : 0;   // 歩くときの、上下のゆれ
+    a.el.style.zIndex = d.z ?? 1;
+    a.el.style.left = `${lerp(d.x, to.x ?? d.x, pa) + (d.bulge ? d.bulge * Math.sin(Math.PI * pa) : 0)}%`;   // bulge:弧をえがいて動く(よこへ ふくらむ)
+    a.el.style.bottom = `calc(var(--u)*${GROUND + lerp(d.y, to.y ?? d.y, p) + bob})`;
     a.el.style.opacity = lerp(d.a, to.a ?? d.a, p);
-    a.el.style.height = `${34 * lerp(d.s, to.s ?? d.s, p)}vh`;
-    const motion = drawActor(a, now, d.mood);
+    a.el.style.height = `calc(var(--u)*${42 * lerp(d.s, to.s ?? d.s, p) * (1 + MARGIN.top + MARGIN.y) / 1.06})`;
+    const sayOn = Boolean(d.say) && (!d.sayAt || (lt >= d.sayAt[0] && lt < d.sayAt[1]));
+    a.bubble.classList.toggle('on', sayOn);
+    if (sayOn) {   // 画面の外に出ないように、横にずらす
+      a.bubble.style.translate = '0 0';
+      const r = a.bubble.getBoundingClientRect(), pr = phone.getBoundingClientRect();
+      const dx = r.right > pr.right - 8 ? pr.right - 8 - r.right : r.left < pr.left + 8 ? pr.left + 8 - r.left : 0;
+      a.bubble.style.translate = `${dx}px 0`;
+    }
+    const motion = drawActor(a, now, d, lt);
+    for (const c of d.cues || []) {   // 腕・表情の動きの指定(絵コンテの cues)
+      const n = c.every ? Math.floor((lt - c.at) / c.every) : 0;
+      const key = `${k}:cue:${a.id}:${c.at}:${c.kind}:${n}`;
+      if (lt >= c.at && (c.to === undefined || lt < c.to) && !fired.has(key)) { fired.add(key); motion.cue(c.kind, now); }
+    }
+    if (d.anim && d.animAt !== undefined && lt >= d.animAt && !fired.has(`${k}:anim:${a.id}`)) { fired.add(`${k}:anim:${a.id}`); a.el.classList.add(`a-${d.anim}`); }
     for (const h of sc.hops || []) {
       const key = `${k}:${h.at}:${h.who}`;
-      if (h.who === a.id && lt >= h.at && !fired.has(key)) { fired.add(key); motion.hop(now); }
+      if (h.who === a.id && lt >= h.at && !fired.has(key)) { fired.add(key); if (!d.calm) motion.hop(now); }
     }
   }
+  // 敵・もの(ground:地面に立つ。ほかは空に ういている)
   const imgs = foesEl.children;
   (sc.foes || []).forEach((f, n) => {
     const s = imgs[n]; if (!s) return;
-    const x = lerp(f.from[0], f.to[0], p), y = lerp(f.from[1], f.to[1], p);
-    const sh = f.shake ? Math.sin(now / 40 + n) * 0.8 : Math.sin(now / 300 + n) * 1.2;
-    s.style.left = `${x}%`; s.style.top = `${y + (f.h > 18 ? 14 : 0) + sh}vh`;
+    const fd = f.delay || 0, hd = fd + (f.hold || 0), len = f.len ?? (sc.dur - hd), p = ease(Math.min(1, Math.max(0, (lt - hd) / Math.max(0.1, len)))), pl = Math.min(1, Math.max(0, (lt - hd) / Math.max(0.1, len)));   // len:動いている時間(秒)   // hold:その場で止まっている秒数(見えているが、動きだしはあと)   // delay:出てくるのを、おくらせる(秒)
+    const x = lerp(f.from[0], f.to[0], p) + (f.bulge ? f.bulge * Math.sin(Math.PI * p) : 0), y0 = lerp(f.from[1], f.to[1], f.yPow ? Math.pow(p, f.yPow) : p);   // yPow:たて(上下)の動きを、おくらせる(さいしょは よこへ、あとで下へ=弧)
+    const sh = f.shake ? Math.sin(now / 38 + n) * 0.7 : 0;
+    const hh = lerp(f.h, f.hTo ?? f.h, p), rot = (f.rot || 0) * p + (f.spin || 0) * p;
+    const flip = (f.flip ?? f.to[0] < f.from[0]) ? -1 : 1;   // 絵は 右向き。左へ動くときは、はんてん
+    const lift = f.arc ? Math.abs(Math.sin(pl * Math.PI * f.arc.n)) * f.arc.h : 0;
+    let fr = f.art;   // コマの絵(走る・はばたく など)を、きりかえる
+    if (f.frames) fr = f.frames[Math.floor(now / 1000 * (f.fps || 6)) % f.frames.length];
+    if (f.hop && lift > 1) fr = f.hop;
+    if (f.swapAt !== undefined && lt >= f.swapAt) fr = f.art2;   // swapAt:この秒から、別の絵にかえる
+    if (s.dataset.fr !== fr) { s.dataset.fr = fr; s.src = artUrl(fr); }
+    s.style.left = `${x}%`; s.style.height = `calc(var(--u)*${hh})`;
+    if (f.ground) {
+      s.style.top = 'auto'; s.style.bottom = `calc(var(--u)*${GROUND + y0 + lift + sh})`; s.style.transform = `translate(-50%,0) rotate(${rot}deg) scaleX(${flip})`;
+    } else {
+      const arc = f.arc ? -lift : 0;
+      s.style.top = `calc(var(--u)*${y0 + arc + sh + (f.h > 18 ? 14 : 0)})`; s.style.transform = `translate(-50%,-50%) rotate(${rot}deg) scaleX(${flip})`;
+    }
+    s.style.opacity = lt < fd || (f.until !== undefined && lt >= f.until) ? 0 : f.vanishAtEnd ? (lt >= hd + len ? 0 : 1) : f.fade ? lerp(f.fade[0], f.fade[1], p) : 1;   // vanishAtEnd:最後まで はっきり、着いたら 消える
   });
+  // 印(びっくり・おこり・衝撃の星 など)
+  (sc.marks || []).forEach((m, n) => {
+    const s = marksEl.children[n]; if (!s) return;
+    const on = lt >= m.at && lt < m.to, q = Math.min(1, (lt - m.at) / 0.25);
+    s.style.opacity = on ? 1 : 0;
+    s.style.transform = `translate(-50%,-50%) scale(${m.still ? 1 : on ? 0.4 + 0.6 * ease(q) + Math.sin(now / 90) * 0.04 : 0.4})`;
+  });
+  // ゆっくり流れる雲・太陽
+  (sc.props || []).forEach((pr, n) => { const o = pr[4]; const s = props.children[n]; if (s && o?.drift) s.style.left = `${pr[1] + o.drift * lt}%`; });
+  // きらきら・ハート
+  if (sc.fx && now - lastPart > (sc.fx.rate || 260) && !reduced) {
+    lastPart = now;
+    const art = sc.fx.art[Math.floor(Math.random() * sc.fx.art.length)];
+    const s = document.createElement('img');
+    s.className = `part ${sc.fx.mode}`; s.src = artUrl(art); s.alt = '';
+    s.style.left = `${10 + Math.random() * 80}%`; s.style.top = sc.fx.mode === 'rise' ? `calc(var(--u)*${52 + Math.random() * 20})` : `calc(var(--u)*${4 + Math.random() * 8})`;
+    partsEl.append(s); setTimeout(() => s.remove(), 3800);
+  }
   requestAnimationFrame(frame);
 }
 document.getElementById('loading').remove();
-play(PROLOGUE);
+play(MOVIES.find(m => m.id === params.get('play')) || MOVIES.find(m => isOpen(m.id)) || PROLOGUE);
 requestAnimationFrame(frame);
 window.play = play; window.MOVIES = MOVIES;
+window.warp = (t) => { sceneStart = performance.now() - t * 1000; };   // 試験用:コマの中の時刻へ
+window.seek = (n) => { want = Math.min(n, movie.scenes.length - 1); sceneIdx = -1; };   // n番目(0から)のコマへ
