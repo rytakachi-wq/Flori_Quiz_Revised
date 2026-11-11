@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
-  <link rel="stylesheet" href="style.css?v=20261111a">
+  <link rel="stylesheet" href="style.css?v=20261112b">
 </head>
 <body>
   <div id="badge-bg" class="badge-bg" aria-hidden="true"></div>
@@ -21,6 +21,15 @@
   </div>
   <!-- ものがたり(ムービー):別のページ(src/live2d/story-movie.html)を、画面の上に重ねて見せる -->
   <div id="story-movie" class="overlay story-movie" role="dialog" aria-label="ものがたり" hidden><iframe id="story-movie-frame" title="ものがたり" allow="autoplay"></iframe></div>
+  <!-- ものがたり:見るムービーを えらぶ画面(「その他」の「ものがたり」から) -->
+  <div id="movie-pick" class="overlay movie-pick" role="dialog" aria-label="ものがたりを えらぶ" hidden>
+    <div class="movie-pick-box">
+      <button id="btn-movie-pick-back" class="back-btn" type="button"><span aria-hidden="true">↩</span> 戻る</button>
+      <h2 class="movie-pick-title">ものがたり</h2>
+      <p class="movie-pick-note">(仮)今だけ ぜんぶ 見られるヨ</p>
+      <div id="movie-pick-list" class="movie-pick-list"></div>
+    </div>
+  </div>
   <div id="tutorial" class="overlay tutorial" role="dialog" aria-label="遊び方" hidden>
     <div class="tut-box">
       <h2 id="tut-title" class="tut-title"></h2>
@@ -565,6 +574,6 @@
       <button id="btn-oni-yes" class="btn btn-main" type="button">挑戦する!</button>
     </div>
   </dialog>
-  <script type="module" src="main.js?v=20261112a"></script>
+  <script type="module" src="main.js?v=20261112b"></script>
 </body>
 </html>

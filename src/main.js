@@ -1262,7 +1262,7 @@ $("btn-credits").addEventListener("click", showCredits);
 // プロローグは、はじめて開いたとき、だれにでも見せる。①〜⑤は、総合得点が 20・40・60・80・100点になったあと、つぎにゲームを始める前に、1回だけ見せる。
 // 「その他」の「ものがたり」では、見られるようになったものを、いつでも見られる。
 const MOVIE_SEEN_KEY = "floriQuiz.movieSeen";
-const MOVIE_VER = "20261112a";
+const MOVIE_VER = "20261112b";
 const MOVIE_INFO = [
   { id: "pro", need: 0 },
   { id: "ep1", need: 20 },
@@ -1312,8 +1312,42 @@ async function showDueMovies(onlyPrologue = false) {
     await openMovie(`mode=story&play=${m.id}`);
   }
 }
+// えらぶ画面(いまだけ・仮:ぜんぶ 見られる。ほんとうの条件は、MOVIE_INFO の need)
+const MOVIE_ALL_OPEN_NOW = true;
+const MOVIE_TITLES = {
+  pro: ["プロローグ", "フロリと 家族の おはなし"],
+  ep1: ["第1話 ネズミと パパの 帽子", "総合得点 20点で 見られる"],
+  ep2: ["第2話 カエルと ママの リボン", "総合得点 40点で 見られる"],
+  ep3: ["第3話 決戦の 前に", "総合得点 60点で 見られる"],
+  ep4: ["第4話 ドラゴンと さいごの たたかい", "総合得点 80点で 見られる"],
+  epi: ["エンディング", "総合得点 100点で 見られる"],
+};
+function renderMoviePick() {
+  const open = new Set(MOVIE_ALL_OPEN_NOW ? MOVIE_INFO.map((m) => m.id) : unlockedMovies());
+  const list = $("movie-pick-list");
+  list.replaceChildren(
+    ...MOVIE_INFO.map((m) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "movie-pick-item";
+      const [title, note] = MOVIE_TITLES[m.id];
+      const strong = document.createElement("b");
+      strong.textContent = title;
+      const small = document.createElement("span");
+      small.textContent = open.has(m.id) ? (m.need > 0 && MOVIE_ALL_OPEN_NOW ? `(仮)今だけ見られる / ${note}` : note) : `まだ 見られない(${note})`;
+      button.append(strong, small);
+      button.disabled = !open.has(m.id);
+      button.addEventListener("click", () => openMovie(`mode=gallery&play=${m.id}`));
+      return button;
+    }),
+  );
+}
 $("btn-story-movie").addEventListener("click", () => {
-  openMovie(`mode=gallery&unlocked=${unlockedMovies().join(",")}`);
+  renderMoviePick();
+  $("movie-pick").hidden = false;
+});
+$("btn-movie-pick-back").addEventListener("click", () => {
+  $("movie-pick").hidden = true;
 });
 window.addEventListener("message", (event) => {
   if (event.data !== "close-story-movie") return;

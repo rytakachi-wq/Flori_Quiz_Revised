@@ -161,15 +161,8 @@ const closeAll = () => parent.postMessage('close-story-movie', '*');
 const xBtn = document.getElementById('x'); xBtn.textContent = STORY ? 'とばす' : 'とじる'; xBtn.onclick = closeAll;
 if (!params.get('debug')) koma.style.display = 'none';
 if (STORY) bar.style.display = 'none';
-else {
-  for (const mv of MOVIES) {
-    const b = document.createElement('button'); b.dataset.id = mv.id;
-    if (isOpen(mv.id)) { b.textContent = mv.label; b.onclick = () => { chain = false; play(mv); }; }
-    else { b.textContent = `${mv.label}(${NEED[mv.id]}点で)`; b.disabled = true; }
-    bar.append(b);
-  }
+else {   // ボタンは「じどうで すすむ」だけ(ムービーのえらびかたは、ゲームの画面で)
   const autoBtn = document.createElement('button'); autoBtn.textContent = 'じどうで すすむ:なし'; autoBtn.onclick = () => { auto = !auto; autoKey = ''; autoBtn.textContent = auto ? 'じどうで すすむ:あり' : 'じどうで すすむ:なし'; autoBtn.classList.toggle('on', auto); }; bar.append(autoBtn);
-  const allBtn = document.createElement('button'); allBtn.textContent = '▶ 全部つづけて'; allBtn.onclick = () => { chain = true; play(MOVIES.find(m => isOpen(m.id))); }; bar.append(allBtn);
 }
 const nextOpen = from => { for (let i = from; i < MOVIES.length; i++) if (isOpen(MOVIES[i].id)) return i; return -1; };
 
@@ -177,7 +170,7 @@ function play(mv) {
   movie = mv; want = 0; sceneIdx = -1; fired = new Set(); prevBg = '';
   for (const b of bar.querySelectorAll('button[data-id]')) b.classList.toggle('on', b.dataset.id === mv.id);
 }
-addEventListener('pointerdown', e => { if (!e.target.closest('#bar')) goScene(want + 1); });
+addEventListener('pointerdown', e => { if (!e.target.closest('#bar, #x')) goScene(want + 1); });
 
 function setScene(i) {
   sceneIdx = i; lastLine = -1;

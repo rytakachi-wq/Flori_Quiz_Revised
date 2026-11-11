@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>フロリの ものがたり</title>
 <style>
-html,body{margin:0;height:100%;overflow:hidden}
+html,body{margin:0;height:100%;overflow:hidden;touch-action:manipulation}
 body{font:16px system-ui,"Hiragino Sans","Yu Gothic",sans-serif;user-select:none;-webkit-user-select:none;background:#111;color:#2a3440}
 /* スマホの たて長の画面(9:16)の枠。大きい画面でも、まんなかに たて長で出す。たて長の さらに細長い画面では、たて いっぱい */
 #phone{position:fixed;left:50%;top:0;transform:translateX(-50%);height:100vh;width:min(100vw,56.25vh);container-type:size;--u:1.28cqw;overflow:hidden;background:#000}
@@ -60,10 +60,10 @@ body{font:16px system-ui,"Hiragino Sans","Yu Gothic",sans-serif;user-select:none
 #line{font-size:calc(var(--u)*3);font-weight:bold;line-height:1.5;white-space:pre-line;word-break:keep-all;overflow-wrap:anywhere;line-break:strict;text-wrap:balance}   /* 文の折れ目は、ことばの切れ目で */
 #title{position:absolute;inset:0;display:grid;place-items:start center;padding-top:calc(var(--u)*8);font-size:calc(var(--u)*8);font-weight:bold;color:#fff;text-shadow:0 calc(var(--u)*.5) 0 #c04040,calc(var(--u)*.25) 0 0 #c04040,calc(var(--u)*-.25) 0 0 #c04040;opacity:0;transition:opacity 2s;pointer-events:none;text-align:center}
 #title.on{opacity:1}
-#bar{position:absolute;top:1%;left:2%;right:2%;display:flex;gap:calc(var(--u)*.8);justify-content:center;flex-wrap:wrap;z-index:5}
+#bar{position:absolute;top:1%;left:26%;right:2%;display:flex;gap:calc(var(--u)*.8);justify-content:center;flex-wrap:wrap;z-index:5}
 #bar button{font:inherit;font-size:calc(var(--u)*1.9);font-weight:bold;padding:.35em .8em;border:3px solid #4a5560;border-radius:999px;background:#fff;cursor:pointer}
 #bar button.on{background:#ffd0e4}
-#x{position:absolute;right:2%;top:calc(var(--u)*9);z-index:6;font:inherit;font-size:calc(var(--u)*2.2);font-weight:bold;padding:.25em .8em;border:3px solid #4a5560;border-radius:999px;background:#fff;cursor:pointer}
+#x{position:absolute;left:2%;top:1%;z-index:7;touch-action:manipulation;font:inherit;font-size:calc(var(--u)*2.2);font-weight:bold;padding:.25em .8em;border:3px solid #4a5560;border-radius:999px;background:#fff;cursor:pointer}
 #bar button:disabled{opacity:.45;cursor:default}
 #koma{position:absolute;left:2%;top:calc(var(--u)*9);z-index:5;padding:.1em .6em;font-weight:bold;font-size:calc(var(--u)*2.4);color:#fff;background:rgba(0,0,0,.45);border-radius:999px}
 #prog{position:absolute;left:0;top:0;height:calc(var(--u)*.7);background:#e4877d;width:0;transition:width .1s linear;z-index:6}
@@ -92,5 +92,5 @@ body{font:16px system-ui,"Hiragino Sans","Yu Gothic",sans-serif;user-select:none
 <div id="loading">よみこみちゅう…</div>
 </div><!-- /phone -->
 </div>
-<script type="module" src="story-movie.js?v=20261112a"></script>
+<script type="module" src="story-movie.js?v=20261112b"></script>
 </body></html>
