@@ -164,6 +164,10 @@ function tick(now) {
     // 終わりが近づいたら(のこり約5秒)、新しい落ちものは出さない
     shooter.setSpawning(rollY + roll.offsetHeight > NO_SPAWN_LEFT);
     roll.style.transform = `translateY(${Math.round(rollY)}px)`;
+    // 背景:朝から夜へ、ロールが流れるのに合わせて うつりかわる
+    const stage = $("credits-stage");
+    const dusk = Math.min(1, Math.max(0, 1 - (rollY + roll.offsetHeight) / (stage.clientHeight + roll.offsetHeight)));
+    stage.style.setProperty("--dusk", dusk.toFixed(3));
     if (rollY < -roll.offsetHeight) beginResult();
   }
   shooter.update(dt);
@@ -215,6 +219,7 @@ export function openCredits() {
   shooter.setSpawning(true);
   shooter.setActive(true);
   rollY = $("credits-stage").clientHeight;
+  $("credits-stage").style.setProperty("--dusk", "0");
   finished = false;
   $("credits-result").hidden = true;
   last = performance.now();

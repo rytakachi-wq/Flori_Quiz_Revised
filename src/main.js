@@ -37,10 +37,10 @@ import {
   recordRound,
 } from "./storage.js";
 import { illustrationFor } from "./illustrations.js";
-import { createTalker } from "./talk.js";
+import { createTalker } from "./talk.js?v=fam1";
 import { initTutorial, openTutorial } from "./tutorial.js";
 import { initRules, openRules as resetRules } from "./rules.js";
-import { openCredits, closeCredits } from "./credits.js";
+import { openCredits, closeCredits } from "./credits.js?v=dusk1";
 import { BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js";
 import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js";
 import { startLiveFlori } from "./live-flori.js";
@@ -322,6 +322,7 @@ function renderQuest() {
   const total = currentTotal();
   $("quest-score").textContent = `${total} / 100点`;
   $("quest-fill").style.width = `${Math.min(100, total)}%`;
+  $("quest-flori").style.left = `${Math.min(100, total)}%`; // フロリは、線の上(いまの点のところ)
   const next = MOVIE_INFO.find((m) => m.need > total);
   document.querySelector(".quest-ttl").textContent = next ? `つぎの ものがたりまで あと ${next.need - total}点!` : "ぜんぶの ものがたりが 見られるヨ!";
 }
@@ -1089,7 +1090,7 @@ function showRecords() {
   const rightIds = new Set(s.right);
   // 5つの分野(ふつう+難しい)は総合得点の問題。オニ問題は、別に数える
   const oniRight = new Set(s.oniRight);
-  const groupRows = [...FIELDS, "オニ"].map((group) => {
+  const groupRows = FIELDS.map((group) => {
     const oni = group === "オニ";
     const list = oni ? oniQuestions : playableQuestions.filter((q) => fieldOf(q) === group);
     const got = list.filter((q) => (oni ? oniRight : rightIds).has(q.uid ?? q.id)).length;
@@ -1366,7 +1367,7 @@ window.addEventListener("message", (event) => {
   movieDone = null;
   done?.();
 });
-$("btn-credits-back").addEventListener("click", () => show("menu", -1));
+$("btn-credits-back").addEventListener("click", () => show("cover", -1));
 const PAGE_OPEN = {
   cover: () => show("cover"),
   menu: () => openMenu(),
@@ -1545,7 +1546,7 @@ $("corner-flori").addEventListener("click", (event) => {
   void button.offsetWidth; // アニメーションをもう1度動かす
   button.classList.add("is-tapped");
   coverTaps += 1;
-  if (coverTaps >= ONI_TAPS) {
+  if (coverTaps >= ONI_TAPS && oniQuestions.length > 0) {
     coverTaps = 0;
     window.getSelection()?.removeAllRanges(); // 連打で選ばれた部分を、全部外す
     $("dlg-oni").showModal();
@@ -1565,12 +1566,12 @@ async function init() {
     const normal = questions.filter((q) => q.level <= MAX_LEVEL);
     normalQuestions = normal;
     hardQuestions = questions.filter((q) => q.level >= HARD_MIN_LEVEL && q.level <= HARD_LEVEL);
-    oniQuestions = questions.filter((q) => q.level > HARD_LEVEL);
+    oniQuestions = []; // オニ問題は、なくした(利用者の指示)
     normalIds = new Set(normal.map((q) => q.uid ?? q.id));
     hardIds = new Set(hardQuestions.map((q) => q.uid ?? q.id));
     oniIds = new Set(oniQuestions.map((q) => q.uid ?? q.id));
     playableQuestions = [...normal, ...hardQuestions];
-    allQuestions = questions;
+    allQuestions = [...normal, ...hardQuestions];
     renderBadgeBackground();
     // 答えたあと・結果で出す、フロリの絵を先に読みこんでおく(すぐ出せるように)
     const preload = [...Object.values(IMG), "../assets/flori/m/wave_nikkori.png", "../assets/flori/m/body_wave.webp"];
@@ -1670,22 +1671,15 @@ const HUBS = {
     items: [
       { label: "遊び方", sub: "ムービーで 見る", icon: "clapper", go: () => playTutorial("rpg") },
       { label: "ものがたり", sub: "フロリ家族の おはなし", icon: "scroll", go: () => { renderMoviePick(); $("movie-pick").hidden = false; } },
-    ],
-  },
-  collection: {
-    title: "コレクション",
-    items: [
-      { label: "着せ替え", sub: "フロリを おしゃれに", icon: "crown", go: () => PAGE_OPEN.dress() },
-      { label: "成績", sub: "総合得点・記録", icon: "trophy", go: () => PAGE_OPEN.records() },
-      { label: "問題図鑑", sub: "出会った 問題カード", icon: "books", go: () => PAGE_OPEN.dex() },
-    ],
-  },
-  fun: {
-    title: "おたのしみ",
-    items: [
-      { label: "毎日1問", sub: "1日に1問だけ", icon: "daycal", go: () => $("btn-daily").click() },
-      { label: "復習", sub: "間違えた問題を もう1度", icon: "notebook", go: () => $("btn-review").click() },
       { label: "スタッフクレジット", sub: "つくった みんな", icon: "star_fill", go: () => showCredits() },
+      { label: "設定", sub: "音・文字の大きさなど", icon: "gear", go: () => PAGE_OPEN.settings() },
+    ],
+  },
+  records: {
+    title: "成績・問題図鑑",
+    items: [
+      { label: "成績", sub: "記録・ランク", icon: "trophy", go: () => PAGE_OPEN.records() },
+      { label: "問題図鑑", sub: "総合得点・問題カード", icon: "books", go: () => PAGE_OPEN.dex() },
     ],
   },
 };
@@ -1718,8 +1712,17 @@ function openHub(key) {
   $("hub").hidden = false;
 }
 $("btn-hub-story").addEventListener("click", () => openHub("story"));
-$("btn-hub-collection").addEventListener("click", () => openHub("collection"));
-$("btn-hub-fun").addEventListener("click", () => openHub("fun"));
+// 着せ替え:まんなかのボタン。おすと、画面が 下から 上へ あがってくる
+$("btn-hub-dress").addEventListener("click", () => {
+  PAGE_OPEN.dress();
+  const screen = $("screen-dress");
+  screen.classList.remove("slide-up");
+  void screen.offsetWidth;
+  screen.classList.add("slide-up");
+  screen.addEventListener("animationend", () => screen.classList.remove("slide-up"), { once: true });
+});
+// 成績・総合得点:右のボタン
+$("btn-hub-records").addEventListener("click", () => openHub("records"));
 $("hub-close").addEventListener("click", () => {
   $("hub").hidden = true;
 }); // 遊び方は、ホームに置いた
@@ -2119,7 +2122,7 @@ function showDex() {
   $("dex-count").textContent = `カード ${have} / ${everyList.length}枚(${percent}%)`;
   $("dex-meter-bar").style.width = `${percent}%`;
   // 分類のボタン(いくつ集めたか)
-  const tabs = ["全て", ...GENRES, "オニ"].map((name) => {
+  const tabs = ["全て", ...GENRES].map((name) => {
     const list = name === "全て" ? everyList : name === "オニ" ? oniList : playableList.filter((q) => genreOf(q) === name);
     const got = list.filter((q) => met.has(q.uid ?? q.id)).length;
     const button = document.createElement("button");

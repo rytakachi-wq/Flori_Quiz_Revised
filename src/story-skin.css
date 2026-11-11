@@ -272,7 +272,7 @@ body.has-pager { padding-bottom: 0 !important; }
 
 /* フロリの足が かくれないように、上と下を ひらく */
 .corner-flori { display: none; }
-.home-top { justify-content: space-between; padding: 0 2px; }
+.home-top { justify-content: space-between; padding: 0 2px; min-height: 0; }
 .home-top .logo-small { height: 30px; width: auto; }
 .cover-home { padding-top: 8px; padding-bottom: 8px; }
 .play-btn { height: 62px; }
@@ -283,23 +283,6 @@ body.has-pager { padding-bottom: 0 !important; }
 .home-help .hub-ico { width: 30px; height: 30px; }
 .home-help-mid .hub-ico { width: 38px; height: 38px; }
 .quest-bar u { height: 20px; top: -5px; }
-
-/* さらに上を ひらく:ロゴの行を なくして、設定は きろくの右に重ねる */
-.cover-home .home-top { position: absolute; top: 12px; right: 14px; z-index: 4; width: auto; min-height: 0; padding: 0; }
-.cover-home .home-top .logo-small { display: none; }
-.cover-home .cover-gear { min-height: 34px; padding: 2px 10px; font-size: 14px; }
-.cover-home .quest-panel { padding-right: 84px; min-height: 52px; }
-.cover-home .quest-score { position: absolute; right: 14px; bottom: 6px; font-size: 16px; }
-.cover-home { padding-top: 10px; }
-.home-hero .hero-fig { margin-top: 10px !important; }
-
-/* 設定ボタン:きろくの左に、まるく */
-.cover-home .home-top { left: 16px; right: auto; top: 13px; }
-.cover-home .cover-gear { width: 42px; height: 42px; min-height: 0; padding: 0; border-radius: 50%; font-size: 11px; line-height: 1.1; display: flex; align-items: center; justify-content: center; text-align: center; }
-.cover-home .quest-panel { padding-left: 64px; padding-right: 14px; min-height: 62px; }
-.cover-home .quest-score { position: static; font-size: 17px; }
-.cover-home .quest-head { align-items: center; }
-.quest-bar { margin-top: 6px; }
 
 /* クイズの えらぶ画面:もとの ピンク・水色を やめて、巻物に */
 .mode-btn, .mode-btn.m-rpg, .mode-btn.m-daily, .mode-btn.m-review {
@@ -316,3 +299,32 @@ body.has-pager { padding-bottom: 0 !important; }
 .mode-ico { width: 44px; height: 44px; object-fit: contain; display: block; }
 .mode-btn .tile-icon { display: flex; align-items: center; justify-content: center; width: 52px; height: 52px; background: none; }
 .rules-again { color: #fff; background: linear-gradient(180deg, #b8784a, #7a4a2a); border: 3px solid var(--sk-brown); box-shadow: 0 4px 0 #4a2a10; text-shadow: 0 2px 0 #4a2a10; }
+
+/* ===== 追加(3回目) ===== */
+/* 設定ボタン:もとの位置(右上)・もとの形(ふちのついた まるいはこ)。色だけ ものがたり風 */
+.cover-home .home-top { position: relative; top: auto; left: auto; right: auto; width: 100%; display: flex; align-items: center; justify-content: space-between; }
+.cover-home .cover-gear { position: static; width: auto; height: auto; min-height: 36px; padding: 2px 14px; border-radius: 999px; font-size: 15px; display: inline-flex; align-items: center; gap: 4px; }
+.home-top .logo-small { display: block; }
+/* ぼうけんの きろく:旗は 絵、フロリは 線の上 */
+.cover-home .quest-panel { padding: 4px 12px 6px; min-height: 0; }
+.cover-home .quest-head { display: flex; align-items: baseline; justify-content: space-between; }
+.cover-home .quest-score { position: static; font-size: 17px; }
+.quest-bar { position: relative; height: 12px; margin: 22px 14px 6px; background: #5a3a2a; border: 3px solid var(--sk-brown); border-radius: 999px; overflow: visible; }
+.quest-bar i { position: relative; z-index: 1; }
+.quest-flag { position: absolute; z-index: 2; bottom: 100%; width: 22px; height: 22px; margin-left: -11px; margin-bottom: 1px; object-fit: contain; pointer-events: none; }
+.quest-flori { position: absolute; z-index: 3; bottom: 100%; width: 34px; height: 34px; margin-left: -17px; margin-bottom: -6px; object-fit: contain; border-radius: 50%; background: #fff3cf; border: 2px solid var(--sk-brown); transition: left 0.6s; pointer-events: none; }
+.quest-bar u { display: none; }
+/* 着せ替え:下から上へ あがってくる */
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: none; } }
+#screen-dress.slide-up { animation: slideUp 0.45s ease-out !important; }
+/* スタッフクレジット:背景が 朝から夜へ */
+#screen-credits .credits-stage { background: url("../assets/movie/bg_sunrise_hd.webp") center bottom / cover !important; }
+#screen-credits .credits-stage::before { content: ""; position: absolute; inset: 0; z-index: 0; background: url("../assets/movie/bg_night_hd.webp") center bottom / cover; opacity: var(--dusk, 0); pointer-events: none; }
+#screen-credits .credits-roll { z-index: 1; color: color-mix(in srgb, #fff3cf calc(var(--dusk, 0) * 100%), #4a3428); text-shadow: 0 1px 0 rgba(0, 0, 0, calc(var(--dusk, 0) * 0.5)); }
+#screen-credits .credits-roll * { color: inherit; }
+
+/* 設定は、おはなしの中へ。ホームの上には、つぎの ものがたりまでの きろくだけ */
+.cover-home .home-top { display: none !important; }
+.cover-home { padding-top: 10px; }
+.cover-home .home-hero .hero-fig { margin-top: 4px !important; }
+.cover-home .home-stage { padding-top: 8px; }
