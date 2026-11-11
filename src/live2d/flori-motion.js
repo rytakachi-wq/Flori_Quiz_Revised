@@ -90,12 +90,13 @@ export function createMotion(model, opts = {}) {
   // 使えるイベント:ずっと同じ表情のとき(mood)は、顔の系統を出さない。腕を動かさないとき(noArms)は、腕の系統を出さない
   const allowed = kind => !((moodExpr && GROUP[kind] === 'face') || (opts.noArms && GROUP[kind] === 'arm'));
 
-  function nextEvent(t) {
+  function nextEvent(t, force) {
     let r, kind;
     // 表情 50%、眉だけ 8%、白目 5%、きょろきょろ 7%、口 5%、腕と足 25%(伸び 7・手を振る 5・ぱたぱた 7・ばんざい 6)。おなじ種類を、続けて出さない。
     // ※両手を顔の前に上げる「わくわく」は、やめた(利用者の指示)
     let tries = 0;
     do { tries++; r = Math.random(); kind = r < 0.46 ? 'expr' : r < 0.54 ? 'brow' : r < 0.58 ? 'gaze' : r < 0.60 ? 'dart' : r < 0.615 ? 'mouth' : r < 0.74 ? 'stretch' : r < 0.86 ? 'wave' : r < 0.93 ? 'flap' : 'cheer'; } while (!allowed(kind) || tries < 40 && ( kind === lastKind || recent.includes(kind) && Math.random() < 0.8 || GROUP[kind] === lastGroup || (kind === 'dart' && lastKind === 'gaze')));   // 同じ種類・同じ系統(顔 / 目 / 腕)を、続けて出さない。直近3つと同じものも、ほとんど出さない
+    if (force) kind = force;   // cue(): 指定した動きを、すぐ出す
     lastKind = kind; recent.push(kind); if (recent.length > 3) recent.shift(); lastGroup = GROUP[kind];
     if (kind === 'dart') {      // 目きょろきょろ:寄り目をといて、左右へ 2〜3回(3回まで)見る(かならず かわりばんこ)
       const n = 2 + Math.floor(Math.random() * 2), seq = []; let d = lastLook;
@@ -226,5 +227,6 @@ export function createMotion(model, opts = {}) {
     return out;
   }
 
-  return { update, hop(now) { const t = now / 1000; if (t - hopT0 >= HOP_SECONDS) { hopT0 = t; opts.onEvent?.('hop'); } } };
+  // cue(kind, now): 動きを、指定して出す(kind = wave[手を振る]・cheer[ばんざい]・flap[ぱたぱた]・stretch[伸び]・expr[表情]・gaze[白目で見る]・dart[きょろきょろ]・brow[眉]・mouth[口])。ぴょんの最中は、あとで出る
+  return { cue(kind, now) { if (!opts.noArms || GROUP[kind] !== 'arm') { ev = nextEvent(now / 1000, kind); opts.onEvent?.(kind); } }, update, hop(now) { const t = now / 1000; if (t - hopT0 >= HOP_SECONDS) { hopT0 = t; opts.onEvent?.('hop'); } } };
 }
