@@ -54,7 +54,7 @@ import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./fur
   keepOwned({ have: new Set(start.badges), stars: start.stars });
 }
 
-const QUESTIONS_URL = "../data/questions/questions.json?v=20261110k"; // 問題を変えたら、この値と index.html の ?v= を変える
+const QUESTIONS_URL = "../data/questions/questions.json?v=20261111a"; // 問題を変えたら、この値と index.html の ?v= を変える
 const ONI_TAPS = 5; // 表紙のすみのフロリを、この回数押すと、オニ問題が出る
 const IMG = {
   think: "../assets/flori/m/book_pen.png",
@@ -1250,6 +1250,16 @@ function showCredits() {
   openCredits();
 }
 $("btn-credits").addEventListener("click", showCredits);
+// ものがたり(ムービー):画面の上に重ねる。ムービーの「とじる」で、もどる
+$("btn-story-movie").addEventListener("click", () => {
+  $("story-movie-frame").src = `./live2d/story-movie.html?v=20261111a`;
+  $("story-movie").hidden = false;
+});
+window.addEventListener("message", (event) => {
+  if (event.data !== "close-story-movie") return;
+  $("story-movie").hidden = true;
+  $("story-movie-frame").src = "about:blank"; // 止める
+});
 $("btn-credits-back").addEventListener("click", () => show("menu", -1));
 const PAGE_OPEN = {
   cover: () => show("cover"),

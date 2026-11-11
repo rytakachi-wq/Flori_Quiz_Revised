@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
-  <link rel="stylesheet" href="style.css?v=20261110k">
+  <link rel="stylesheet" href="style.css?v=20261111a">
 </head>
 <body>
   <div id="badge-bg" class="badge-bg" aria-hidden="true"></div>
@@ -19,6 +19,8 @@
     <button id="btn-tutorial" class="btn btn-sub opening-tutorial" type="button"><span aria-hidden="true">▶</span> 遊び方を 見る</button>
     <img class="opening-flori" src="../assets/flori/m/body_wave.webp" alt="" hidden>
   </div>
+  <!-- ものがたり(ムービー):別のページ(src/live2d/story-movie.html)を、画面の上に重ねて見せる -->
+  <div id="story-movie" class="overlay story-movie" role="dialog" aria-label="ものがたり" hidden><iframe id="story-movie-frame" title="ものがたり" allow="autoplay"></iframe></div>
   <div id="tutorial" class="overlay tutorial" role="dialog" aria-label="遊び方" hidden>
     <div class="tut-box">
       <h2 id="tut-title" class="tut-title"></h2>
@@ -62,7 +64,7 @@
         </div>
       </div>
       <button id="btn-quiz" class="play-btn" type="button"><span class="gi" aria-hidden="true">🎯</span><span class="pb-text"><b>クイズ</b><small>スタート!</small></span><span class="pb-go" aria-hidden="true">▶</span></button>
-      <button id="btn-tutorial-home" class="rpg-cmd" type="button"><span class="rc-cursor" aria-hidden="true">▶</span><span class="rc-ico" aria-hidden="true">🎬</span><span>遊び方</span></button>
+      <button id="btn-tutorial-home" class="home-help" type="button"><span class="rc-ico" aria-hidden="true">🎬</span><span>遊び方</span></button>
     </section>
 
     <!-- クイズのルール(クイズを押したとき、はじめに出る) -->
@@ -113,6 +115,7 @@
         </div>
       </div>
       <div class="menu-grid">
+        <button id="btn-story-movie" class="tile t-tutorial" type="button"><span class="tile-icon" aria-hidden="true">🎞️</span><span class="tile-text"><span class="tile-label">ものがたり</span></span></button>
         <button id="btn-credits" class="tile t-credits" type="button"><span class="tile-icon" aria-hidden="true">🎈</span><span class="tile-text"><span class="tile-label">スタッフクレジット</span></span><span class="tile-dot" hidden></span></button>
       </div>
     </section>
@@ -562,6 +565,6 @@
       <button id="btn-oni-yes" class="btn btn-main" type="button">挑戦する!</button>
     </div>
   </dialog>
-  <script type="module" src="main.js?v=20261110k"></script>
+  <script type="module" src="main.js?v=20261111a"></script>
 </body>
 </html>
