@@ -182,9 +182,11 @@ export function draw(model, ctx, view, opts = {}) {
   // つぶれ・のび(opts.squash = { sx, sy, px, py }。px,py はキャンバス座標の支点=足もと)
   if (opts.squash) { const q = opts.squash; ctx.translate(q.px, q.py); ctx.scale(q.sx, q.sy); ctx.translate(-q.px, -q.py); }
   const order = model.meshes.map((m, i) => i).sort((i, j) => (ev[i].order - ev[j].order) || (model.drawOrder.indexOf(i) - model.drawOrder.indexOf(j)));
-  for (const i of order) {
+  // opts.patch(ctx) があるときは、腕(バンザイ・コブシ)を、いちばん最後に描く。その前に patch を呼ぶ(顔に はりつける絵を、腕より下の層に出すため)
+  const isArm = m => /^(右|左)手(バンザイ|コブシ)$/.test(m.name);
+  const drawMesh = (i) => {
     const m = model.meshes[i], e = ev[i];
-    if (!m.visible || (opts.hide && opts.hide.has(i)) || armHidden(model, m)) continue;
+    if (!m.visible || (opts.hide && opts.hide.has(i)) || armHidden(model, m)) return;
     ctx.globalAlpha = e.op;
     const im = (opts.imgs && opts.imgs.get(m.img)) || model.imgs.get(m.img);   // opts.imgs = 色をつけた絵(もとより小さくてもよい。メッシュの絵の大きさに のばして貼る)
     for (let t = 0; t < m.tri.length; t += 3) {
@@ -193,6 +195,12 @@ export function draw(model, ctx, view, opts = {}) {
       const p = ix.flatMap(v => [e.pos[v * 2], e.pos[v * 2 + 1]]);
       drawTri(ctx, im, u, p, 0.7 / k, m.iw, m.ih);   // 三角形のつなぎめに すじが出ないように、画面で約0.7ピクセル分、ふくらませる(k = 画面の拡大率)
     }
+  };
+  for (const i of order) if (!opts.patch || !isArm(model.meshes[i])) drawMesh(i);
+  if (opts.patch) {
+    ctx.globalAlpha = 1;
+    opts.patch(ctx);
+    for (const i of order) if (isArm(model.meshes[i])) drawMesh(i);
   }
   ctx.globalAlpha = 1;
 }

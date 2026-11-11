@@ -18,9 +18,9 @@ const FOOT = { px: 1455, py: 3470 };
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const SRC = new URL('../', import.meta.url);   // src/
 const ART = {   // 絵(アプリの絵)。src/live2d/ から見た場所
-  dragon: '../../assets/illust/dragon.webp', mouse: '../../assets/illust/mouse.webp', frog: '../../assets/illust/frog.webp', scorpion: '../../assets/illust/scorpion.webp',
-  house: '../../assets/illust/house.webp', sun: '../../assets/illust/sun.webp', moon: '../../assets/illust/moon.webp', cloud: '../../assets/illust/cloud.webp', castle: '../../assets/illust/castle.webp',
-  hat: '../../assets/illust/tophat.webp', ribbon: '../../assets/dress/head01.png',
+  dragon: '../assets/illust/dragon.webp', mouse: '../assets/illust/mouse.webp', frog: '../assets/illust/frog.webp', scorpion: '../assets/illust/scorpion.webp',
+  house: '../assets/illust/house.webp', sun: '../assets/illust/sun.webp', moon: '../assets/illust/moon.webp', cloud: '../assets/illust/cloud.webp', castle: '../assets/illust/castle.webp',
+  hat: '../assets/illust/tophat.webp', ribbon: '../assets/dress/head01.png',
 };
 const loadImg = src => new Promise(ok => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => ok(im); im.src = new URL(src, SRC).href; });
 
