@@ -328,3 +328,21 @@ body.has-pager { padding-bottom: 0 !important; }
 .cover-home { padding-top: 10px; }
 .cover-home .home-hero .hero-fig { margin-top: 4px !important; }
 .cover-home .home-stage { padding-top: 8px; }
+
+/* 設定:右上のすみ(赤丸の場所)。きろくの上に、ちいさく */
+.cover-home .home-top { display: block !important; position: absolute; top: 8px; right: 12px; left: auto; width: auto; min-height: 0; padding: 0; z-index: 5; }
+.cover-home .home-top .logo-small, .cover-home .home-top .corner-flori { display: none !important; }
+.cover-home .cover-gear { min-height: 28px; padding: 1px 12px; font-size: 13px; }
+.cover-home { padding-top: 40px; }
+/* ぼうけんの きろく:たてを すこし つぶす */
+.cover-home .quest-panel { padding: 3px 12px 4px; }
+.cover-home .quest-head { line-height: 1.05; }
+.cover-home .quest-score { font-size: 16px; }
+.quest-bar { margin: 18px 14px 4px; }
+.quest-flag { width: 19px; height: 19px; margin-left: -9px; }
+.quest-flori { width: 30px; height: 30px; margin-left: -15px; margin-bottom: -5px; }
+/* ふきだしの 床に、よゆう(かざりを つけたフロリが ぶつからない) */
+.cover-home .home-hero .hero-fig { margin-top: 34px !important; }
+.cover-home .home-speech { margin-bottom: 4px; }
+#screen-cover .home-top { position: absolute !important; top: 8px; right: 12px; left: auto !important; width: auto !important; display: block !important; z-index: 5; }
+#screen-cover .home-top .cover-gear { position: static; }
