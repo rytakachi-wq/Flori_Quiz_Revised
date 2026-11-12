@@ -363,3 +363,6 @@ body.has-pager { padding-bottom: 0 !important; }
 #screen-cover .home-stage .home-hero { align-self: center !important; margin-left: auto; margin-right: auto; }
 /* ふきだしの しっぽが、帽子と かさならないように、ホームでは しっぽを出さない */
 .cover-home .home-speech::after, .cover-home .home-speech::before { display: none !important; }
+
+/* 下のバーは なくなったので、そのぶん(約50px)、3つのボタンを いちばん下へ。クイズ スタートと フロリも、その分 下へ */
+#screen-cover.cover-home { padding-bottom: 10px !important; }
