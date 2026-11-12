@@ -1379,44 +1379,10 @@ const PAGE_OPEN = {
     show("settings");
   },
 };
-let swipe = null;
-// 横にスワイプ:左へなぞると、次の画面。右へなぞると、前の画面。
-// 少しずらしただけでは動かさない。大きくなぞったら、指を離す前に移動。短くても、すばやく払う(フリック)なら、離したときに移動。
-function trySwipe(touch, released) {
-  const start = swipe;
-  if (!start || start.done || !PAGER.includes(currentScreen)) return;
-  if (document.querySelector("dialog[open]") || !$("tutorial").hidden || !$("opening").hidden || announcing) return;
-  const dx = touch.clientX - start.x;
-  const dy = touch.clientY - start.y;
-  const elapsed = Math.max(1, Date.now() - start.t);
-  const horizontal = Math.abs(dx) > Math.abs(dy) * 2.2;
-  const bigDrag = Math.abs(dx) > 110 && horizontal;
-  const flick = released && Math.abs(dx) > 45 && horizontal && Math.abs(dx) / elapsed > 0.45; // 1ミリ秒に 0.45px 以上
-  if (bigDrag || flick) {
-    start.done = true;
-    const next = PAGER.indexOf(currentScreen) + (dx < 0 ? 1 : -1);
-    if (next >= 0 && next < PAGER.length) PAGE_OPEN[PAGER[next]]();
-  }
-}
-document.addEventListener(
-  "touchstart",
-  (event) => {
-    swipe = event.touches.length === 1 ? { x: event.touches[0].clientX, y: event.touches[0].clientY, t: Date.now(), done: false } : null;
-    document.body.classList.add("is-touching");
-  },
-  { passive: true },
-);
-document.addEventListener("touchmove", (event) => trySwipe(event.touches[0], false), { passive: true });
-document.addEventListener(
-  "touchend",
-  (event) => {
-    trySwipe(event.changedTouches[0], true);
-    swipe = null;
-    setTimeout(() => document.body.classList.remove("is-touching"), 250);
-  },
-  { passive: true },
-);
-document.addEventListener("touchcancel", () => { swipe = null; document.body.classList.remove("is-touching"); }, { passive: true });
+// 横スワイプで画面を うつす動きは、なくした(利用者の指示)。さわっている間の目印だけ のこす
+document.addEventListener("touchstart", () => document.body.classList.add("is-touching"), { passive: true });
+document.addEventListener("touchend", () => setTimeout(() => document.body.classList.remove("is-touching"), 250), { passive: true });
+document.addEventListener("touchcancel", () => document.body.classList.remove("is-touching"), { passive: true });
 
 function askRestart(action) {
   restartAction = action;

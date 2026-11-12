@@ -366,3 +366,14 @@ body.has-pager { padding-bottom: 0 !important; }
 
 /* 下のバーは なくなったので、そのぶん(約50px)、3つのボタンを いちばん下へ。クイズ スタートと フロリも、その分 下へ */
 #screen-cover.cover-home { padding-bottom: 10px !important; }
+
+/* 下の3つのボタン:大きさを ぜんぶ そろえる(まんなかも おなじ) */
+#screen-cover .home-sub { grid-template-columns: repeat(3, 1fr) !important; align-items: stretch !important; }
+#screen-cover .home-help, #screen-cover .home-help-mid { min-height: 66px !important; height: 66px; font-size: 13px !important; padding: 4px 2px !important; flex-direction: column; white-space: nowrap; }
+#screen-cover .home-help .hub-ico, #screen-cover .home-help-mid .hub-ico { width: 34px !important; height: 34px !important; }
+@media (max-height: 700px) {
+  #screen-cover .home-help, #screen-cover .home-help-mid { min-height: 58px !important; height: 58px; }
+  #screen-cover .home-help .hub-ico, #screen-cover .home-help-mid .hub-ico { width: 28px !important; height: 28px !important; }
+}
+#screen-cover .home-sub { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+#screen-cover .home-help, #screen-cover .home-help-mid { width: 100% !important; margin: 0 !important; min-width: 0; }
