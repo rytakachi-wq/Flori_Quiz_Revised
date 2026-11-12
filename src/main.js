@@ -37,7 +37,7 @@ import {
   recordRound,
 } from "./storage.js";
 import { illustrationFor } from "./illustrations.js";
-import { createTalker } from "./talk.js?v=fam1";
+import { createTalker } from "./talk.js?v=fam2";
 import { initTutorial, openTutorial } from "./tutorial.js";
 import { initRules, openRules as resetRules } from "./rules.js";
 import { openCredits, closeCredits } from "./credits.js?v=dusk1";
