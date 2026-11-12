@@ -242,7 +242,7 @@ body.has-pager { padding-bottom: 0 !important; }
 .hub-item small { display: block; font-size: 13px; color: #7a5a40; }
 .hub .back-btn { align-self: center; }
 /* オープニング:動くフロリが、はじめから いる */
-.opening .opening-flori { animation: none; margin-top: 8px; width: min(210px, calc(46 * var(--vw))); }
+.opening .opening-flori { animation: none; margin-top: 8px; }   /* 横幅は、もとのまま(style.css の min(190px, 42vw))*/
 .opening.is-playing .opening-flori { animation: none; }
 /* クイズの画面:敵の絵と、背景(ものがたりの絵) */
 .foe-img { display: block; width: auto; height: 100%; max-height: 100%; object-fit: contain; }
