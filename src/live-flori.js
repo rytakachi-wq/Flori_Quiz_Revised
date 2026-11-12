@@ -177,6 +177,11 @@ function frame(now) {
     }
     configure(img, item);
     const { canvas } = item;
+    // かざりで フロリを縮めている(decor-overlay の fit)とき、絵とかざりは縮むが、hero-fig の中の canvas は縮まず、かざり(帽子)の位置が ずれる。同じ倍率で縮める
+    if (canvas.parentElement?.classList.contains("has-live")) {
+      canvas.style.scale = img.style.scale || "";
+      canvas.style.transformOrigin = img.style.transformOrigin || "";
+    }
     const dpr = Math.min(devicePixelRatio || 1, 2);
     const w = Math.round(Math.min(canvas.clientWidth * dpr, 640));
     const h = Math.round((w * (1 + 2 * MARGIN.y) * FRAME.h) / ((1 + 2 * MARGIN.x) * FRAME.w));

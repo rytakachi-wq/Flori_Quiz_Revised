@@ -43,7 +43,7 @@ import { initRules, openRules as resetRules } from "./rules.js";
 import { openCredits, closeCredits } from "./credits.js?v=dusk1";
 import { BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js";
 import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js";
-import { startLiveFlori } from "./live-flori.js";
+import { startLiveFlori } from "./live-flori.js?v=fit1";
 import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js";
 import { getVolume, loopName, playJingle, playSe, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js";
 import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js";
