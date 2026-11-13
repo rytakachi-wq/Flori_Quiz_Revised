@@ -244,3 +244,14 @@
 #screen-rules .rf-next, #screen-rules .rf-prev { height: 60px; min-height: 60px; white-space: nowrap; font-size: 17px; padding: 0 6px; }
 .rf-tag { display: inline-flex; align-items: center; gap: 4px; }
 .rf-tag .rf-ico { height: 1.3em; }
+
+/* えらぶ画面:ルールは、各クイズの「した」(よこに ながい ボタン) */
+.mode-row { flex-direction: column; gap: 4px; }
+.mode-row .rules-again { flex-direction: row; width: 100%; min-height: 34px; height: 34px; padding: 0 12px; font-size: 16px; gap: 6px; border-radius: 12px; }
+.mode-row .rules-again small { font-size: 15px; }
+.mode-btn.m-rpg { min-height: 100px; }
+.mode-btn.m-daily, .mode-btn.m-review { min-height: 78px; }
+#screen-setup .mode-list { gap: 10px; }
+@media (max-height: 640px) { .mode-btn.m-rpg { min-height: 70px; } .mode-btn.m-daily, .mode-btn.m-review { min-height: 54px; } .mode-row .rules-again { height: 28px; min-height: 28px; } }
+.mode-row .mode-btn { flex: 0 0 auto; width: 100%; }
+.mode-row .rules-again { flex: 0 0 auto; }

@@ -1,7 +1,7 @@
 // スタッフクレジット:下から上へ流れるスタッフロール。流れている後ろで、シューティングが遊べる(shooter.js)。
 // 載せる内容は CREDITS の表(映画のスタッフロールのように、見出しごとに、役割と名前をならべる)。
-import { createShooter } from "./shooter.js?v=20261114b";
-import { playSe, setScene } from "./audio.js?v=20261114b";
+import { createShooter } from "./shooter.js?v=20261114c";
+import { playSe, setScene } from "./audio.js?v=20261114c";
 
 // section は大きな見出し。{ br: true } は、そこで行を改める(次の項目は、つぎの行へ)。{ space: N } は、Nピクセルの間をあける。role の行は、names が空なら画面に出さない。「（仮）」は、名前が決まったら入れかえる。
 export const CREDITS = [

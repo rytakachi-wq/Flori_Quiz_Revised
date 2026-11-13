@@ -2,7 +2,7 @@
 // 問題の uid(番号がつけなおされても変わらない)で、ひもづける。答えが分かってしまう絵には、しない。
 // 動きは、style.css の ia- ではじまるクラス(ゆれる・はねる・すべる など)。
 
-import { emojiHtml, imgHtml } from "./emoji-img.js?v=20261114b";
+import { emojiHtml, imgHtml } from "./emoji-img.js?v=20261114c";
 
 // 絵文字は、描かれた絵(assets/illust/)に置きかわる(emojiHtml)。同じ形の人が並ぶ問題は、A〜D のちがう子(stand_a〜d、walk_a〜d)を使う。
 const e = (emoji, cls = "", delay = 0) => `<span class="ie ${cls}"${delay ? ` style="--d:${delay}s"` : ""}>${emoji}</span>`;
