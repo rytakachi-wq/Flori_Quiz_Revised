@@ -467,6 +467,18 @@ export const THEMES = [
     return { id: p.id, name: p.name, tint: p.tint, preview: p.stage, stage: p.stage, bg, blue, dark, cover: plain ? p.stage : `linear-gradient(160deg, ${bg}, ${blue})`, pattern: plain ? undefined : p.stage, unlock: null, trial: true }; // pattern:柄物の背景は、ホーム・図鑑・その他・設定の背景にも、その柄を使う
   }),
 ];
+// 背景(ものがたりの絵。ホーム・着せ替えのフロリの後ろに出る)。条件なし=はじめから全部えらべる(条件を付けるなら、unlock を足す)
+export const BGS = [
+  { id: "sunrise", name: "夜明けの野原", file: "bg_sunrise_hd", tint: "#f4a35a", unlock: null },
+  { id: "home", name: "家の前", file: "bg_home_hd", tint: "#7fcf7a", unlock: null },
+  { id: "castle", name: "お城", file: "bg_castle_hd", tint: "#8aa0e0", unlock: null },
+  { id: "gate", name: "お城の門", file: "bg_gate", tint: "#9a8a70", unlock: null },
+  { id: "forest", name: "森", file: "bg_forest", tint: "#4caf6a", unlock: null },
+  { id: "swamp", name: "沼", file: "bg_swamp", tint: "#6a9a5a", unlock: null },
+  { id: "dusk", name: "夕焼け", file: "bg_dusk", tint: "#f08a5a", unlock: null },
+  { id: "night", name: "夜", file: "bg_night_hd", tint: "#5a5ab0", unlock: null },
+  { id: "alert", name: "紫のお城", file: "bg_alert", tint: "#8a5ad0", unlock: null },
+].map((b) => ({ ...b, url: `../assets/movie/${b.file}.webp` }));
 // 着せ替えの一覧は、系統ごとにまとめて並べる(もらえる順とは別。もらえる順は、assignUnlocks の表のまま)。
 // 頭:帽子 → 頭の上(耳・冠・輪・ふたば・小鳥・ひよこ・アンテナ)→ 右上の飾り(花・リボンなど)
 // 体:首周り → 胸(ブローチ・バッジ)→ ポーチ・バッグ → 手に持つもの
@@ -624,8 +636,8 @@ export function rankOf(total) {
 }
 
 // ---------------- 選びかたの保存 ----------------
-const DEFAULT_DRESS = { head: "none", body: "none", face: "none", theme: "sky", color: "original" };
-const LISTS = { head: HEADS, body: BODIES, face: FACES, theme: THEMES, color: COLORS };
+const DEFAULT_DRESS = { head: "none", body: "none", face: "none", theme: "sky", color: "original", bg: "sunrise" };
+const LISTS = { head: HEADS, body: BODIES, face: FACES, theme: THEMES, color: COLORS, bg: BGS };
 
 export function loadDress() {
   try {

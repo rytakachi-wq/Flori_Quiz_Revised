@@ -45,7 +45,7 @@ import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedB
 import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js";
 import { startLiveFlori } from "./live-flori.js?v=fit1";
 import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js";
-import { getVolume, loopName, playJingle, playSe, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js";
+import { getVolume, loopName, playHeartHalf, playJingle, playSe, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js";
 import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=fm11";
 
 // 着せ替えの条件が変わったとき、前の条件で手に入れていたものを残す(初めて開いたときの1回だけ)
@@ -77,9 +77,13 @@ let timeLimit = false; // この回に、制限時間を付けるか(普通・�
 let hinted = false; // 今の問題で、ヒントを見たか
 
 // 画面ごとのBGMの場面(audio.js の BGM と対応)
+// RPGの曲:ボス戦・宝箱は、それぞれ専用の曲
+function rpgScene(kind) {
+  return kind === "boss" ? "rpgboss" : kind === "chest" ? "rpgchest" : "rpg";
+}
 function sceneOf(name) {
-  if (name === "rpg") return mode === "rpg" && play?.current?.kind === "boss" ? "rpgboss" : "rpg"; // 画面を出すたびに曲が切りかわって、初めから鳴りなおすのを防ぐ
-  if (name === "gameover") return "gameover"; // BGMはなし(ゲームオーバーの音だけ)
+  if (name === "rpg") return rpgScene(mode === "rpg" ? play?.current?.kind : null); // 画面を出すたびに曲が切りかわって、初めから鳴りなおすのを防ぐ
+  if (name === "gameover") return "gameover"; // ゲームオーバーの曲
   if (name === "question") {
     return { oni: "oni", hard: "hard" }[mode] ?? "question";
   }
@@ -2466,7 +2470,7 @@ function showRpg() {
   warn.textContent = stage.kind === "boss" ? "警告! ボス戦だ!" : "警告! 次はボスがまっているぞ!";
   $("screen-rpg").querySelector(".rpg-window").scrollTop = 0;
   show("rpg");
-  setScene(stage.kind === "boss" ? "rpgboss" : "rpg"); // ボス戦は、BGMが変わる
+  setScene(rpgScene(stage.kind)); // ボス戦・宝箱は、BGMが変わる
   fitRpgWindow();
   setTimeout(fitRpgWindow, 150); // ふりがなが付いたあとに、もう1度
   if (timeLimit) startRpgTimer();
@@ -2609,7 +2613,7 @@ $("btn-rpg-hint-yes").addEventListener("click", () => {
   rpgHinted = true;
   play.useHint();
   renderRpgHearts();
-  playSe("rpgGuard", 380); // ハートが半分減った音(ダメージより短く)
+  playHeartHalf(); // ハートが半分減った音(攻撃・ダメージの音とは別の、やわらかい2音)
   rpgFx("💔 ハート半分減った");
   $("screen-rpg").classList.add("is-hinted"); // 低い画面では、上の絵を小さくして、ヒントの場所をあける
   $("rpg-hint").textContent = `💡 ${rpgQuestion.hint}`;
@@ -2830,7 +2834,7 @@ function renderDress() {
   const kind = dressTab;
   let lastGroup = null; // 系統(帽子・耳・冠…)が変わるごとに、線と説明を入れて、改行する
   $("dress-list").replaceChildren(
-    dressLegend(),
+    ...(kind === "bg" ? [] : [dressLegend()]), // 背景には、レア度がない
     ...DRESS_LISTS[kind].flatMap((choice, index) => {
       // 「なし」は、さいしょの系統の行に入れる(1行だけ、むだにしない)
       const groupNo = choice.group ?? (index === 0 ? DRESS_LISTS[kind][1]?.group : undefined);

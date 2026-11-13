@@ -88,14 +88,14 @@ export function createMotion(model, opts = {}) {
   model.follow = false;     // 上唇は、live2d.js の追尾ではなく、ここで決める(LIP_MARGIN)
 
   // 使えるイベント:ずっと同じ表情のとき(mood)は、顔の系統を出さない。腕を動かさないとき(noArms)は、腕の系統を出さない
-  const allowed = kind => !((moodExpr && GROUP[kind] === 'face') || (opts.noArms && GROUP[kind] === 'arm'));
+  const allowed = kind => !((moodExpr && GROUP[kind] === 'face' && kind !== 'mouth') || (opts.noArms && GROUP[kind] === 'arm'));
 
   function nextEvent(t, force) {
     let r, kind;
     // 表情 50%、眉だけ 8%、白目 5%、きょろきょろ 7%、口 5%、腕と足 25%(伸び 7・手を振る 5・ぱたぱた 7・ばんざい 6)。おなじ種類を、続けて出さない。
     // ※両手を顔の前に上げる「わくわく」は、やめた(利用者の指示)
     let tries = 0;
-    do { tries++; r = Math.random(); kind = r < 0.46 ? 'expr' : r < 0.54 ? 'brow' : r < 0.58 ? 'gaze' : r < 0.60 ? 'dart' : r < 0.615 ? 'mouth' : r < 0.74 ? 'stretch' : r < 0.86 ? 'wave' : r < 0.93 ? 'flap' : 'cheer'; } while (!allowed(kind) || tries < 40 && ( kind === lastKind || recent.includes(kind) && Math.random() < 0.8 || GROUP[kind] === lastGroup || (kind === 'dart' && lastKind === 'gaze')));   // 同じ種類・同じ系統(顔 / 目 / 腕)を、続けて出さない。直近3つと同じものも、ほとんど出さない
+    do { tries++; r = Math.random(); kind = moodExpr && Math.random() < 0.4 ? 'mouth' : r < 0.46 ? 'expr' : r < 0.54 ? 'brow' : r < 0.58 ? 'gaze' : r < 0.60 ? 'dart' : r < 0.615 ? 'mouth' : r < 0.74 ? 'stretch' : r < 0.86 ? 'wave' : r < 0.93 ? 'flap' : 'cheer'; } while (!allowed(kind) || tries < 40 && ( kind === lastKind || recent.includes(kind) && Math.random() < 0.8 || GROUP[kind] === lastGroup || (kind === 'dart' && lastKind === 'gaze')));   // 同じ種類・同じ系統(顔 / 目 / 腕)を、続けて出さない。直近3つと同じものも、ほとんど出さない
     if (force) kind = force;   // cue(): 指定した動きを、すぐ出す
     lastKind = kind; recent.push(kind); if (recent.length > 3) recent.shift(); lastGroup = GROUP[kind];
     if (kind === 'dart') {      // 目きょろきょろ:寄り目をといて、左右へ 2〜3回(3回まで)見る(かならず かわりばんこ)
@@ -179,6 +179,7 @@ export function createMotion(model, opts = {}) {
       const ang = opts.noTilt ? 0 : x.tilt * (x.dir ? dir : 1) * e * 9;   // opts.noTilt:首をかしげない(ムービー用)
       brow = x.brow * e; tilt = ang > 0 ? ang / 9.6 : ang / 12.4; mouth = idleAbs * (1 - e) + (x.mouth ?? idleAbs) * e + (x.wobble ? x.wobble * e * Math.sin(a * Math.PI * 2 * 2.2) : 0);
       if (x.look) gaze = -Math.sign(tilt) * x.look * e;     // 傾けた側を見る(+ は画面の右)
+      if (moodExpr && kind === 'mouth') mouth = (x.mouth ?? idleAbs) * (1 - k) + k * (-1 + 1.8 * (0.5 + 0.5 * Math.sin(a * Math.PI * 2 * ev.rate - Math.PI / 2)));   // ずっと同じ表情(成績の驚いた顔など)でも、ときどき、口だけ ぱくぱく
     }
     // 見た目の位置(キャンバスのピクセル。+ は画面の右)で決めて、パラメーター値に直す。いつもの顔は寄り目(右の目 +CROSS_PX・左の目 −CROSS_PX)。
     // 左右を見るときは、両目とも、同じ位置(GAZE_PX)へ動かす(ひとみが目からはみ出さない・片方だけ動かない、をなくす)

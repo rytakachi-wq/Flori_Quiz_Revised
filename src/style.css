@@ -3684,15 +3684,15 @@ html[data-pattern] :is(#screen-menu, #screen-note, #screen-credits, #screen-dex,
 /* ものがたりを えらぶ画面 */
 .movie-pick { z-index: 1050; justify-content: flex-start; background: linear-gradient(#bfe7ff, #fff6cf); }
 .movie-pick[hidden] { display: none; }
-.movie-pick-box { width: min(520px, 92vw); height: 100%; display: flex; flex-direction: column; align-items: stretch; gap: 8px; padding: 10px 0; overflow: hidden; box-sizing: border-box; }
+.movie-pick-box { width: min(520px, 92vw); display: flex; flex-direction: column; align-items: stretch; gap: 10px; padding: 14px 0; overflow-y: auto; max-height: 100%; }
 .movie-pick-box .back-btn { align-self: flex-start; }
-.movie-pick-title { margin: 0; font-size: 22px; color: #3a7aa8; }
-.movie-pick-note { margin: 0; font-size: 13px; font-weight: bold; color: #c04a5a; }
-.movie-pick-list { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; gap: 6px; }
-.movie-pick-item { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 0; width: 100%; padding: 0 14px; font: inherit; text-align: left; cursor: pointer; background: #fff; border: 3px solid #4a7fb3; border-radius: 16px; box-shadow: 0 3px 0 rgba(53, 95, 140, 0.4); touch-action: manipulation; overflow: hidden; }
+.movie-pick-title { margin: 0; font-size: 26px; color: #3a7aa8; }
+.movie-pick-note { margin: 0; font-size: 15px; font-weight: bold; color: #c04a5a; }
+.movie-pick-list { display: flex; flex-direction: column; gap: 10px; }
+.movie-pick-item { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; padding: 10px 16px; font: inherit; text-align: left; cursor: pointer; background: #fff; border: 3px solid #4a7fb3; border-radius: 18px; box-shadow: 0 4px 0 rgba(53, 95, 140, 0.4); touch-action: manipulation; }
 .movie-pick-item:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(53, 95, 140, 0.4); }
-.movie-pick-item b { font-size: 17px; color: #1f3f66; }
-.movie-pick-item span { font-size: 11px; color: #5a6a7a; }
+.movie-pick-item b { font-size: 20px; color: #1f3f66; }
+.movie-pick-item span { font-size: 14px; color: #5a6a7a; }
 
 /* RPG:敵はフロリと同じ地面に立つ(名前とハートは、敵の上に重ねる)。敵のハートは大きく・見やすく */
 .rpg-field .rpg-foe { align-content: end; justify-items: center; }

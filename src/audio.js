@@ -19,6 +19,8 @@ const BGM = {
   oni: "oni",
   rpg: "quest",
   rpgboss: "questboss", // RPGの、ボス戦
+  rpgchest: "chest", // RPGの、宝箱
+  gameover: "gameover", // ゲームオーバー
   result: "result",
   tutorial: "tutorial",
   credits: "credits", // スタッフクレジット
@@ -223,6 +225,28 @@ export function playSe(name, maxMs = 0) {
     }, fadeAt);
   }
   return { stop: () => sound.pause() };
+}
+
+// ハートが半分へった音(ヒントを見たとき):やわらかい「ぽろん」と、ひとつ下がる音。攻撃の音(ばしっ)・受けた音とは、ちがう音(ファイルなし。WebAudio で作る)
+export function playHeartHalf() {
+  if (volumes.se === 0) return;
+  if (context && context.state !== "running") context.resume().catch(() => {});
+  if (!context || context.state !== "running") return;
+  const level = curve(volumes.se);
+  const t = context.currentTime;
+  for (const [offset, hz] of [[0, 784], [0.13, 587]]) {
+    const osc = context.createOscillator();
+    const gain = context.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(hz, t + offset);
+    osc.frequency.exponentialRampToValueAtTime(hz * 0.97, t + offset + 0.3);
+    gain.gain.setValueAtTime(0.0001, t + offset);
+    gain.gain.exponentialRampToValueAtTime(Math.max(0.0002, 0.3 * level), t + offset + 0.012);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + offset + 0.32);
+    osc.connect(gain).connect(context.destination);
+    osc.start(t + offset);
+    osc.stop(t + offset + 0.34);
+  }
 }
 
 // 「しゅん」:高い音から すっと下がる、短い音(ファイルなし。WebAudio で作る)。シューティングで、弾が当たったときに鳴らす

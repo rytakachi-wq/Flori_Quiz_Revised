@@ -9,7 +9,6 @@ import { recolorCanvas } from '../flori-color.js';
 import { HEADS } from '../badges.js';
 import { startFurigana } from '../furigana.js?v=fm11';
 import { MOVIES } from './storyboard.js?v=20261112a';
-import { playStoryBgm } from './story-bgm.js';
 
 startFurigana();
 
@@ -169,12 +168,9 @@ const nextOpen = from => { for (let i = from; i < MOVIES.length; i++) if (isOpen
 
 function play(mv) {
   movie = mv; want = 0; sceneIdx = -1; fired = new Set(); prevBg = '';
-  playStoryBgm(mv.id);   // お話ごとの専用BGM
   for (const b of bar.querySelectorAll('button[data-id]')) b.classList.toggle('on', b.dataset.id === mv.id);
 }
-// 画面をさわっても、つぎには進まない。「次へ」のボタンで進む
-const nextBtn = document.getElementById('next');
-nextBtn.onclick = () => goScene(want + 1);
+addEventListener('pointerdown', e => { if (!e.target.closest('#bar, #x')) goScene(want + 1); });
 
 function setScene(i) {
   sceneIdx = i; lastLine = -1;
@@ -213,8 +209,6 @@ function frame(now) {
   const k = want, sc = movie.scenes[k];
   const lt = (now - sceneStart) / 1000, p = ease(Math.min(1, lt / sc.dur)), pl = Math.min(1, lt / sc.dur);   // コマの動きは さいごで止まり、クリックまで そのまま
   if (k === movie.scenes.length - 1 && lt >= sc.dur + 6 && !STORY_CLOSING) { play(movie); requestAnimationFrame(frame); return; }   // 何も押さないと、はじめにもどって くりかえす
-  const nextText = k === movie.scenes.length - 1 ? (STORY ? '閉じる' : '最初から') : '次へ ▶';
-  if (nextBtn.dataset.t !== nextText) { nextBtn.dataset.t = nextText; nextBtn.textContent = nextText; }
   prog.style.width = `${(k + 1) / movie.scenes.length * 100}%`;
   if (auto && lt >= sc.dur + 1.2 && autoKey !== `${movie.id}:${k}`) { autoKey = `${movie.id}:${k}`; goScene(k + 1); }   // じどうで すすむ:読みおわったら、つぎのコマ・つぎのムービーへ
   if (sc.flash !== undefined && lt >= sc.flash && !fired.has(`${k}:flash`)) { fired.add(`${k}:flash`); flashEl.classList.remove('on'); void flashEl.offsetWidth; flashEl.classList.add('on'); }
@@ -307,6 +301,7 @@ function frame(now) {
   }
   requestAnimationFrame(frame);
 }
+document.getElementById('loading').remove();
 play(MOVIES.find(m => m.id === params.get('play')) || MOVIES.find(m => isOpen(m.id)) || PROLOGUE);
 requestAnimationFrame(frame);
 window.play = play; window.MOVIES = MOVIES;

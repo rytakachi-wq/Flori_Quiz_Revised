@@ -67,10 +67,7 @@ body{font:16px system-ui,"Hiragino Sans","Yu Gothic",sans-serif;user-select:none
 #bar button:disabled{opacity:.45;cursor:default}
 #koma{position:absolute;left:2%;top:calc(var(--u)*9);z-index:5;padding:.1em .6em;font-weight:bold;font-size:calc(var(--u)*2.4);color:#fff;background:rgba(0,0,0,.45);border-radius:999px}
 #prog{position:absolute;left:0;top:0;height:calc(var(--u)*.7);background:#e4877d;width:0;transition:width .1s linear;z-index:6}
-#bottom{position:absolute;left:3%;right:3%;bottom:2%;display:flex;flex-direction:column;align-items:flex-end;gap:calc(var(--u)*1)}
-#bottom #cap{position:static;align-self:stretch}
-#next{touch-action:manipulation;font:inherit;font-size:calc(var(--u)*3);font-weight:bold;padding:.3em 1.1em;border:3px solid #4a5560;border-radius:999px;background:#ffd24a;color:#3a2a10;cursor:pointer;box-shadow:0 calc(var(--u)*.5) 0 rgba(0,0,0,.35);z-index:8}
-#next:active{transform:translateY(calc(var(--u)*.4))}
+#loading{position:absolute;inset:0;display:grid;place-items:center;background:#fff6cf;font-weight:bold;font-size:calc(var(--u)*3.4);z-index:9}
 </style></head><body>
 <div id="phone">
 <div id="stage">
@@ -91,8 +88,9 @@ body{font:16px system-ui,"Hiragino Sans","Yu Gothic",sans-serif;user-select:none
 <div id="koma"></div>
 <button id="x" type="button">閉じる</button>
 <div id="bar"></div>
-<div id="bottom"><button id="next" type="button">次へ ▶</button><div id="cap"><div id="who"></div><div id="line"></div></div></div>
+<div id="cap"><div id="who"></div><div id="line"></div></div>
+<div id="loading">よみこみちゅう…</div>
 </div><!-- /phone -->
 </div>
-<script type="module" src="story-movie.js?v=20261113b"></script>
+<script type="module" src="story-movie.js?v=20261113a"></script>
 </body></html>
