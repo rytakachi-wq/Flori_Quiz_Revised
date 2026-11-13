@@ -5,7 +5,7 @@
 // 辞書(furigana-data.js)の読みで <ruby> をつける。設定が変わったら、包んだ文字を作りなおす。
 // 辞書にない漢字は、ふりがながつかない(開発用の確認で、画面の文字は全部当てはまることを確かめてある)。
 
-import { ENTRIES, KYOIKU_BY_GRADE } from "./furigana-data.js?v=fm6";
+import { ENTRIES, KYOIKU_BY_GRADE } from "./furigana-data.js?v=fm8";
 
 const STORAGE_KEY = "floriQuiz.furigana";
 export const MODES = ["all", "many", "few", "none"];
@@ -375,8 +375,32 @@ export function setFuriganaMode(next) {
 // ---- 画面の文字に、ふりがなをつける ----
 const SKIP_TAGS = new Set(["SCRIPT", "STYLE", "TEXTAREA", "INPUT", "TITLE", "RT", "RP"]);
 
+// ふりがなの文字が、漢字より横に長いとき(例:「心配」の上の「しんぱい」)、まわりに すき間があいて見える。
+// 読みがはみ出す分だけ、となりが ふつうの文字(ルビのついていない文字)のときは、そちらへ ふりがなを かぶせて、すき間をつめる。
+function overhang(host) {
+  for (const ruby of host.querySelectorAll("ruby")) {
+    const rt = ruby.querySelector("rt");
+    const base = ruby.firstChild;
+    if (!rt || !base || base.nodeType !== Node.TEXT_NODE) continue;
+    const baseSize = parseFloat(getComputedStyle(ruby).fontSize);
+    const rtSize = parseFloat(getComputedStyle(rt).fontSize);
+    if (!baseSize || !rtSize) continue;
+    // 文字の幅のめやす:全角=1em、半角(数字・英字・記号)=0.55em
+    const widthEm = (text) => [...text].reduce((sum, ch) => sum + (ch.charCodeAt(0) < 0x300 ? 0.55 : 1), 0);
+    const extra = ((widthEm(rt.textContent) * rtSize) - (widthEm(base.textContent) * baseSize)) / baseSize / 2; // 左右それぞれ、何emはみ出すか
+    if (extra <= 0.04) continue;
+    // となりが、ふつうの文字のときだけ、かぶせる(となりにも ふりがながあるときは、ぶつかるので かぶせない)
+    const room = (node) => (node && node.nodeType === Node.TEXT_NODE && node.textContent.trim() ? Math.min(0.9, node.textContent.length * 0.45) : 0);
+    const left = Math.min(extra, 0.6, room(ruby.previousSibling));
+    const right = Math.min(extra, 0.6, room(ruby.nextSibling));
+    if (left > 0.02) ruby.style.marginLeft = `${-left.toFixed(2)}em`;
+    if (right > 0.02) ruby.style.marginRight = `${-right.toFixed(2)}em`;
+  }
+}
+
 function render(host) {
   host.innerHTML = rubyHtml(host.dataset.plain, mode, host.dataset.kana === "1");
+  if (host.isConnected) overhang(host);
 }
 
 function hostify(node) {
@@ -391,6 +415,7 @@ function hostify(node) {
   if (kana) host.dataset.kana = "1";
   render(host);
   node.replaceWith(host);
+  overhang(host);
 }
 
 function scan(root) {

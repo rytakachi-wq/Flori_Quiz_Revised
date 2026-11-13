@@ -34,7 +34,7 @@ export const CREDITS = [
   { role: "文字(フォント)", names: ["Zen Maru Gothic", "(Google Fonts)"] },
 
   { section: "音" },
-  { role: "BGM", names: ["オリジナル曲", "(ブラウザの中で 演奏しています)"] },
+  { role: "BGM", names: ["オリジナル曲", "(ブラウザの中で演奏しています)"] },
   { role: "効果音", names: ["効果音ラボ"] },
 
   { section: "プログラム" },
@@ -60,10 +60,10 @@ export const CREDITS = [
 
   { space: 90 },
   { section: "Special Thanks" },
-  { role: "", names: ["遊んでくれた あなた"] },
+  { role: "", names: ["遊んでくれたあなた"] },
 ];
 
-export const CREDITS_THANKS = "遊んでくれて ありがとう!";
+export const CREDITS_THANKS = "遊んでくれてありがとう!";
 const ROLL_SPEED = 62; // 流れる速さ(1秒に進むピクセル)
 const NO_SPAWN_LEFT = 320; // ロールの終わりまで、これより近づいたら、落ちものを出さない(ピクセル)
 const PER_LINE = 3; // 同じ行に ならべる数(最大)
@@ -135,8 +135,8 @@ let last = 0;
 
 function messageFor({ state, best, bestIdeal }) {
   if (state === "ended") return "";
-  if (state === "idle") return "画面を タッチして シューティング!\n(ドラッグで フロリを 動かそう)";
-  if (state === "over") return `ゲームオーバー!  最高 ${best}/${bestIdeal}点\nタッチで もう1回`;
+  if (state === "idle") return "画面をタッチしてシューティング!\n(ドラッグでフロリを動かそう)";
+  if (state === "over") return `ゲームオーバー!  最高 ${best}/${bestIdeal}点\nタッチでもう1回`;
   return "";
 }
 
@@ -180,8 +180,8 @@ function beginResult() {
   finished = true;
   shooter.finish(); // ここで、シューティングは止まる
   $("credits-hud").hidden = true;
-  $("credits-msg").dataset.text = "スタッフロール 終了!";
-  $("credits-msg").textContent = "スタッフロール 終了!";
+  $("credits-msg").dataset.text = "スタッフロール終了!";
+  $("credits-msg").textContent = "スタッフロール終了!";
   $("credits-msg").hidden = false;
   playSe("whistle");
   setScene("credits-end"); // 終了からドラムロールの間は、BGMを止める
@@ -198,7 +198,7 @@ function showResult() {
   const { played, best, kills, ideal } = shooter.finish();
   $("credits-hud").hidden = true;
   $("credits-msg").hidden = true;
-  $("cres-title").textContent = played ? "シューティング 結果発表!" : "スタッフロール 終わり";
+  $("cres-title").textContent = played ? "シューティング結果発表!" : "スタッフロール終わり";
   $("cres-score").textContent = played ? `${best}/${ideal}点` : "";
   $("cres-kills").textContent = played ? `倒した数 ${kills}こ` : "";
   $("credits-result").hidden = false;

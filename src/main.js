@@ -46,7 +46,7 @@ import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js";
 import { startLiveFlori } from "./live-flori.js?v=fit1";
 import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js";
 import { getVolume, loopName, playJingle, playSe, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js";
-import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=fm6";
+import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=fm9";
 
 // 着せ替えの条件が変わったとき、前の条件で手に入れていたものを残す(初めて開いたときの1回だけ)
 {
@@ -326,7 +326,7 @@ function renderQuest() {
   $("quest-fill").style.width = `${Math.min(100, total)}%`;
   $("quest-flori").style.left = `${Math.min(100, total)}%`; // フロリは、線の上(いまの点のところ)
   const next = MOVIE_INFO.find((m) => m.need > total);
-  document.querySelector(".quest-ttl").textContent = next ? `次の 物語まで あと ${next.need - total}点!` : "全部の 物語が 見られるヨ!";
+  document.querySelector(".quest-ttl").textContent = next ? `次の物語まであと ${next.need - total}点!` : "全部の物語が見られるヨ!";
 }
 
 // 難しさの星(全部で4段階)
@@ -381,7 +381,7 @@ function startPlayNow(nextMode, startMessage = null) {
     announce("クエスト スタート!", "start", showRpg, "../assets/flori/m/body_wave.webp");
     return;
   }
-  announce(startMessage ?? "それでは スタート!", "start", showQuestion, "../assets/flori/m/body_wave.webp");
+  announce(startMessage ?? "それではスタート!", "start", showQuestion, "../assets/flori/m/body_wave.webp");
 }
 
 // RPGの問題:分類を分けずに、普通・難しい問題の全部から、ランダムに出る
@@ -404,14 +404,14 @@ function showQuestion() {
     review: "復習 ",
     daily: "毎日1問 ",
   }[mode];
-  $("q-progress").textContent = `${prefix}第${play.asked + 1}問 / ${total}問`;
+  $("q-progress").textContent = mode === "daily" ? "毎日1問" : `${prefix}第${play.asked + 1}問 / ${total}問`; // 毎日1問は1問だけなので「第1問 / 1問」とは書かない
   // 進み具合のバー(感想 No.9):いま何問目かまで、うめる
   $("q-bar-fill").style.width = `${Math.round(((play.asked + 1) / total) * 100)}%`;
   $("q-bar-fill").parentElement.hidden = mode === "daily"; // 毎日1問は1問だけなので、バーは出さない
   $("screen-question").dataset.player = ""; // (CSSが、この印を使っている)
   // 星は、せまい枠(文字を大きくしたとき)でも、はみ出さないように、すこし小さく詰めて出す
   const starsHtml = (text) => `<span class="q-stars">${text}</span>`;
-  $("q-level").innerHTML = mode === "oni" ? "難しさ オニ" : `難しさ ${starsHtml(stars(question.level))}`;
+  $("q-level").innerHTML = mode === "oni" ? "難しさオニ" : `難しさ ${starsHtml(stars(question.level))}`;
   // 問題に合わせた、イラスト(絵と動きで、場面が分かるように)
   const art = illustrationFor(question);
   $("q-art").innerHTML = art;
@@ -479,16 +479,16 @@ function coachLine(asked, total, leveledUp) {
   const last = total > 1 && asked === total - 1;
   const base = (() => {
     if (asked === 0) {
-      if (mode === "hard") return { text: "難しいモード! さぁ 頑張るぞ!" };
+      if (mode === "hard") return { text: "難しいモード! さぁ頑張るぞ!" };
       if (mode === "oni") return { text: "オニ問題! 頑張って!" };
       if (mode === "daily") return { text: "今日の 1問! 頑張って!" };
-      if (mode === "review") return { text: "復習 さぁ 頑張るぞ!" };
-      return { text: "さぁ 頑張るぞ!" };
+      if (mode === "review") return { text: "復習! さぁ頑張るぞ!" };
+      return { text: "さぁ頑張るぞ!" };
     }
     if (last) return { text: "ラスト 1問! 頑張れー!" };
-    if (total >= 5 && asked === Math.floor(total / 2)) return { text: "ちょうど 半分! フレーフレー!" };
-    if (total >= 5 && asked === total - 2) return { text: "あと ちょっと~!" };
-    return lastCorrect === false ? { text: "どんまい! 次は 行けるヨ!" } : { text: "その調子 その調子!" };
+    if (total >= 5 && asked === Math.floor(total / 2)) return { text: "ちょうど半分! フレーフレー!" };
+    if (total >= 5 && asked === total - 2) return { text: "あとちょっと~!" };
+    return lastCorrect === false ? { text: "どんまい! 次は行けるヨ!" } : { text: "その調子! その調子!" };
   })();
   if (leveledUp && mode !== "oni") return { text: "難しくなりました!", surprised: true, levelup: true };
   return base;
@@ -678,7 +678,7 @@ function answer(response) {
   verdict.textContent =
     correct
       ? hinted
-        ? `正解!(ヒントを使ったので 半分の${fmtPts(POINTS_PER_CORRECT - HINT_COST)}点)`
+        ? `正解!(ヒントを使ったので半分の${fmtPts(POINTS_PER_CORRECT - HINT_COST)}点)`
         : "正解!"
       : wasTimedOut
         ? "時間切れ…"
@@ -822,7 +822,7 @@ function showResult() {
   // 総合得点は、初めて正解した問題の分だけ、ふえる。
   const gainText = () => {
     const gained = currentTotal() - before;
-    return gained > 0 ? `総合得点が${gained}点増えたヨ!` : "総合得点は 新しく正解したり ヒントなしで正解し直した時だけ増えるヨ。";
+    return gained > 0 ? `総合得点が${gained}点増えたヨ!` : "総合得点は新しく正解したりヒントなしで正解し直した時だけ増えるヨ。";
   };
   $("screen-result").dataset.clear = ""; // クエストクリアのときだけ、金の見た目(home-ui.css)
   if (mode === "review") {
@@ -866,8 +866,8 @@ function showResult() {
     $("r-record").hidden = !saved.isRecord;
     const wrongCount = new Set(result.answers.filter((a) => !a.correct || a.hinted).map((a) => a.id)).size; // 同じ問題は、1問と数える
     setNote.textContent = result.cleared
-      ? `ハート${heartsText(result.lives)} 残して クリア!${wrongCount > 0 ? `間違えた${wrongCount}問は 間違いノートに 入ったヨ。` : ""}`
-      : `${result.stage}マス目まで 進んだヨ。${wrongCount > 0 ? `間違えた${wrongCount}問は 間違いノートに 入ったヨ。` : ""}`;
+      ? `ハート${heartsText(result.lives)} 残してクリア!${wrongCount > 0 ? `間違えた${wrongCount}問は間違いノートに入ったヨ。` : ""}`
+      : `${result.stage}マス目まで進んだヨ。${wrongCount > 0 ? `間違えた${wrongCount}問は間違いノートに入ったヨ。` : ""}`;
     $("btn-again").textContent = "もう1度挑戦";
   } else if (mode === "hard") {
     const saved = recordRound({ ...result, mode: "hard", timed: timeLimit });
@@ -886,7 +886,7 @@ function showResult() {
     $("r-best").textContent = `${fmtPts(stats.best)}点`;
     $("r-record").hidden = !saved.isRecord;
     $("btn-again").textContent = "続けて遊ぶ";
-    setNote.textContent = "続けて遊ぶと 難しさも続きます。正解が続くと難しく 間違えると易しくなります。";
+    setNote.textContent = "続けて遊ぶと難しさも続きます。正解が続くと難しく間違えると易しくなります。";
     persistCourse(); // 「続きから」の記録
   }
   setNote.hidden = false;
@@ -906,7 +906,7 @@ function showResult() {
   const toReview = (mode === "normal" || mode === "hard") ? result.answers.filter((a) => !a.correct || a.hinted).map((a) => a.id) : [];
   reviewNow = toReview;
   $("btn-r-review").hidden = toReview.length === 0;
-  $("btn-r-review").textContent = `📖 間違えた問題を すぐ 復習(${toReview.length}問)`;
+  $("btn-r-review").textContent = `📖 間違えた問題をすぐ復習(${toReview.length}問)`;
   show("result");
   fitResult();
   setTimeout(fitResult, 150);
@@ -1026,8 +1026,8 @@ function recordRpgResult(result) {
   recordRpg({ cleared: result.cleared, noDamage: result.lives === RPG_LIVES, boss: result.stage >= RPG_STAGES.length - 1, chests: result.chests ?? 0 });
 }
 function adventureComment(result) {
-  if (result.cleared) return result.lives === RPG_LIVES ? "ノーダメージ クリア! すごいヨ!" : "ドラゴンを 倒した! おめでとう!";
-  return result.stage >= 3 ? "惜しい! ボスの すぐ近くまで 来たヨ!" : "ナイスチャレンジ! また 冒険に 出よう!";
+  if (result.cleared) return result.lives === RPG_LIVES ? "ノーダメージ クリア! すごいヨ!" : "ドラゴンを倒した! おめでとう!";
+  return result.stage >= 3 ? "惜しい! ボスのすぐ近くまで来たヨ!" : "ナイスチャレンジ! また冒険に出よう!";
 }
 
 // RPGの記録(端末の中だけ。成績のデータとは別に持つ):クリアした回数と、いちばん少ない問題数でクリアした記録(最短記録)
@@ -1332,12 +1332,12 @@ async function showDueMovies(onlyPrologue = false) {
 // えらぶ画面(いまだけ・仮:ぜんぶ 見られる。ほんとうの条件は、MOVIE_INFO の need)
 const MOVIE_ALL_OPEN_NOW = true;
 const MOVIE_TITLES = {
-  pro: ["プロローグ", "フロリと 家族の お話"],
-  ep1: ["第1話 ネズミと パパの 帽子", "総合得点 20点で 見られる"],
-  ep2: ["第2話 カエルと ママの リボン", "総合得点 40点で 見られる"],
-  ep3: ["第3話 決戦の 前に", "総合得点 60点で 見られる"],
-  ep4: ["第4話 ドラゴンと 最後の 戦い", "総合得点 80点で 見られる"],
-  epi: ["エンディング", "総合得点 100点で 見られる"],
+  pro: ["プロローグ", "フロリと家族のお話"],
+  ep1: ["第1話 ネズミとパパの帽子", "総合得点 20点で見られる"],
+  ep2: ["第2話 カエルとママのリボン", "総合得点 40点で見られる"],
+  ep3: ["第3話 決戦の前に", "総合得点 60点で見られる"],
+  ep4: ["第4話 ドラゴンと最後の戦い", "総合得点 80点で見られる"],
+  epi: ["エンディング", "総合得点 100点で見られる"],
 };
 function renderMoviePick() {
   const open = new Set(MOVIE_ALL_OPEN_NOW ? MOVIE_INFO.map((m) => m.id) : unlockedMovies());
@@ -1351,7 +1351,7 @@ function renderMoviePick() {
       const strong = document.createElement("b");
       strong.textContent = title;
       const small = document.createElement("span");
-      small.textContent = open.has(m.id) ? (m.need > 0 && MOVIE_ALL_OPEN_NOW ? `(仮)今だけ見られる / ${note}` : note) : `まだ 見られない(${note})`;
+      small.textContent = open.has(m.id) ? (m.need > 0 && MOVIE_ALL_OPEN_NOW ? `(仮)今だけ見られる / ${note}` : note) : `まだ見られない(${note})`;
       button.append(strong, small);
       button.disabled = !open.has(m.id);
       button.addEventListener("click", () => openMovie(`mode=gallery&play=${m.id}`));
@@ -1475,7 +1475,7 @@ $("btn-r-review").addEventListener("click", () => {
   reviewScope = [...reviewNow];
   reviewFromQuiz = true;
   timeLimit = false;
-  startPlay("review", "ここで 正解すると 復習モードから 消えるヨ!");
+  startPlay("review", "ここで正解すると復習モードから消えるヨ!");
 });
 // 毎日1問・復習のあとは、「その他」へ戻る
 const leaveGame = () => {
@@ -1639,11 +1639,11 @@ $("btn-tutorial").addEventListener("click", (event) => {
 // ホームの3つのボタン:えらぶ画面(おはなし・コレクション・おたのしみ)
 const HUBS = {
   story: {
-    title: "フロリの お話",
+    title: "フロリのお話",
     items: [
-      { label: "遊び方", sub: "ムービーで 見る", icon: "clapper", go: () => playTutorial("rpg") },
-      { label: "物語", sub: "フロリ家族の お話", icon: "scroll", go: () => { renderMoviePick(); $("movie-pick").hidden = false; } },
-      { label: "スタッフクレジット", sub: "作った みんな", icon: "star_fill", go: () => showCredits() },
+      { label: "遊び方", sub: "ムービーで見る", icon: "clapper", go: () => playTutorial("rpg") },
+      { label: "物語", sub: "フロリ家族のお話", icon: "scroll", go: () => { renderMoviePick(); $("movie-pick").hidden = false; } },
+      { label: "スタッフクレジット", sub: "作ったみんな", icon: "star_fill", go: () => showCredits() },
     ],
   },
   records: {
@@ -1826,8 +1826,8 @@ function renderNews() {
   const news = computeNews();
   const lines = [];
   if (news.cards > 0) lines.push(`📚 問題図鑑:新しいカードが ${news.cards}枚!`);
-  if (news.dress.length) lines.push(`🎁 着せ替えが 増えたヨ:${news.dress.map(dressName).join("・")}`);
-  if (news.gain > 0) lines.push(`🏆 総合得点が ${news.gain}点 アップ!(今 ${news.now.total}点)`);
+  if (news.dress.length) lines.push(`🎁 着せ替えが増えたヨ:${news.dress.map(dressName).join("・")}`);
+  if (news.gain > 0) lines.push(`🏆 総合得点が ${news.gain}点アップ!(今 ${news.now.total}点)`);
   const list = $("r-news");
   list.hidden = lines.length === 0;
   list.replaceChildren(
@@ -1884,7 +1884,7 @@ function renderRewardCard(el) {
   info.className = "reward-info";
   const title = document.createElement("b");
   title.className = "reward-title";
-  title.textContent = `次の ご褒美:${item.name}(${KIND_WORD[kind]})`;
+  title.textContent = `次のご褒美:${item.name}(${KIND_WORD[kind]})`;
   const bar = document.createElement("span");
   bar.className = "reward-bar";
   const fill = document.createElement("i");
@@ -2071,7 +2071,7 @@ function showDex() {
           openDexCard(question, label, rightSet.has(uid));
           button.classList.remove("is-flip");
         }, 110);
-      } else $("dex-comment").textContent = "まだ出会っていないヨ。問題を解くと カードがもらえるヨ!";
+      } else $("dex-comment").textContent = "まだ出会っていないヨ。問題を解くとカードがもらえるヨ!";
     });
     return button;
   };
@@ -2108,8 +2108,8 @@ function showDex() {
     have === everyList.length
       ? "🎉 コンプリート! 全部のカードが揃ったヨ!"
       : have === 0
-        ? "問題を解くと カードが集まるヨ!"
-        : "押すと 問題が見られるヨ!";
+        ? "問題を解くとカードが集まるヨ!"
+        : "押すと問題が見られるヨ!";
   $("screen-dex").classList.toggle("is-complete", have === everyList.length);
   $("dex-grid").replaceChildren(...cards);
   $("dex-grid").scrollTop = 0;
@@ -2233,15 +2233,15 @@ function showNote() {
     return button;
   });
   $("note-filter").replaceChildren(...tabs);
-  $("note-count").textContent = items.length > 0 ? `ノートの問題 ${items.length}問` : "ノートは まっさら!";
+  $("note-count").textContent = items.length > 0 ? `ノートの問題 ${items.length}問` : "ノートはまっさら!";
   const byGroup = FIELDS.map((name) => [name, items.filter((q) => fieldOf(q) === name).length]);
   const [top, topCount] = byGroup.reduce((a, b) => (b[1] > a[1] ? b : a));
   $("note-comment").textContent =
     items.length === 0
-      ? "間違えた問題は ないヨ。すごい!"
+      ? "間違えた問題はないヨ。すごい!"
       : topCount >= 2 && topCount > items.length / 2
-        ? `${top}の問題が 多いヨ。押すと 解説が 見られるヨ!`
-        : "押すと 解説が 見られるヨ!";
+        ? `${top}の問題が多いヨ。押すと解説が見られるヨ!`
+        : "押すと解説が見られるヨ!";
   $("btn-note-review").disabled = items.length === 0;
   show("note");
 }
@@ -2347,7 +2347,7 @@ function renderRpgStatus(stage = play.current, foeHp = play.hp) {
   $("rpg-foe-icon").replaceChildren(foeImage(stage));
   $("rpg-field").dataset.foe = FOE_ART[stage.name]?.key ?? "mouse"; // 背景も、ものがたりの絵にそろえる
   $("rpg-foe-name").textContent = stage.kind === "chest" ? "宝箱" : stage.kind === "boss" ? `ボス ${stage.name}` : stage.name;
-  $("rpg-foe-hp").textContent = stage.kind === "chest" ? "正解で ハート回復" : `${"💗".repeat(Math.max(0, foeHp))}${"🤍".repeat(stage.hp - Math.max(0, foeHp))}`;
+  $("rpg-foe-hp").textContent = stage.kind === "chest" ? "正解でハート回復" : `${"💗".repeat(Math.max(0, foeHp))}${"🤍".repeat(stage.hp - Math.max(0, foeHp))}`;
 }
 
 function rpgPose(src, alt) {
@@ -2388,13 +2388,13 @@ function fitRpgWindow() {
 // 「現れた!」の文。同じ敵に、間違えるたびに、ちがう文にする
 function rpgIntro(stage, retries) {
   const name = stage.kind === "boss" ? `ボス ${stage.name}` : stage.name;
-  if (stage.kind === "chest") return "宝箱だ! 正解で ハート回復!";
-  if (retries === 0) return `${stage.icon} ${name}が 現れた!`;
+  if (stage.kind === "chest") return "宝箱だ! 正解でハート回復!";
+  if (retries === 0) return `${stage.icon} ${name}が現れた!`;
   const lines = [
-    `${name}が にやりと 笑った! つぎの 問題だ!`,
-    `${name}は まだ 立ちはだかっている!`,
-    `${name}の 怒りが 高まっている!`,
-    `${name}が おそいかかってくる! あきらめるな!`,
+    `${name}がにやりと笑った! つぎの問題だ!`,
+    `${name}はまだ立ちはだかっている!`,
+    `${name}の怒りが高まっている!`,
+    `${name}がおそいかかってくる! あきらめるな!`,
   ];
   return lines[(retries - 1) % lines.length];
 }
@@ -2444,7 +2444,7 @@ function showRpg() {
   const warn = $("rpg-warn");
   const beforeBoss = RPG_STAGES.length - 2;
   warn.hidden = play.stage < beforeBoss;
-  warn.textContent = stage.kind === "boss" ? "警告! ボス戦だ!" : "警告! 次は ボスが まっているぞ!";
+  warn.textContent = stage.kind === "boss" ? "警告! ボス戦だ!" : "警告! 次はボスがまっているぞ!";
   $("screen-rpg").querySelector(".rpg-window").scrollTop = 0;
   show("rpg");
   setScene(stage.kind === "boss" ? "rpgboss" : "rpg"); // ボス戦は、BGMが変わる
@@ -2496,11 +2496,11 @@ function rpgAnswer(index, timedUp = false) {
   const event = play.event;
   rpgSounds(event);
   const message = {
-    hit: `⚔️ 攻撃! ${foe.name}に ダメージ!`,
-    defeat: `💥 ${foe.name}を 倒した!`,
-    damage: `💢 ${foe.name}の 攻撃! ハート -1`,
-    heal: "💖 宝箱が 開いた! ハート +1",
-    miss: "🎁 宝箱は 開けられなかった…",
+    hit: `⚔️ 攻撃! ${foe.name}にダメージ!`,
+    defeat: `💥 ${foe.name}を倒した!`,
+    damage: `💢 ${foe.name}の攻撃! ハート -1`,
+    heal: "💖 宝箱が開いた! ハート +1",
+    miss: "🎁 宝箱は開けられなかった…",
   }[event];
   rpgFx("", event === "damage" ? "is-hurt" : "is-strike"); // 動きだけ(文字は、下の正解/残念の行に出す。ウィンドウに収めるため)
   if (event === "defeat") setTimeout(() => $("rpg-field").classList.add("is-defeat"), 400);
@@ -2548,12 +2548,12 @@ function showGameOver() {
   const last = RPG_STAGES.length - 1;
   $("go-message").textContent =
     result.stage === 0
-      ? "最初の 敵に 負けちゃった…。次は 頑張ろう!"
+      ? "最初の敵に負けちゃった…。次は頑張ろう!"
       : result.stage >= last
-        ? "ドラゴンに やられちゃった…。あと少しだったヨ!"
+        ? "ドラゴンにやられちゃった…。あと少しだったヨ!"
         : result.stage >= 3
-          ? "ボスの すぐ近くまで 来たのに…。くやしいネ!"
-          : "ここまで 頑張ったヨ。もう1度 行ってみよう!";
+          ? "ボスのすぐ近くまで来たのに…。くやしいネ!"
+          : "ここまで頑張ったヨ。もう1度行ってみよう!";
   $("go-path").replaceChildren(
     ...RPG_STAGES.map((stage, index) => {
       const item = document.createElement("li");
@@ -2566,7 +2566,7 @@ function showGameOver() {
   );
   $("go-reach").textContent = `${result.stage} / ${RPG_STAGES.length}`;
   $("go-correct").textContent = `${result.correct} / ${result.total}問`;
-  $("go-note").textContent = wrongCount > 0 ? `間違えた${wrongCount}問は、間違いノートに 入ったヨ。` : "";
+  $("go-note").textContent = wrongCount > 0 ? `間違えた${wrongCount}問は、間違いノートに入ったヨ。` : "";
   $("go-note").hidden = wrongCount === 0;
   awardBadges();
   show("gameover");
@@ -2590,7 +2590,7 @@ $("btn-rpg-hint-yes").addEventListener("click", () => {
   play.useHint();
   renderRpgHearts();
   playSe("rpgGuard", 380); // ハートが半分減った音(ダメージより短く)
-  rpgFx("💔 ハート 半分 減った");
+  rpgFx("💔 ハート半分減った");
   $("screen-rpg").classList.add("is-hinted"); // 低い画面では、上の絵を小さくして、ヒントの場所をあける
   $("rpg-hint").textContent = `💡 ${rpgQuestion.hint}`;
   $("rpg-hint").hidden = false;
@@ -2781,7 +2781,7 @@ function renderDress() {
   const owned = dressOwned(stats);
   const total = dressTotal();
   $("dress-meter-bar").style.width = `${Math.round((owned / total) * 100)}%`;
-  $("dress-meter-text").textContent = `ご褒美 GET ${owned} / ${total}個${owned >= total ? "  全部 コンプリート! 🎉" : ""}`;
+  $("dress-meter-text").textContent = `ご褒美 GET ${owned} / ${total}個${owned >= total ? "  全部コンプリート! 🎉" : ""}`;
   renderRewardCard($("dress-reward"));
   setDecor("dress-decor", wornItems());
   seenTabs.add(dressTab); // いま開いている種類の NEW は、すぐ消える

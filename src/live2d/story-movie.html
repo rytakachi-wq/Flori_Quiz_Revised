@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>フロリの 物語</title>
+<title>フロリの物語</title>
 <style>
 html,body{margin:0;height:100%;overflow:hidden;touch-action:manipulation}
 body{font:16px system-ui,"Hiragino Sans","Yu Gothic",sans-serif;user-select:none;-webkit-user-select:none;background:#111;color:#2a3440}
-/* スマホの たて長の画面(9:16)の枠。大きい画面でも、まんなかに たて長で出す。たて長の さらに細長い画面では、たて いっぱい */
+/* スマホのたて長の画面(9:16)の枠。大きい画面でも、まんなかにたて長で出す。たて長のさらに細長い画面では、たていっぱい */
 #phone{position:fixed;left:50%;top:0;transform:translateX(-50%);height:100vh;width:min(100vw,56.25vh);container-type:size;--u:1.28cqw;overflow:hidden;background:#000}
 #stage{position:absolute;inset:0;overflow:hidden;background:#000}
 .bg{position:absolute;inset:0}   /* 背景は、すぐに入れかえる(ゆっくり重ねると、うしろの白っぽい色が見える) */
@@ -18,7 +18,7 @@ body{font:16px system-ui,"Hiragino Sans","Yu Gothic",sans-serif;user-select:none
 .bgs-gate{background:linear-gradient(#4a3a5a 0%,#7a4a5a 58%,#3a2a3a 58%,#2a1a2a 100%)}
 .bgs-alert{background:linear-gradient(#5a1a2a,#a02a3a 58%,#3a1020 100%)}
 .bgs-title{background:linear-gradient(#ffd0d0,#ff9a9a)}
-/* 場面を置く枠は、いつも 9:16(下にそろえる)。もっと細長い画面では、上に、空・背景が のびる */
+/* 場面を置く枠は、いつも 9:16(下にそろえる)。もっと細長い画面では、上に、空・背景がのびる */
 #world{position:absolute;left:0;right:0;bottom:0;height:177.78cqw;will-change:transform}
 .prop{position:absolute;width:auto;transform:translateX(-50%);filter:drop-shadow(0 calc(var(--u)*.5) calc(var(--u)*.5) rgba(0,0,0,.25))}
 .actor{position:absolute;transform:translateX(-50%);pointer-events:none;height:calc(var(--u)*42);aspect-ratio:calc(800*1.12)/calc(1003*1.19)}
@@ -57,7 +57,7 @@ body{font:16px system-ui,"Hiragino Sans","Yu Gothic",sans-serif;user-select:none
 @keyframes fade{from{opacity:1}to{opacity:0}}
 #cap{position:absolute;left:3%;right:3%;bottom:2%;min-height:calc(var(--u)*11);box-sizing:border-box;padding:calc(var(--u)*1.2) calc(var(--u)*2);background:rgba(255,255,255,.96);border:4px solid #4a5560;border-radius:20px;text-align:center}
 #who{font-size:calc(var(--u)*2.2);font-weight:bold;color:#3a7aa8;min-height:calc(var(--u)*2.6)}
-#line{font-size:calc(var(--u)*3);font-weight:bold;line-height:1.5;white-space:pre-line;word-break:keep-all;overflow-wrap:anywhere;line-break:strict;text-wrap:balance}   /* 文の折れ目は、ことばの切れ目で */
+#line{font-size:calc(var(--u)*3);font-weight:bold;line-height:1.5;white-space:pre-line;word-break:auto-phrase;overflow-wrap:anywhere;line-break:strict;text-wrap:balance}   /* 文の折れ目は、ことばの切れ目で */
 #title{position:absolute;inset:0;display:grid;place-items:start center;padding-top:calc(var(--u)*8);font-size:calc(var(--u)*8);font-weight:bold;color:#fff;text-shadow:0 calc(var(--u)*.5) 0 #c04040,calc(var(--u)*.25) 0 0 #c04040,calc(var(--u)*-.25) 0 0 #c04040;opacity:0;transition:opacity 2s;pointer-events:none;text-align:center}
 #title.on{opacity:1}
 #bar{position:absolute;top:1%;left:26%;right:2%;display:flex;gap:calc(var(--u)*.8);justify-content:center;flex-wrap:wrap;z-index:5}
@@ -92,5 +92,5 @@ body{font:16px system-ui,"Hiragino Sans","Yu Gothic",sans-serif;user-select:none
 <div id="loading">よみこみちゅう…</div>
 </div><!-- /phone -->
 </div>
-<script type="module" src="story-movie.js?v=20261112b"></script>
+<script type="module" src="story-movie.js?v=20261113a"></script>
 </body></html>

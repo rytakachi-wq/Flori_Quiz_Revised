@@ -9,12 +9,12 @@ const SEQ = (items) => items.map(([icon, note], n) => `<span class="tg-seq-item"
 const DAILY_SCENES = [
   {
     title: "毎日1問",
-    caption: "1日に1問だけ出る 今日の問題だよ。1日1回 挑戦できるよ。",
+    caption: "1日に1問だけ出る今日の問題だよ。1日1回挑戦できるよ。",
     html: `<div class="tg">${seq([["📅", "今日の問題"], ["❓", "1問だけ"]], "wide")}</div>`,
   },
   {
     title: "毎日1問",
-    caption: "毎日続けて解くと 連続の日数がのびて ご褒美がもらえるよ。",
+    caption: "毎日続けて解くと連続の日数がのびてご褒美がもらえるよ。",
     html: `<div class="tg">${seq([["📅", "1日目"], ["📅", "2日目"], ["📅", "3日目"], ["🎁", "ご褒美"]])}</div>`,
   },
 ];
@@ -23,17 +23,17 @@ const DAILY_SCENES = [
 const REVIEW_SCENES = [
   {
     title: "復習",
-    caption: "間違えた問題と ヒントを見て解いた問題が 出るよ。",
+    caption: "間違えた問題とヒントを見て解いた問題が出るよ。",
     html: `<div class="tg">${seq([["❌", "間違えた問題"], ["💡", "ヒントを見た問題"]], "wide")}</div>`,
   },
   {
     title: "復習",
-    caption: "ヒントを見ないで 正解すると 復習から消えるよ。",
+    caption: "ヒントを見ないで正解すると復習から消えるよ。",
     html: `<div class="tg">${seq([["📖", "復習"], ["✅", "正解"], ["✨", "消える"]], "wide")}</div>`,
   },
   {
     title: "復習",
-    caption: "制限時間は付かないよ(急がず じっくり 思い出す練習にするため)。",
+    caption: "制限時間は付かないよ(急がずじっくり思い出す練習にするため)。",
     html: `<div class="tg">${seq([["⏱", "制限時間"], ["🚫", "付かない"]], "wide")}</div>`,
   },
 ];
@@ -41,27 +41,27 @@ const REVIEW_SCENES = [
 const RPG_SCENES = [
   {
     title: "RPGクエスト",
-    caption: "5つのマスを 進んで ボスの ドラゴンを 倒そう! ハートは 4つだよ。",
+    caption: "5つのマスを進んでボスのドラゴンを倒そう! ハートは 4つだよ。",
     html: `<div class="tg">${seq([["🐭", "ザコ"], ["🎁", "宝箱"], ["🦂", "強い敵"], ["🐉", "ボス"]])}</div>`,
   },
   {
     title: "戦い",
-    caption: "正解すると 敵に 攻撃! 間違えると ハートが 1つ 減るよ。",
+    caption: "正解すると敵に攻撃! 間違えるとハートが 1つ減るよ。",
     html: `<div class="tg">${seq([["✅", "正解"], ["⚔️", "攻撃"], ["❌", "間違い"], ["💔", "ハート -1"]])}</div>`,
   },
   {
     title: "ヒント",
-    caption: "ヒントを見ると ハートが 半分 減るよ。ハートが 半分しか ない時は 見られないよ。",
-    html: `<div class="tg">${seq([["💡", "ヒント"], ["💔", "ハート 半分"]], "wide")}</div>`,
+    caption: "ヒントを見るとハートが半分減るよ。ハートが半分しかない時は見られないよ。",
+    html: `<div class="tg">${seq([["💡", "ヒント"], ["💔", "ハート半分"]], "wide")}</div>`,
   },
   {
     title: "宝箱・ボス",
-    caption: "宝箱は 正解で ハートが 1つ 回復! ボスは 2回 正解すると 倒せるよ。",
-    html: `<div class="tg">${seq([["🎁", "回復"], ["🐉", "ボス"], ["⚔️", "2回 攻撃"]])}</div>`,
+    caption: "宝箱は正解でハートが 1つ回復! ボスは 2回正解すると倒せるよ。",
+    html: `<div class="tg">${seq([["🎁", "回復"], ["🐉", "ボス"], ["⚔️", "2回攻撃"]])}</div>`,
   },
   {
     title: "間違い・クリア",
-    caption: "間違えた問題は 間違いノートに 入るよ。ハートが 0になる前に ドラゴンを 倒そう!",
+    caption: "間違えた問題は間違いノートに入るよ。ハートが 0になる前にドラゴンを倒そう!",
     html: `<div class="tg">${seq([["❌", "間違い"], ["📓", "ノート"], ["🏆", "クリア"]])}</div>`,
   },
 ];
@@ -92,7 +92,7 @@ function render() {
   );
   $("tut-prev").disabled = index === 0;
   const last = index === SCENES.length - 1;
-  $("tut-next").textContent = last ? (options.startLabel ?? "もう1度 見る") : "次へ ▶";
+  $("tut-next").textContent = last ? (options.startLabel ?? "もう1度見る") : "次へ ▶";
   $("tut-next").classList.toggle("is-start", last && Boolean(options.startLabel));
   $("tut-skip").textContent = options.skipLabel ?? "閉じる";
 }

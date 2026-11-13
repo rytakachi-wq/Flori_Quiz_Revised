@@ -6,23 +6,23 @@ const CH = (cls = "") => `<div class="rf-ch ${cls}"><span>4こ</span><span class
 
 const COMMON = [
   {
-    title: "① 答えを 選ぶ",
-    caption: "問題の答えを 選ぼう。正解すると 点が もらえるよ!",
+    title: "① 答えを選ぶ",
+    caption: "問題の答えを選ぼう。正解すると点がもらえるよ!",
     html: `${Q}${CH("f1")}<span class="rf-badge rf-good b1">⭕ 正解! +1点</span><span class="rf-finger fg1">👆</span>`,
   },
   {
     title: "② ヒント",
-    caption: "ヒントを 見ると その問題の 点が 半分に なるよ。",
-    html: `${Q}${CH()}<span class="rf-btn rf-hintbtn">💡 ヒント</span><span class="rf-hinttext">たし算を してみよう</span><span class="rf-pts"><s>1点</s> → <b>0.5点</b><small>半分</small></span><span class="rf-finger fg2">👆</span>`,
+    caption: "ヒントを見るとその問題の点が半分になるよ。",
+    html: `${Q}${CH()}<span class="rf-btn rf-hintbtn">💡 ヒント</span><span class="rf-hinttext">たし算をしてみよう</span><span class="rf-pts"><s>1点</s> → <b>0.5点</b><small>半分</small></span><span class="rf-finger fg2">👆</span>`,
   },
   {
     title: "③ 分からない",
-    caption: "「分からない」を 押すと 答えが 見られるよ。でも 不正解に なるよ。",
-    html: `${Q}${CH()}<span class="rf-btn rf-givebtn">🤔 分からない</span><span class="rf-answer">答えは 「5こ」</span><span class="rf-badge rf-bad b3">❌ 不正解 0点</span><span class="rf-finger fg3">👆</span>`,
+    caption: "「分からない」を押すと答えが見られるよ。でも不正解になるよ。",
+    html: `${Q}${CH()}<span class="rf-btn rf-givebtn">🤔 分からない</span><span class="rf-answer">答えは「5こ」</span><span class="rf-badge rf-bad b3">❌ 不正解 0点</span><span class="rf-finger fg3">👆</span>`,
   },
   {
     title: "④ 制限時間",
-    caption: "制限時間を つけると 1問 30秒。時間切れは 不正解。",
+    caption: "制限時間をつけると 1問 30秒。時間切れは不正解。",
     html: `<div class="rf-clock"><span class="rf-clock-n">⏱ 30秒</span><span class="rf-bar"><i></i></span><span class="rf-over">⏰ 時間切れ!</span></div>`,
   },
 ];
@@ -30,12 +30,12 @@ const COMMON = [
 const SOLO = [
   {
     title: "① 1回は 5問",
-    caption: "1回は 5問。正解すると 1問で 1点。5問 全部で 5点満点だよ。",
+    caption: "1回は 5問。正解すると 1問で 1点。5問全部で 5点満点だよ。",
     html: `<div class="rf-five">${[1, 2, 3, 4, 5].map((n) => `<span style="--n:${n - 1}"><b>${n}</b><em>+1</em></span>`).join("")}</div><span class="rf-total">合計 5点満点</span>`,
   },
   {
-    title: "② 続くと 難しく",
-    caption: "正解が 続くと 問題が 難しく。全部の問題で 100点満点の 総合得点を 目指そう!",
+    title: "② 続くと難しく",
+    caption: "正解が続くと問題が難しく。全部の問題で 100点満点の総合得点を目指そう!",
     html: `<div class="rf-ladder"><span class="l1">難しさ ★☆☆☆</span><span class="l2">難しさ ★★☆☆</span><span class="l3">難しさ ★★★☆</span></div><div class="rf-chain"><span>⭕</span><span>⭕</span><span>⭕</span><em>⬆ 難しく!</em></div><span class="rf-total t100">🏆 総合得点 100点満点</span>`,
   },
 ];
@@ -52,7 +52,7 @@ const STACK = (...parts) => `<div class="rf-stack">${parts.join("")}</div>`;
 const HARD = [
   {
     title: "② 難しい問題",
-    caption: "難しい問題だけが 出るよ。正解すると 1問で 1点。全部の問題で 100点満点の 総合得点を 目指そう!",
+    caption: "難しい問題だけが出るよ。正解すると 1問で 1点。全部の問題で 100点満点の総合得点を目指そう!",
     html: `${SEQ([["🔥", "難しい問題"], ["⭕", "正解"], ["🏆", "総合得点"]])}`,
   },
 ];
@@ -60,33 +60,33 @@ const HARD = [
 // RPGクエスト
 const RPG = [
   {
-    title: "① 5つの マス",
-    caption: "5つのマスを 進んで ボスの ドラゴンを 倒そう!",
+    title: "① 5つのマス",
+    caption: "5つのマスを進んでボスのドラゴンを倒そう!",
     html: SEQ([["🐭", "ザコ"], ["🎁", "宝箱"], ["🦂", "強い敵"], ["🐉", "ボス"]]),
   },
   {
     title: "② ハートは 4つ",
-    caption: "ハートは 4つ。間違えると 1つ 減って、0に なると ゲームオーバーだよ。",
+    caption: "ハートは 4つ。間違えると 1つ減って、0になるとゲームオーバーだよ。",
     html: STACK(HEARTS([HEART, HEART, HEART, HEART], "rf-lose"), '<span class="rf-note">間違えると… ハート -1</span>'),
   },
   {
     title: "③ 戦い",
-    caption: "正解すると 敵に 攻撃! 間違えると 敵に やられて ハートが 1つ 減るよ。",
+    caption: "正解すると敵に攻撃! 間違えると敵にやられてハートが 1つ減るよ。",
     html: SEQ([["✅", "正解"], ["⚔️", "攻撃"], ["❌", "間違い"], ["💔", "ハート -1"]]),
   },
   {
     title: "④ ヒント",
-    caption: "ヒントを 見ると ハートが 半分 減るよ。ハートが 半分しか ない時は 見られないよ。",
-    html: STACK(SEQ([["💡", "ヒントを 見る"]]), HEARTS([HEART, HEART, HEART, HEART_HALF]), '<span class="rf-note">ハート 半分</span>'),
+    caption: "ヒントを見るとハートが半分減るよ。ハートが半分しかない時は見られないよ。",
+    html: STACK(SEQ([["💡", "ヒントを見る"]]), HEARTS([HEART, HEART, HEART, HEART_HALF]), '<span class="rf-note">ハート半分</span>'),
   },
   {
     title: "⑤ 宝箱・ボス",
-    caption: "宝箱は 正解で ハートが 1つ 回復! ボスは 2回 正解すると 倒せるよ。",
-    html: SEQ([["🎁", "回復"], ["🐉", "ボス"], ["⚔️", "2回 攻撃"]]),
+    caption: "宝箱は正解でハートが 1つ回復! ボスは 2回正解すると倒せるよ。",
+    html: SEQ([["🎁", "回復"], ["🐉", "ボス"], ["⚔️", "2回攻撃"]]),
   },
   {
     title: "⑥ 間違い・クリア",
-    caption: "間違えた問題は 間違いノートに 入るよ。ハートが 0に なる前に ドラゴンを 倒そう!",
+    caption: "間違えた問題は間違いノートに入るよ。ハートが 0になる前にドラゴンを倒そう!",
     html: SEQ([["❌", "間違い"], ["📓", "ノート"], ["🏆", "クリア"]]),
   },
 ];
@@ -95,26 +95,26 @@ const RPG = [
 const DAILY = [
   {
     title: "① 1日に 1問",
-    caption: "毎日 1問だけ 出る 特別な問題だよ。1日に 1回 挑戦できるよ。",
+    caption: "毎日 1問だけ出る特別な問題だよ。1日に 1回挑戦できるよ。",
     html: SEQ([["📅", "毎日 1問"], ["🤔", "挑戦"], ["⭕", "正解"]]),
   },
   {
-    title: "② 毎日 つづけよう",
-    caption: "毎日 続けて 挑戦しよう。明日は また 新しい 問題が 出るよ。",
-    html: SEQ([["🌙", "明日"], ["📅", "新しい 問題"], ["🏆", "続けよう"]]),
+    title: "② 毎日つづけよう",
+    caption: "毎日続けて挑戦しよう。明日はまた新しい問題が出るよ。",
+    html: SEQ([["🌙", "明日"], ["📅", "新しい問題"], ["🏆", "続けよう"]]),
   },
 ];
 
 // 復習
 const REVIEW = [
   {
-    title: "① 間違えた 問題",
-    caption: "間違えた 問題は 間違いノートに 入るよ。",
+    title: "① 間違えた問題",
+    caption: "間違えた問題は間違いノートに入るよ。",
     html: SEQ([["❌", "間違い"], ["📓", "ノート"]]),
   },
   {
-    title: "② もう1度 挑戦",
-    caption: "ノートの 問題を もう1度 解いて、しっかり 覚えよう!",
+    title: "② もう1度挑戦",
+    caption: "ノートの問題をもう1度解いて、しっかり覚えよう!",
     html: SEQ([["📓", "ノート"], ["🤔", "もう1度"], ["⭕", "覚えた!"]]),
   },
 ];
@@ -123,8 +123,8 @@ const REVIEW = [
 const KINDS = {
   daily: { theme: "daily", tag: "📅 毎日1問", scenes: () => DAILY },
   review: { theme: "review", tag: "📓 復習", scenes: () => REVIEW },
-  normal: { theme: "solo", tag: "🌱 1人で 普通", scenes: () => [...COMMON, ...SOLO] },
-  hard: { theme: "hard", tag: "🔥 1人で 難しい", scenes: () => [...COMMON, SOLO[0], ...HARD] },
+  normal: { theme: "solo", tag: "🌱 1人で普通", scenes: () => [...COMMON, ...SOLO] },
+  hard: { theme: "hard", tag: "🔥 1人で難しい", scenes: () => [...COMMON, SOLO[0], ...HARD] },
   rpg: { theme: "rpg", tag: "🗡️ RPGクエスト", scenes: () => RPG },
 };
 let kind = "normal";
@@ -144,7 +144,7 @@ function render() {
   $("rf-tag").textContent = info.tag;
   $("rf-title").textContent = `${CIRCLED[index] ?? ""} ${scene.title.replace(/^[①-⑩]\s*/, "")}`; // 番号は、場面の順につける
   $("rf-caption").textContent = scene.caption;
-  $("rf-skip").textContent = `ルールを 飛ばして ${lastEndLabel === "クイズのモード選択へ" ? "モード選択へ" : lastEndLabel}`;
+  $("rf-skip").textContent = `ルールを飛ばして ${lastEndLabel === "クイズのモード選択へ" ? "モード選択へ" : lastEndLabel}`;
   const stage = $("rf-stage");
   stage.replaceChildren();
   stage.insertAdjacentHTML("beforeend", scene.html);

@@ -7,7 +7,7 @@ import { loadModel, draw } from './live2d.js?v=patch1';
 import { createMotion } from './flori-motion.js?v=hand1';
 import { recolorCanvas } from '../flori-color.js';
 import { HEADS } from '../badges.js';
-import { startFurigana } from '../furigana.js?v=fm6';
+import { startFurigana } from '../furigana.js?v=fm9';
 import { MOVIES } from './storyboard.js?v=20261112a';
 
 startFurigana();
@@ -162,7 +162,7 @@ const xBtn = document.getElementById('x'); xBtn.textContent = STORY ? '飛ばす
 if (!params.get('debug')) koma.style.display = 'none';
 if (STORY) bar.style.display = 'none';
 else {   // ボタンは「じどうで すすむ」だけ(ムービーのえらびかたは、ゲームの画面で)
-  const autoBtn = document.createElement('button'); autoBtn.textContent = '自動で 進む:なし'; autoBtn.onclick = () => { auto = !auto; autoKey = ''; autoBtn.textContent = auto ? '自動で 進む:あり' : '自動で 進む:なし'; autoBtn.classList.toggle('on', auto); }; bar.append(autoBtn);
+  const autoBtn = document.createElement('button'); autoBtn.textContent = '自動で進む:なし'; autoBtn.onclick = () => { auto = !auto; autoKey = ''; autoBtn.textContent = auto ? '自動で進む:あり' : '自動で進む:なし'; autoBtn.classList.toggle('on', auto); }; bar.append(autoBtn);
 }
 const nextOpen = from => { for (let i = from; i < MOVIES.length; i++) if (isOpen(MOVIES[i].id)) return i; return -1; };
 

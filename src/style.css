@@ -3721,3 +3721,19 @@ html[data-pattern] :is(#screen-menu, #screen-note, #screen-credits, #screen-dex,
 #screen-dex .dex-filter .dt-name, #screen-note .dex-filter .dt-name { font-size: 11.5px; letter-spacing: -0.06em; white-space: nowrap; }
 #screen-dex .dex-filter .dt-name .emi, #screen-note .dex-filter .dt-name .emi { display: none; }
 @media (max-width: 380px) { #screen-dex .dex-filter .dt-name, #screen-note .dex-filter .dt-name { font-size: 10px; letter-spacing: -0.08em; } }
+
+/* 項目E(全体の修正):320px幅の問題画面で、上のチップ(「毎日1問」「難しさ」)が たてにつぶれ、星と問題の選択肢が切れていたのを直す */
+@media (max-width: 340px) {
+  #screen-question .status { grid-template-columns: auto 1fr auto; gap: 4px; }
+  #screen-question .status .back-btn { padding: 0 6px; font-size: 13px; gap: 3px; height: 40px; min-height: 40px; }
+  #screen-question .status .back-btn img, #screen-question .status .back-btn .emi { width: 20px; height: 20px; }
+  #screen-question .status .chip-button { padding: 2px 5px; font-size: 12px; }
+  #screen-question .status .q-info { grid-template-columns: auto 1fr; gap: 3px; }
+  #screen-question .q-chip { font-size: 11px; padding: 0 3px; white-space: nowrap; min-height: 34px; }
+  #screen-question .q-chip-level { padding: 0 1px; }
+}
+/* 項目E:RPGのヒントを見たあと、小さい画面(高さ700px以下)で選択肢が切れる・文字が小さくなりすぎるのを、戦いの場を低くして直す */
+@media (max-height: 700px) {
+  .rpg-screen:has(.rpg-hint:not([hidden])) { --rpg-field-h: 88px; }
+  .rpg-screen:has(.rpg-hint:not([hidden])) .rpg-path { display: none; }
+}
