@@ -330,13 +330,21 @@ body.has-pager { padding-bottom: 0 !important; }
 #screen-credits .credits-hud { left: 10px; right: 10px; top: 8px; }
 #screen-credits .credits-score { font-size: 26px; line-height: 1; padding: 6px 14px; color: #ffe08a; text-shadow: 0 2px 0 #3a2418; background: rgba(58, 36, 24, 0.82); border: 3px solid #d9a441; border-radius: 999px; }
 #screen-credits .credits-msg { color: #4a3428; background: #fff3cf; border: 3px solid #5a3a2a; text-shadow: none; }
-/* 結果発表:フロリを大きく・見やすい板に */
-#screen-credits .credits-result { z-index: 3; gap: 8px; background: rgba(40, 24, 12, 0.86); }
+/* 背景:朝 → 夕やけ → 夜 へ、なめらかに(朝の絵と夜の絵を まぜ、まんなかで 夕やけの色を重ねる) */
+#screen-credits .credits-stage::before { opacity: calc(var(--dusk, 0) * var(--dusk, 0) * (3 - 2 * var(--dusk, 0))); }
+#screen-credits .credits-stage::after { content: ""; position: absolute; inset: 0; z-index: 0; background: linear-gradient(180deg, rgba(255, 150, 80, 0.15) 0%, rgba(255, 110, 80, 0.6) 55%, rgba(150, 60, 120, 0.7) 100%); opacity: calc(var(--mid, 0) * 0.85); pointer-events: none; }
+/* ゲーム中:ハートを大きく */
+#screen-credits .credits-hud { align-items: flex-start; }
+#screen-credits #credits-hearts { font-size: 34px; line-height: 1; letter-spacing: 2px; filter: drop-shadow(0 2px 0 rgba(58, 36, 24, 0.8)); }
+#screen-credits #credits-hearts img { height: 1.1em; width: auto; }
+/* 結果発表:RPGの結果発表(クエストクリア)に合わせる = 金の光線の背景・茶色と金の板 */
+#screen-credits .credits-result { z-index: 3; gap: 8px; background: radial-gradient(circle at 50% 30%, rgba(255, 250, 200, 0.95), rgba(255, 220, 120, 0) 55%), repeating-conic-gradient(from 0deg at 50% 30%, rgba(255, 215, 90, 0.35) 0deg 10deg, rgba(255, 243, 207, 0) 10deg 20deg), linear-gradient(180deg, #fff3cf 0%, #ffe39a 55%, #f6c864 100%); border: 3px solid #8a5a10; border-radius: 18px; box-sizing: border-box; }
 #screen-credits :is(.credits-hud, .credits-msg) { z-index: 2; }
-#screen-credits .cres-flori { height: clamp(120px, calc(28 * var(--dvh)), 230px); }
-#screen-credits .cres-title { font-size: 24px; color: #fff3cf; text-shadow: 0 2px 0 #3a2418; }
-#screen-credits .cres-score { font-size: 52px; color: #ffe08a; text-shadow: 0 3px 0 #3a2418; }
-#screen-credits .cres-kills { font-size: 18px; color: #fff3cf; text-shadow: 0 2px 0 #3a2418; }
+#screen-credits .cres-flori { height: clamp(130px, calc(30 * var(--dvh)), 250px); filter: drop-shadow(0 4px 6px rgba(138, 74, 16, 0.45)); }
+#screen-credits .cres-title { font-size: 26px; color: #fff3cf; -webkit-text-stroke: 6px #8a4a10; paint-order: stroke fill; text-shadow: none; }
+#screen-credits .cres-score { min-width: 62%; padding: 6px 18px; font-size: 48px; color: #c0381c; text-shadow: 0 2px 0 #fff; background: linear-gradient(180deg, #fff6d8, #ffe39a); border: 3px solid #b8741c; border-radius: 16px; box-shadow: 0 4px 0 #8a4a10; }
+#screen-credits .cres-score:empty { display: none; }
+#screen-credits .cres-kills { font-size: 18px; color: #7a4a10; text-shadow: 0 2px 0 #fff; }
 
 /* 設定は、おはなしの中へ。ホームの上には、つぎの ものがたりまでの きろくだけ */
 .cover-home .home-top { display: none !important; }

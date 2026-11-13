@@ -168,6 +168,7 @@ function tick(now) {
     const stage = $("credits-stage");
     const dusk = Math.min(1, Math.max(0, 1 - (rollY + roll.offsetHeight) / (stage.clientHeight + roll.offsetHeight)));
     stage.style.setProperty("--dusk", dusk.toFixed(3));
+    stage.style.setProperty("--mid", (1 - Math.abs(2 * dusk - 1)).toFixed(3)); // まんなか(夕方)ほど 1。夕やけの色を重ねる
     if (rollY < -roll.offsetHeight) beginResult();
   }
   shooter.update(dt);
@@ -220,6 +221,7 @@ export function openCredits() {
   shooter.setActive(true);
   rollY = $("credits-stage").clientHeight;
   $("credits-stage").style.setProperty("--dusk", "0");
+  $("credits-stage").style.setProperty("--mid", "0");
   finished = false;
   $("credits-result").hidden = true;
   last = performance.now();

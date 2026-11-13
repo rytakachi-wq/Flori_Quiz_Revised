@@ -84,10 +84,61 @@ const STORY_TRACKS = {
       'F6/8 C6/4 A5/4', 'G5/4 E6/4 C6/8', 'D6/4 B5/4 G5/4 B5/4', 'C6/16',
     ),
   },
+  // きんぱく:あやしい・あぶない場面(ドラゴンが出る・警告 など)
+  story_alarm: {
+    bpm: 150, trim: 1.5, voice: 'buzz', bass: 'pulse', pad: 0.025, tick: 'eighth',
+    drums: 'k...s...k...s...', drumsB: 'k.k.s...k.k.s.s.',
+    chords: ['Am', 'Am', 'F', 'E7', 'Am', 'Am', 'Dm', 'E7', 'F', 'G', 'Am', 'E7', 'Dm', 'E7', 'Am', 'E7'],
+    lead: bars(
+      'A5/2 -/2 A5/2 -/2 A5/2 -/2 E5/2 -/2', 'C6/2 -/2 C6/2 -/2 B5/4 A5/4', 'A5/2 -/2 A5/2 -/2 G5/2 -/2 F5/2 -/2', 'G#5/4 B5/4 D6/4 B5/4',
+      'A5/2 -/2 A5/2 -/2 A5/2 -/2 E5/2 -/2', 'C6/2 -/2 C6/2 -/2 B5/4 A5/4', 'D6/2 -/2 D6/2 -/2 C6/4 A5/4', 'E6/8 D6/4 B5/4',
+      'C6/4 A5/4 F5/4 A5/4', 'D6/4 B5/4 G5/4 B5/4', 'E6/4 C6/4 A5/4 C6/4', 'B5/4 G#5/4 E5/4 G#5/4',
+      'A5/4 D6/4 F6/4 D6/4', 'G#5/4 B5/4 E6/4 D6/4', 'C6/4 E6/4 A6/8', 'E6/2 D6/2 B5/2 G#5/2 E5/8',
+    ),
+  },
+  // かなしい場面:パパとママが連れ去られる・とらわれている
+  story_sad: {
+    bpm: 66, trim: 1.5, voice: 'soft', bass: 'sustain', pad: 0.045,
+    chords: ['Am', 'F', 'C', 'G', 'Am', 'F', 'Dm', 'E7', 'Am', 'F', 'C', 'G', 'F', 'Dm', 'E7', 'Am'],
+    lead: bars(
+      'E5/8 A5/8', 'C6/8 A5/8', 'G5/8 E5/8', 'D5/8 B4/8',
+      'E5/4 A5/4 C6/8', 'A5/8 F5/8', 'D6/8 A5/8', 'G#5/8 B5/8',
+      'C6/8 E6/8', 'A5/4 C6/4 A5/8', 'E5/4 G5/4 C6/8', 'B5/8 G5/8',
+      'A5/8 F5/8', 'F5/4 A5/4 D6/8', 'B5/8 G#5/8', 'A5/16',
+    ),
+  },
+  // あるく場面:冒険に出る・先へ進む。明るく、はずむ
+  story_walk: {
+    bpm: 104, trim: 1.4, voice: 'triangle', bass: 'bounce', pad: 0.03, stab: true,
+    drums: 'k...s...k...s...',
+    chords: ['C', 'G', 'Am', 'F', 'C', 'G', 'F', 'G', 'C', 'Am', 'F', 'G', 'Em', 'Am', 'F', 'C'],
+    lead: bars(
+      'E5/4 E5/2 G5/2 C6/4 G5/4', 'D5/4 D5/2 G5/2 B5/4 G5/4', 'C6/4 C6/2 E6/2 A5/4 E5/4', 'A5/4 A5/2 C6/2 F5/4 A5/4',
+      'G5/4 E5/4 G5/4 C6/4', 'B5/4 G5/4 D6/4 B5/4', 'A5/4 F5/4 C6/4 A5/4', 'G5/4 B5/4 D6/8',
+      'E6/4 C6/4 G5/4 C6/4', 'E6/4 C6/4 A5/4 C6/4', 'F6/4 C6/4 A5/4 C6/4', 'D6/4 B5/4 G5/4 B5/4',
+      'E6/4 B5/4 G5/4 B5/4', 'C6/4 A5/4 E5/4 A5/4', 'A5/4 C6/4 F6/8', 'G5/4 E5/4 C5/8',
+    ),
+  },
+  // うれしい場面:やった!助かった!
+  story_joy: {
+    bpm: 124, trim: 1.4, voice: 'mallet', bass: 'bounce', pad: 0.03, stab: true,
+    drums: 'k.h.s.h.k.h.s.h.', drumsB: 'k.hsk.hsk.hsk.hs',
+    chords: ['C', 'F', 'G', 'C', 'Am', 'F', 'G', 'C', 'C', 'Dm', 'G', 'C', 'F', 'G', 'Am', 'C'],
+    lead: bars(
+      'C6/2 E6/2 G6/4 E6/2 C6/2 G5/4', 'A5/2 C6/2 F6/4 C6/2 A5/2 F5/4', 'B5/2 D6/2 G6/4 D6/2 B5/2 G5/4', 'E6/4 C6/4 G5/4 C6/4',
+      'C6/2 E6/2 A6/4 E6/2 C6/2 A5/4', 'A5/2 C6/2 F6/4 A6/4 F6/4', 'G6/4 D6/4 B5/4 D6/4', 'E6/4 G6/4 C7/8',
+      'E6/2 G6/2 E6/2 C6/2 G5/8', 'D6/2 F6/2 A6/4 F6/2 D6/2 A5/4', 'B5/2 D6/2 B5/2 G5/2 D6/8', 'C6/4 E6/4 G6/4 E6/4',
+      'F6/4 A6/4 C7/4 A6/4', 'G6/4 B6/4 D7/4 B6/4', 'A6/4 E6/4 C6/4 E6/4', 'G6/8 C7/8',
+    ),
+  },
 };
 Object.assign(TRACKS, STORY_TRACKS);
 
-const TRACK_OF = { pro: 'story_pro', ep1: 'story_ep1', ep2: 'story_ep2', ep3: 'story_ep3', ep4: 'story_ep4', epi: 'story_epi' };
+// 場面ごとの気もち(storyboard.js の bgm)→ 曲。お話の id でも引ける(場面に bgm がないとき)
+const TRACK_OF = {
+  peace: 'story_pro', alarm: 'story_alarm', sad: 'story_sad', resolve: 'story_ep3', walk: 'story_walk', mouse: 'story_ep1', frog: 'story_ep2', battle: 'story_ep4', joy: 'story_joy', warm: 'story_epi',
+  pro: 'story_pro', ep1: 'story_ep1', ep2: 'story_ep2', ep3: 'story_ep3', ep4: 'story_ep4', epi: 'story_epi',
+};
 
 let player = null;
 let want = null;   // ならしたい曲(音が出せるようになる前に呼ばれても、あとで鳴らす)

@@ -165,13 +165,12 @@ const xBtn = document.getElementById('x'); xBtn.textContent = STORY ? '飛ばす
 if (!params.get('debug')) koma.style.display = 'none';
 if (STORY) bar.style.display = 'none';
 else {   // ボタンは「じどうで すすむ」だけ(ムービーのえらびかたは、ゲームの画面で)
-  const autoBtn = document.createElement('button'); autoBtn.textContent = '自動で進む:なし'; autoBtn.onclick = () => { auto = !auto; autoKey = ''; autoBtn.textContent = auto ? '自動で進む:あり' : '自動で進む:なし'; autoBtn.classList.toggle('on', auto); }; bar.append(autoBtn);
+  const autoBtn = document.createElement('button'); autoBtn.textContent = '自動で進む:なし'; autoBtn.onclick = () => { auto = !auto; autoKey = ''; autoBtn.textContent = auto ? '自動で進む:あり' : '自動で進む:なし'; autoBtn.classList.toggle('on', auto); }; autoBtn.id = 'auto'; document.getElementById('btnrow').prepend(autoBtn);
 }
 const nextOpen = from => { for (let i = from; i < MOVIES.length; i++) if (isOpen(MOVIES[i].id)) return i; return -1; };
 
 function play(mv) {
   movie = mv; want = 0; sceneIdx = -1; fired = new Set(); prevBg = '';
-  playStoryBgm(mv.id);   // お話ごとの専用BGM
   setTimeout(() => { if (movie === mv) for (const sc of mv.scenes) { const d = [...bgsEl.children].find(x => x.dataset.bg === sc.bg); if (d) ensureBg(d); } }, 1500);   // このお話の、のこりの背景を、あとから読む
   for (const b of bar.querySelectorAll('button[data-id]')) b.classList.toggle('on', b.dataset.id === mv.id);
 }
@@ -182,6 +181,7 @@ nextBtn.onclick = () => goScene(want + 1);
 function setScene(i) {
   sceneIdx = i; lastLine = -1;
   const sc = movie.scenes[i];
+  playStoryBgm(sc.bgm ?? movie.id);   // 場面ごとの専用BGM(曲がかわる場面だけ、きりかわる)
   for (const d of bgsEl.children) { if (d.dataset.bg === sc.bg) ensureBg(d); d.style.opacity = d.dataset.bg === sc.bg ? 1 : 0; }
   // 場面が かわるときの 暗転は、やめた(利用者の指示)   // 場面が かわるとき、暗転ぎみに つなぐ
   prevBg = sc.bg;
