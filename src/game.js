@@ -329,7 +329,7 @@ export class RpgRound {
     return this.stage >= RPG_STAGES.length;
   }
 
-  // 敵の問題は、間違えたら、正解するまで、同じ問題をもう1度出す(宝箱は、間違えても、次へ進む)
+  // 敵の問題は、間違えるたびに、ちがう問題に変わる(答えた問題は used に入るので、同じものは出ない)
   nextQuestion() {
     if (this.pending) return { question: this.pending, leveledUp: false };
     return { question: pickByLevel(this.questions, this.used, this.current.level, this.rng), leveledUp: false };
@@ -365,7 +365,7 @@ export class RpgRound {
     } else {
       this.event = "damage";
       this.lives -= 1;
-      this.pending = question;
+      this.pending = null; // 間違えても、同じ問題は出さない(つぎは、ちがう問題)
       this.retries += 1;
     }
     return correct;
