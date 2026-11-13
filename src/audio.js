@@ -20,6 +20,8 @@ const BGM = {
   rpg: "quest",
   rpgboss: "questboss", // RPGの、ボス戦
   rpgchest: "chest", // RPGの、宝箱
+  daily: "daily", // 毎日1問
+  opening: "openwait", // オープニング(画面をさわる前。ブラウザの決まりで、1回さわるまで、音は出ない)
   gameover: "gameover", // ゲームオーバー
   result: "result",
   tutorial: "tutorial",
@@ -247,6 +249,45 @@ export function playHeartHalf() {
     osc.start(t + offset);
     osc.stop(t + offset + 0.34);
   }
+}
+
+// 鳴らす準備(WebAudio が動いているときだけ。動いていなければ、動かしなおして、今回は鳴らさない)
+function ready() {
+  if (volumes.se === 0) return false;
+  if (context && context.state !== "running") context.resume().catch(() => {});
+  return Boolean(context && context.state === "running");
+}
+// 1つの音を、WebAudio で鳴らす(type:波の形、from→to:高さ(Hz)の変わりかた、start:鳴らしはじめ(秒)、length:長さ(秒)、peak:大きさ)
+function blip({ type = "sine", from, to = from, start = 0, length = 0.2, peak = 0.3 }) {
+  const t = context.currentTime + start;
+  const osc = context.createOscillator();
+  const gain = context.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(from, t);
+  if (to !== from) osc.frequency.exponentialRampToValueAtTime(to, t + length * 0.8);
+  gain.gain.setValueAtTime(0.0001, t);
+  gain.gain.exponentialRampToValueAtTime(Math.max(0.0002, peak * curve(volumes.se)), t + 0.012);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t + length);
+  osc.connect(gain).connect(context.destination);
+  osc.start(t);
+  osc.stop(t + length + 0.02);
+}
+
+// ジャンプの音:ぴょーん(低い音から、ぐいっと上がって、ふわっと下がる。かるい「ぽよん」の はずみつき)
+export function playJump() {
+  if (!ready()) return;
+  blip({ type: "triangle", from: 260, to: 980, length: 0.17, peak: 0.34 });
+  blip({ type: "sine", from: 980, to: 620, start: 0.15, length: 0.16, peak: 0.2 });
+  blip({ type: "sine", from: 1960, to: 2400, start: 0.05, length: 0.08, peak: 0.08 });
+}
+
+// 新しい飾りを付けたときの音:きらっ(高い音が3つ、かけのぼる)
+export function playWear() {
+  if (!ready()) return;
+  [[1319, 0], [1760, 0.07], [2349, 0.14], [3136, 0.22]].forEach(([hz, start], i) => {
+    blip({ type: "sine", from: hz, start, length: i === 3 ? 0.5 : 0.22, peak: 0.22 });
+    blip({ type: "triangle", from: hz * 2, start, length: 0.12, peak: 0.05 });
+  });
 }
 
 // 「しゅん」:高い音から すっと下がる、短い音(ファイルなし。WebAudio で作る)。シューティングで、弾が当たったときに鳴らす

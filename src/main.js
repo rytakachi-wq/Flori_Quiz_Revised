@@ -43,9 +43,9 @@ import { initRules, openRules as resetRules } from "./rules.js";
 import { openCredits, closeCredits } from "./credits.js?v=dusk1";
 import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js";
 import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js";
-import { startLiveFlori } from "./live-flori.js?v=fit1";
+import { hopFlori, startLiveFlori } from "./live-flori.js?v=fit2";
 import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js";
-import { getVolume, loopName, playHeartHalf, playJingle, playSe, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js";
+import { getVolume, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js";
 import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=fm11";
 
 // 着せ替えの条件が変わったとき、前の条件で手に入れていたものを残す(初めて開いたときの1回だけ)
@@ -82,10 +82,11 @@ function rpgScene(kind) {
   return kind === "boss" ? "rpgboss" : kind === "chest" ? "rpgchest" : "rpg";
 }
 function sceneOf(name) {
+  if (!$("opening").hidden) return "opening"; // オープニングの間は、オープニングの曲
   if (name === "rpg") return rpgScene(mode === "rpg" ? play?.current?.kind : null); // 画面を出すたびに曲が切りかわって、初めから鳴りなおすのを防ぐ
   if (name === "gameover") return "gameover"; // ゲームオーバーの曲
   if (name === "question") {
-    return { oni: "oni", hard: "hard" }[mode] ?? "question";
+    return { oni: "oni", hard: "hard", daily: "daily" }[mode] ?? "question";
   }
   if (name === "result") return "result";
   if (name === "credits") return "credits";
@@ -1586,6 +1587,9 @@ function closeOpening() {
   const opening = $("opening");
   if (opening.hidden || opening.classList.contains("is-playing")) return;
   unlock();
+  hopFlori("#opening"); // 画面をさわったら、動くフロリが、ぴょんと跳ねる
+  playJump();
+  setScene("cover"); // オープニングの曲は、さわったら止める(つづく曲は、表紙のもの)
   if (!opening.classList.contains("is-idle") && !introSeen()) {
     // はじめて開いたときは、先に遊び方を見せる(知っている人は、「スキップ」で、すぐ始められる)
     if (!openingJingleDone) {
@@ -1948,12 +1952,14 @@ async function showUnlock() {
     applyFloriSrc(flori, "../assets/flori/m/body_wave.webp");
   }
   const wear = $("btn-unlock-wear");
+  wear.dataset.noSe = "1"; // ボタンの音ではなく、飾りを付けた音を鳴らす
   wear.disabled = false;
   wear.textContent = "付けてみる";
   wear.onclick = () => {
     dress = { ...dress, [kind]: id };
     saveDress(dress);
     applyDress();
+    playWear();
     wear.textContent = "✔ 付けたよ!";
     wear.disabled = true;
     playSe("correct");
@@ -2856,6 +2862,7 @@ function renderDress() {
         art.textContent = "？";
       } else if (choice.trial && paint.includes("px")) {
         // 模様のあるもの:大きな絵を縮めて入れて、模様の間隔を、せまくする
+      button.dataset.noSe = "1"; // 押した音は、下で、種類ごとに鳴らす(ボタンの音と重ねない)
         art.classList.add("has-pat");
         const pat = document.createElement("i");
         pat.style.background = paint;
@@ -2921,7 +2928,8 @@ function renderDress() {
         saveDress(dress);
         applyDress();
         renderDress();
-        playSe("button");
+        if ((kind === "head" || kind === "body" || kind === "face") && choice.id !== "none") playWear(); // 飾りを付けたときの音
+        else playSe("button");
         if (choice.unlock !== undefined && choice.id !== "none") flowName(choice.name, choice.tint);
       });
       const label = newGroup ? groupLabel(kind, groupNo) : "";

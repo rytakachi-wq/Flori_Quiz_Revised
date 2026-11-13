@@ -5,7 +5,7 @@
 //  - 出さない画面:クイズ(問題・RPG)。表紙は、クリックで ぴょん。着せ替え画面でも、腕を動かす。
 import { draw, loadModel } from "./live2d/live2d.js";
 import { createMotion } from "./live2d/flori-motion.js";
-import { playSe } from "./audio.js";
+import { playJump } from "./audio.js";
 import { getFloriColor, recolorCanvas } from "./flori-color.js";
 
 // ポーズつきの絵のうち、動くフロリにかえるもの(かざりの位置が合う絵。decor-overlay.js の POSE と同じ)
@@ -205,8 +205,17 @@ let tapAt = -99999;
 function moveSound(item, kind) {
   if (kind !== "hop" || document.hidden || reduced || item.box.closest("#opening")) return;   // オープニングは、専用の音がある
   if (performance.now() - tapAt > 500) return;   // 押していない(ひとりでに跳ねた)ときは、鳴らさない
-  playSe("floriHop");
+  playJump();
 }
+
+// 動くフロリを、いますぐ ぴょんと跳ねさせる(root の中のもの)。オープニングの画面タッチなどから
+export function hopFlori(root) {
+  const now = performance.now();
+  for (const item of mounts.values()) if (item.ready && item.box.closest(root)) item.motion?.hop(now);
+}
+// オープニングは、動くフロリの用意ができるまで、フロリ(静止画)を出さない(静止画が一瞬 出て、動くフロリに かわるのを防ぐ)
+const openingBox = () => document.getElementById("opening");
+setTimeout(() => openingBox()?.classList.add("live-ready"), 4000); // 用意できなくても、4秒たったら出す
 
 function configure(img, item) {
   const src = originalSrc(img);
@@ -257,6 +266,7 @@ function frame(now) {
     tiltDecor(img, reduced ? 0 : faceAngle(), m);
     if (!item.ready) {
       item.ready = true;
+      if (img.closest("#opening")) openingBox()?.classList.add("live-ready");
       img.style.visibility = "hidden"; // 動くフロリが出たら、静止画はかくす(場所・大きさは、そのまま)
     }
   }
