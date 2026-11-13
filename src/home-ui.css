@@ -179,3 +179,51 @@
 .rpg-text { font-size: calc(17.5px * var(--rpg-scale, 1)); line-height: 1.5; }
 #screen-question .question { font-size: clamp(18px, calc(3 * var(--dvh)), 25px); }
 #screen-question .question.long { font-size: clamp(16px, calc(2.6 * var(--dvh)), 21px); }
+
+/* ===== 3回目のまとめ ===== */
+/* オープニングの「遊び方を見る」:クイズ スタートと おなじ 見た目(金のボタン+茶色の▶) */
+.opening .opening-tutorial { width: min(78vw, 300px); min-height: 58px !important; height: 58px; padding: 4px 20px !important; margin-top: 12px; }
+.opening .opening-tutorial .pb-text b { font-size: 24px; letter-spacing: 0.06em; color: #fff; text-shadow: 0 3px 0 var(--sk-brown), 2px 0 0 var(--sk-brown), -2px 0 0 var(--sk-brown), 0 -2px 0 var(--sk-brown); }
+.opening .opening-tutorial .pb-arrow { margin-left: auto; }
+
+/* ランク:すこし大きく・おせる */
+#screen-cover .home-rank { height: 38px; font: inherit; font-size: 16px; font-weight: bold; min-width: 140px; padding: 0 10px; top: 8px; cursor: pointer; touch-action: manipulation; }
+#screen-cover .home-rank:active { transform: translateX(-50%) translateY(2px); box-shadow: 0 1px 0 var(--sk-brown2); }
+#screen-cover .home-top .cover-gear { top: 4px; }
+#screen-cover.cover-home { padding-top: 56px; }
+
+/* 次の ものがたりまでの バー:下の よはくを へらす */
+.quest-bar { margin-bottom: 24px !important; }
+.cover-home .quest-panel { padding-bottom: 2px; }
+
+/* クイズの えらぶ画面:ルールは、各項目の右よこ */
+.mode-row { display: flex; align-items: stretch; gap: 8px; }
+.mode-row .mode-btn { flex: 1 1 0; min-width: 0; }
+.mode-row .rules-again { display: flex !important; flex-direction: column; align-items: center; justify-content: center; gap: 2px; flex: none; width: 64px; padding: 4px; font-size: 22px; line-height: 1; border-width: 3px; border-radius: 16px; color: #fff; }
+.mode-row .rules-again small { font-size: 12px; font-weight: bold; }
+.mode-row .r-rpg { background: linear-gradient(180deg, #ef7a6c, #c8483c); border-color: #7a2418; box-shadow: 0 4px 0 #7a2418; text-shadow: 0 2px 0 #7a2418; }
+.mode-row .r-daily { background: linear-gradient(180deg, #ffc860, #e08a1c); border-color: #8a4a10; box-shadow: 0 4px 0 #8a4a10; text-shadow: 0 2px 0 #8a4a10; }
+.mode-row .r-review { background: linear-gradient(180deg, #7a9ae0, #4a64b8); border-color: #243a78; box-shadow: 0 4px 0 #243a78; text-shadow: 0 2px 0 #243a78; }
+.mode-row .rules-again:active { transform: translateY(3px); box-shadow: none; }
+.mode-row .rules-again rt { color: #ffe9c0 !important; }
+
+/* ゲームオーバー:下の すきまを なくして、フロリを 大きく */
+#screen-gameover .go-stage { flex: 1 1 0; min-height: var(--go-h); height: auto; }
+#screen-gameover .go-flori { height: 100%; max-height: 380px; }
+#screen-gameover .go-buttons { margin-top: 0; }
+
+/* 間違いノート:ルール説明を消した ぶん、「全部 復習する」を 大きく */
+.note-buttons { grid-template-columns: 1fr !important; }
+.note-buttons .btn { min-height: 64px !important; font-size: 20px !important; }
+/* えらぶ画面:ルールを よこに おいたぶん、はばを せまく・たかさを おさえる */
+#screen-setup .mode-list { gap: 8px; }
+.mode-row .rules-again { width: 56px; font-size: 20px; }
+.mode-row .mode-btn { gap: 8px; padding: 6px 10px; }
+.mode-btn.m-rpg { min-height: 92px; }
+.mode-btn.m-rpg .tile-icon { width: 54px; height: 54px; }
+.mode-btn.m-rpg .mode-ico { width: 52px; height: 52px; }
+.mode-btn.m-rpg .tile-label { font-size: clamp(20px, calc(3.2 * var(--dvh)), 25px); white-space: nowrap; }
+.mode-btn .tile-sub { font-size: 12px; }
+.mode-btn.m-rpg { min-height: 118px; }
+.mode-btn.m-daily, .mode-btn.m-review { min-height: 96px; }
+@media (max-height: 640px) { .mode-btn.m-rpg { min-height: 84px; } .mode-btn.m-daily, .mode-btn.m-review { min-height: 66px; } }

@@ -987,7 +987,7 @@ function celebrateResult(result) {
       }),
     );
   }
-  if (mode === "daily") stars.replaceChildren(); // 毎日1問は、電球を出さない
+  if (mode === "daily" || screen.dataset.clear === "1") stars.replaceChildren(); // 毎日1問・クエストクリアは、電球(星)を出さない
   // 紙ふぶき(盛り上がるほど、多く)。発表のときに、降る
   const icons = ["🎉", "⭐", "✨", "🎊", "🌟", "💖"];
   // 紙ふぶき:画面のあちこちに、まばらに ぽんと出て、ゆっくり、ひらひら、散っていく(1人でも皆でも同じ)
@@ -1164,6 +1164,7 @@ function openRankInfo() {
   $("dlg-ranks").showModal();
 }
 $("btn-rank-info").addEventListener("click", openRankInfo);
+$("home-rank").addEventListener("click", openRankInfo); // ホームの ランクを おすと、一覧
 $("btn-ranks-close").addEventListener("click", () => $("dlg-ranks").close());
 
 function next() {
@@ -2320,7 +2321,6 @@ $("btn-note-back").addEventListener("click", () => {
   renderSetup();
   show("setup", -1);
 });
-$("btn-note-guide").addEventListener("click", () => playTutorial("review")); // 復習の説明ムービー(いつでも)
 $("btn-note-review").addEventListener("click", () =>
   guideOnce("review", () => {
     reviewFromQuiz = false;

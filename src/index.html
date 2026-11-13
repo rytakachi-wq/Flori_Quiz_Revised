@@ -65,7 +65,7 @@
     <img class="logo" src="../assets/flori/src/logo.png" alt="フロリ">
     <p class="opening-title" aria-label="ひらめきクイズ"><span style="--i:0">ひ</span><span style="--i:1">ら</span><span style="--i:2">め</span><span style="--i:3">き</span><span style="--i:4">ク</span><span style="--i:5">イ</span><span style="--i:6">ズ</span></p>
     <p class="opening-hint"><span>画面をタッチしてスタート!</span></p>
-    <button id="btn-tutorial" class="btn btn-sub opening-tutorial" type="button"><span aria-hidden="true">▶</span> 遊び方を見る</button>
+    <button id="btn-tutorial" class="play-btn opening-tutorial" type="button"><span class="pb-text"><b>遊び方を見る</b></span><span class="pb-go pb-arrow" aria-hidden="true"></span></button>
     <img class="flori opening-flori" src="../assets/flori/m/body_wave.webp" alt="手を振るフロリ">
   </div>
   <!-- ものがたり(ムービー):別のページ(src/live2d/story-movie.html)を、画面の上に重ねて見せる -->
@@ -122,7 +122,7 @@
           <img src="../assets/flori/src/face_smile_clean.png" alt="">
         </button>
         <img class="logo logo-small" src="../assets/flori/src/logo.png" alt="フロリ">
-        <span id="home-rank" class="home-rank" aria-label="ランク"></span>
+        <button id="home-rank" class="home-rank" type="button" aria-label="ランクの一覧"></button>
         <button id="btn-settings" class="cover-gear" type="button" aria-label="設定"><span aria-hidden="true">⚙️</span> 設定</button>
       </header>
       <h1 class="sr-only">Flori_Quiz</h1>
@@ -182,14 +182,9 @@
         <h2 class="title">クイズ</h2>
       </header>
       <div class="mode-list">
-        <button id="btn-rpg" class="mode-btn m-rpg" type="button"><span class="tile-icon" aria-hidden="true"><img class="mode-ico" src="../assets/movie/dragon_1.webp" alt=""></span><span class="tile-text"><span class="tile-label">RPGクエスト</span><span class="tile-sub">ランダムな問題でボスを倒そう</span></span></button>
-        <button id="btn-daily" class="mode-btn m-daily" type="button"><span class="tile-icon" aria-hidden="true"><img class="mode-ico" src="../assets/illust/daycal.webp" alt=""></span><span class="tile-text"><span class="tile-label">毎日1問</span><span class="tile-sub">1日に1問だけ</span></span><span class="tile-dot" hidden></span></button>
-        <button id="btn-review" class="mode-btn m-review" type="button"><span class="tile-icon" aria-hidden="true"><img class="mode-ico" src="../assets/illust/notebook.webp" alt=""></span><span class="tile-text"><span class="tile-label">復習</span><span class="tile-sub">間違えた問題をもう1度</span></span><span class="tile-dot" hidden></span></button>
-      </div>
-      <div class="rules-row" aria-label="ルールを見る">
-        <button id="btn-show-rules" class="rules-again r-rpg" type="button" data-kind="rpg"><b>RPG</b><small>📖 ルール</small></button>
-        <button id="btn-show-rules-daily" class="rules-again r-daily" type="button" data-kind="daily"><b>毎日1問</b><small>📖 ルール</small></button>
-        <button id="btn-show-rules-review" class="rules-again r-review" type="button" data-kind="review"><b>復習</b><small>📖 ルール</small></button>
+        <div class="mode-row"><button id="btn-rpg" class="mode-btn m-rpg" type="button"><span class="tile-icon" aria-hidden="true"><img class="mode-ico" src="../assets/movie/dragon_1.webp" alt=""></span><span class="tile-text"><span class="tile-label">RPGクエスト</span><span class="tile-sub">ランダムな問題でボスを倒そう</span></span></button><button id="btn-show-rules" class="rules-again r-rpg" type="button" data-kind="rpg"><span aria-hidden="true">📖</span><small>ルール</small></button></div>
+        <div class="mode-row"><button id="btn-daily" class="mode-btn m-daily" type="button"><span class="tile-icon" aria-hidden="true"><img class="mode-ico" src="../assets/illust/daycal.webp" alt=""></span><span class="tile-text"><span class="tile-label">毎日1問</span><span class="tile-sub">1日に1問だけ</span></span><span class="tile-dot" hidden></span></button><button id="btn-show-rules-daily" class="rules-again r-daily" type="button" data-kind="daily"><span aria-hidden="true">📖</span><small>ルール</small></button></div>
+        <div class="mode-row"><button id="btn-review" class="mode-btn m-review" type="button"><span class="tile-icon" aria-hidden="true"><img class="mode-ico" src="../assets/illust/notebook.webp" alt=""></span><span class="tile-text"><span class="tile-label">復習</span><span class="tile-sub">間違えた問題をもう1度</span></span><span class="tile-dot" hidden></span></button><button id="btn-show-rules-review" class="rules-again r-review" type="button" data-kind="review"><span aria-hidden="true">📖</span><small>ルール</small></button></div>
       </div>
       <div id="flow-reward" class="reward-card" hidden></div>
     </section>
@@ -248,7 +243,6 @@
       <div id="note-grid" class="dex-grid"></div>
       <div class="note-buttons">
         <button id="btn-note-review" class="btn btn-review" type="button">📖 全部復習する</button>
-        <button id="btn-note-guide" class="btn btn-plain" type="button">📘 ルール説明</button>
       </div>
     </section>
     <!-- 問題図鑑 -->
