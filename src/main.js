@@ -14,6 +14,7 @@ import {
   QUESTIONS_PER_ROUND,
   RPG_LIVES,
   RPG_STAGES,
+  ONI_STAGES,
   RpgRound,
   TOTAL_POINTS,
   dailyQuestion,
@@ -413,7 +414,8 @@ function startPlay(nextMode, startMessage = null) {
   startPlayNow(nextMode, startMessage);
 }
 function startPlayNow(nextMode, startMessage = null) {
-  mode = nextMode;
+  rpgOni = nextMode === "oni"; // オニ戦は、RPGと同じ形で、10体の敵と戦う
+  mode = rpgOni ? "rpg" : nextMode;
   lastCorrect = null;
   if (mode === "oni") timeLimit = false; // オニ問題には、制限時間はない
   if (mode === "oni") play = new OniRound(oniQuestions);
@@ -431,15 +433,19 @@ function startPlayNow(nextMode, startMessage = null) {
   } else if (mode === "daily") {
     play = new PracticeRound([dailyQuestion(playableQuestions, dateKey())]);
   } else if (mode === "rpg") {
-    play = new RpgRound(adventurePool(), Math.random, new Set(loadStats().right));
+    play = rpgOni ? new RpgRound(oniPool(), Math.random, new Set(), ONI_STAGES) : new RpgRound(adventurePool(), Math.random, new Set(loadStats().right));
     rpgShownStage = -1;
-    announce("クエスト スタート!", "start", showRpg, "../assets/flori/m/body_wave.webp");
+    announce(rpgOni ? "オニ戦 スタート!" : "クエスト スタート!", "start", showRpg, "../assets/flori/m/body_wave.webp");
     return;
   }
   announce(startMessage ?? "それではスタート!", "start", showQuestion, "../assets/flori/m/body_wave.webp");
 }
 
 // RPGの問題:分類を分けずに、普通・難しい問題の全部から、ランダムに出る
+let rpgOni = false; // いま遊んでいるのが、オニ戦か
+function oniPool() {
+  return [...oniQuestions, ...hardQuestions]; // オニ問題を先に。足りなければ、難しい問題
+}
 function adventurePool() {
   return playableQuestions;
 }
@@ -880,8 +886,9 @@ function showResult() {
   $("btn-again").hidden = false;
   const adventure = mode === "rpg";
   $("r-best-row").querySelector("dt").textContent = adventure ? "最短記録" : "最高得点"; // RPG=いちばん少ない問題数でクリア
-  recordDex(result.answers); // 図鑑(どのモードでも)
-  logFields(result.answers); // 分野ごとの、さいきんの正誤(苦手さがし)
+  const normalAnswers = result.answers.filter((a) => !oniIds.has(a.id)); // オニ問題は、図鑑・成績に入れない
+  recordDex(normalAnswers); // 図鑑(どのモードでも)
+  logFields(normalAnswers); // 分野ごとの、さいきんの正誤(苦手さがし)
   $("r-correct-row").hidden = false;
   {
     $("r-correct").textContent = `${result.correct} / ${result.total}問`;
@@ -935,15 +942,15 @@ function showResult() {
     $("btn-again").textContent = "もう1度挑戦";
   } else if (adventure) {
     // RPGは、成績の「遊んだ回数」「正解率」「総合得点」には入れない(この遊びだけの記録を、端末の中に残す)。間違えた問題は、間違いノートに入る。
-    recordWrong(result.answers);
-    recordRpgResult(result);
-    const saved = recordAdventure(result);
-    $("r-title").textContent = result.cleared ? "クエスト クリア! 🏆" : "残念… ゲームオーバー";
+    if (!rpgOni) recordWrong(result.answers);
+    if (!rpgOni) recordRpgResult(result);
+    const saved = rpgOni ? { isRecord: false } : recordAdventure(result);
+    $("r-title").textContent = result.cleared ? (rpgOni ? "オニ戦 クリア! 🏆" : "クエスト クリア! 🏆") : "残念… ゲームオーバー";
     $("screen-result").dataset.clear = result.cleared ? "1" : "";
-    $("r-best-row").hidden = false;
+    $("r-best-row").hidden = rpgOni;
     $("r-best").textContent = adventureBestText();
     $("r-record").hidden = !saved.isRecord;
-    const wrongCount = new Set(result.answers.filter((a) => !a.correct || a.hinted).map((a) => a.id)).size; // 同じ問題は、1問と数える
+    const wrongCount = rpgOni ? 0 : new Set(result.answers.filter((a) => !a.correct || a.hinted).map((a) => a.id)).size; // 同じ問題は、1問と数える
     setNote.textContent = result.cleared
       ? `ハート${heartsText(result.lives)} 残してクリア!${wrongCount > 0 ? `間違えた${wrongCount}問は間違いノートに入ったヨ。` : ""}`
       : `${result.stage}マス目まで進んだヨ。${wrongCount > 0 ? `間違えた${wrongCount}問は間違いノートに入ったヨ。` : ""}`;
@@ -1603,7 +1610,7 @@ $("btn-records-back").addEventListener("click", () => show("cover", -1));
 $("btn-settings").addEventListener("click", () => PAGE_OPEN.settings());
 $("btn-settings-back").addEventListener("click", () => show("cover", -1));
 $("btn-next").addEventListener("click", next);
-$("btn-again").addEventListener("click", () => startPlay(mode));
+$("btn-again").addEventListener("click", () => startPlay(rpgOni ? "oni" : mode));
 // 結果から、間違えた問題を、すぐ復習する
 $("btn-r-review").addEventListener("click", () => {
   if (reviewNow.length === 0) return;
@@ -1675,7 +1682,7 @@ async function init() {
     const normal = questions.filter((q) => q.level <= MAX_LEVEL);
     normalQuestions = normal;
     hardQuestions = questions.filter((q) => q.level >= HARD_MIN_LEVEL && q.level <= HARD_LEVEL);
-    oniQuestions = []; // オニ問題は、なくした(利用者の指示)
+    oniQuestions = questions.filter((q) => q.level > HARD_LEVEL); // オニ問題は、オニフロリを5回押したときの「オニ戦」(10体の敵)にだけ出る
     normalIds = new Set(normal.map((q) => q.uid ?? q.id));
     hardIds = new Set(hardQuestions.map((q) => q.uid ?? q.id));
     oniIds = new Set(oniQuestions.map((q) => q.uid ?? q.id));
@@ -2118,7 +2125,9 @@ $("btn-unlock-next").addEventListener("click", () => {
 // ================= 問題図鑑 =================
 // ================= 問題図鑑(カードを集める) =================
 const CATEGORY_ICON = { ひらめき: "💡", 社会: "🌏", 理科: "🔬", 科学: "⚗️", 日常: "🏠", 規則: "🔢", 国語: "📖", 論理: "🧩", 算数: "➗", オニ: "👹" };
-const RARITY = { 1: "★", 2: "★★", 3: "★★★", 4: "💎", 5: "👹" };
+const RARITY = { 1: "★", 2: "★★", 3: "★★★", 4: "★★★★", 5: "👹" };
+// 図鑑のカードの色は、分野(教科)ごとに同じ(オニは別)
+const fieldClass = (q) => (q.level <= HARD_LEVEL ? ` fld${FIELDS.indexOf(fieldOf(q))}` : "");
 const DEX_VIEWED_KEY = "floriQuiz.dexViewed"; // 図鑑を開いて、もう見たカード(NEW! を一度だけ出すため)
 
 function dexViewed() {
@@ -2131,7 +2140,7 @@ function dexViewed() {
 
 function openDexCard(question, label, owned) {
   const big = $("dex-big");
-  big.className = `dex-big lv${question.level}`;
+  big.className = `dex-big lv${question.level}${fieldClass(question)}`;
   const head = document.createElement("div");
   head.className = "dex-big-head";
   head.textContent = `${CATEGORY_ICON[question.category] ?? "❓"} ${label}  ${question.category}  ${RARITY[question.level] ?? ""}`;
@@ -2184,7 +2193,7 @@ function showDex() {
     const owned = met.has(uid);
     const button = document.createElement("button");
     button.type = "button";
-    button.className = `dex-card lv${question.level}${owned ? "" : " locked"}`;
+    button.className = `dex-card lv${question.level}${fieldClass(question)}${owned ? "" : " locked"}`;
     button.dataset.noSe = owned ? "" : "1";
     const no = document.createElement("span");
     no.className = "dex-no";
@@ -2295,7 +2304,7 @@ $("dlg-dex").addEventListener("click", closeDexCard);
 // 間違えて、まだ正解していない問題(stats.wrong)を、答えと解説つきで並べる。記録は増やさない(復習と同じ印を使う)。
 function openNoteCard(question) {
   const big = $("note-big");
-  big.className = `dex-big lv${question.level}`;
+  big.className = `dex-big lv${question.level}${fieldClass(question)}`;
   const head = document.createElement("div");
   head.className = "dex-big-head";
   head.textContent = `${CATEGORY_ICON[question.category] ?? "❓"} ${question.category}  ${RARITY[question.level] ?? ""}`;
@@ -2338,7 +2347,7 @@ function showNote() {
     .map((question) => {
       const button = document.createElement("button");
       button.type = "button";
-      button.className = `dex-card lv${question.level}`;
+      button.className = `dex-card lv${question.level}${fieldClass(question)}`;
       button.dataset.noSe = "";
       const no = document.createElement("span");
       no.className = "dex-no";
@@ -2475,6 +2484,7 @@ const FOE_ART = {
   宝箱: { key: "chest", src: "../assets/illust/gift.webp" },
   サソリ: { key: "scorpion", src: "../assets/movie/scorpion_guard.webp" },
   ドラゴン: { key: "dragon", src: "../assets/movie/dragon_1.webp" },
+  オニ: { key: "dragon", src: "../assets/illust/oni.webp" },
 };
 function foeImage(stage) {
   const img = document.createElement("img");
@@ -2486,7 +2496,7 @@ function foeImage(stage) {
 function renderRpgStatus(stage = play.current, foeHp = play.hp) {
   renderRpgHearts();
   $("rpg-path").replaceChildren(
-    ...RPG_STAGES.map((stage, index) => {
+    ...play.stages.map((stage, index) => {
       const item = document.createElement("li");
       item.replaceChildren(foeImage(stage));
       item.title = stage.name;
@@ -2618,7 +2628,7 @@ function showRpg() {
   }
   // ボスの1つ前のマスから、警告
   const warn = $("rpg-warn");
-  const beforeBoss = RPG_STAGES.length - 2;
+  const beforeBoss = play.stages.length - 2;
   warn.hidden = play.stage < beforeBoss;
   warn.textContent = stage.kind === "boss" ? "警告! ボス戦だ!" : "警告! 次はボスがまっているぞ!";
   $("screen-rpg").querySelector(".rpg-window").scrollTop = 0;
@@ -2728,12 +2738,16 @@ function rpgNext() {
 // ゲームオーバーの画面:結果発表とは別。どこまで進んだか・間違えた問題のこと・もう1度。BGMはなく、zannense(約7秒の音)を2.6秒で切って鳴らす
 function showGameOver() {
   const result = play.finishRound();
-  recordDex(result.answers); // 図鑑
-  logFields(result.answers);
-  recordWrong(result.answers); // 間違えた問題は、間違いノートへ
-  recordRpgResult(result);
-  const wrongCount = new Set(result.answers.filter((a) => !a.correct || a.hinted).map((a) => a.id)).size; // 同じ問題は、1問と数える(ヒントを見た問題も)
-  const last = RPG_STAGES.length - 1;
+  if (!rpgOni) {
+    recordDex(result.answers); // 図鑑
+    logFields(result.answers);
+  }
+  if (!rpgOni) {
+    recordWrong(result.answers); // 間違えた問題は、間違いノートへ
+    recordRpgResult(result);
+  }
+  const wrongCount = rpgOni ? 0 : new Set(result.answers.filter((a) => !a.correct || a.hinted).map((a) => a.id)).size; // 同じ問題は、1問と数える(ヒントを見た問題も)
+  const last = play.stages.length - 1;
   $("go-message").textContent =
     result.stage === 0
       ? "最初の敵に負けちゃった…。次は頑張ろう!"
@@ -2743,7 +2757,7 @@ function showGameOver() {
           ? "ボスのすぐ近くまで来たのに…。くやしいネ!"
           : "ここまで頑張ったヨ。もう1度行ってみよう!";
   $("go-path").replaceChildren(
-    ...RPG_STAGES.map((stage, index) => {
+    ...play.stages.map((stage, index) => {
       const item = document.createElement("li");
       item.textContent = stage.icon;
       item.title = stage.name;
@@ -2752,7 +2766,7 @@ function showGameOver() {
       return item;
     }),
   );
-  $("go-reach").textContent = `${result.stage} / ${RPG_STAGES.length}`;
+  $("go-reach").textContent = `${result.stage} / ${play.stages.length}`;
   $("go-correct").textContent = `${result.correct} / ${result.total}問`;
   $("go-note").textContent = wrongCount > 0 ? `間違えた${wrongCount}問は、間違いノートに入ったヨ。` : "";
   $("go-note").hidden = wrongCount === 0;
@@ -2761,7 +2775,7 @@ function showGameOver() {
   playSe("rpgSad", 2600); // zannense:約7秒の音を、2.6秒で切る
   resultTimers.push(setTimeout(celebrateUnlocks, 3200)); // 着せ替えが ふえていたら、お祝いの画面
 }
-$("btn-go-again").addEventListener("click", () => startPlay("rpg"));
+$("btn-go-again").addEventListener("click", () => startPlay(rpgOni ? "oni" : "rpg"));
 $("btn-go-note").addEventListener("click", showNote);
 $("btn-go-back").addEventListener("click", () => show("cover", -1));
 

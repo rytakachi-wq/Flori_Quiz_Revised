@@ -285,6 +285,12 @@ export const RPG_STAGES = [
   { kind: "boss", icon: "🐉", name: "ドラゴン", level: 4, hp: 2 },
 ];
 
+// オニ戦:10体の敵と戦う(オニ問題+難しい問題。成績・総合得点・最短記録には入れない)
+export const ONI_STAGES = [
+  ...["ネズミ", "カエル", "サソリ", "ネズミ", "カエル", "サソリ", "ネズミ", "カエル", "サソリ"].map((name) => ({ kind: "enemy", icon: { ネズミ: "🐭", カエル: "🐸", サソリ: "🦂" }[name], name, level: 5, hp: 1 })),
+  { kind: "boss", icon: "👹", name: "オニ", level: 5, hp: 2 },
+];
+
 // 段階がいちばん近い、まだ出していない問題を選ぶ(同じ近さなら、下の段階を先に)。
 // すでに正解したことがある問題(avoid)は、なるべく出さない(ほかに近い段階の問題があれば、そちらを先に)。
 function pickByLevel(questions, used, target, rng, avoid = new Set()) {
@@ -297,7 +303,8 @@ function pickByLevel(questions, used, target, rng, avoid = new Set()) {
 
 // 成績の「遊んだ回数」「正解率」「総合得点」には入れない(オニ・皆で対戦と同じ)。
 export class RpgRound {
-  constructor(questions, rng = Math.random, avoid = new Set()) {
+  constructor(questions, rng = Math.random, avoid = new Set(), stages = RPG_STAGES) {
+    this.stages = stages;
     this.questions = questions;
     this.rng = rng;
     this.avoid = avoid; // 前に正解した問題(uid)。なるべく出さない
@@ -311,8 +318,8 @@ export class RpgRound {
     this.roundAnswers = [];
     this.points = 0;
     this.lives = RPG_LIVES;
-    this.stage = 0; // いまいるマス(RPG_STAGES.length で、クリア)
-    this.hp = RPG_STAGES[0].hp; // いまの敵の、のこりHP
+    this.stage = 0; // いまいるマス(this.stages.length で、クリア)
+    this.hp = this.stages[0].hp; // いまの敵の、のこりHP
     this.event = null; // 直前の答えで、何が起きたか
     this.pending = null; // 間違えた問題(正解するまで、同じ問題を出す)
     this.retries = 0; // いまの問題で、間違えた回数
@@ -324,11 +331,11 @@ export class RpgRound {
   }
 
   get current() {
-    return RPG_STAGES[Math.min(this.stage, RPG_STAGES.length - 1)];
+    return this.stages[Math.min(this.stage, this.stages.length - 1)];
   }
 
   get cleared() {
-    return this.stage >= RPG_STAGES.length;
+    return this.stage >= this.stages.length;
   }
 
   // 敵の問題は、間違えるたびに、ちがう問題に変わる(答えた問題は used に入るので、同じものは出ない)
@@ -386,7 +393,7 @@ export class RpgRound {
 
   advance() {
     this.stage += 1;
-    if (!this.cleared) this.hp = RPG_STAGES[this.stage].hp;
+    if (!this.cleared) this.hp = this.stages[this.stage].hp;
   }
 
   get roundFinished() {

@@ -3789,3 +3789,14 @@ html[data-pattern] :is(#screen-menu, #screen-note, #screen-credits, #screen-dex,
 /* 成績:分野さがしを足したので、画面に収まらないときは、たてに スクロールできるように */
 #screen-records.screen:not([hidden]) { overflow-y: auto; overflow-x: clip; justify-content: flex-start; }
 #screen-records > * { flex-shrink: 0; }
+
+/* ---- 図鑑のカードの色:分野(教科)ごとに同じ ---- */
+.dex-card.fld0, .dex-big.fld0 { --card-a: #eaf6ff; --card-b: #cfe9fa; --card-edge: #7ec3e0; }
+.dex-card.fld1, .dex-big.fld1 { --card-a: #effaeb; --card-b: #cfeac4; --card-edge: #7cc48f; }
+.dex-card.fld2, .dex-big.fld2 { --card-a: #fff9de; --card-b: #fce7a2; --card-edge: #e0b43a; }
+.dex-card.fld3, .dex-big.fld3 { --card-a: #fde8f3; --card-b: #f9c9de; --card-edge: #e079a8; }
+.dex-card.fld4, .dex-big.fld4 { --card-a: #f0e8fd; --card-b: #d9c6f5; --card-edge: #b46ad8; }
+.dex-card.locked { --card-a: #d9dfe3; --card-b: #d9dfe3; }
+#screen-dex .dex-rarity, #screen-note .dex-rarity { top: 9px; right: 6px; font-size: 10.5px; letter-spacing: -0.12em; }
+/* RPGの問題の枠:広い画面で、中身の幅にちぢまないように(選択肢が細くなる) */
+.rpg-screen > .rpg-window { width: 100%; }
