@@ -3,10 +3,10 @@
 //  - かざり(頭・体・顔)は、いままでどおり。絵の見えている場所にそろえて、重ねる(decor-overlay.js)。
 //  - 色(着せ替えの色)は、体・頭・手足の絵を、flori-color.js で色づけしてから、貼る。
 //  - 出さない画面:クイズ(問題・RPG)。表紙は、クリックで ぴょん。着せ替え画面でも、腕を動かす。
-import { draw, loadModel } from "./live2d/live2d.js?v=20261113q";
-import { createMotion } from "./live2d/flori-motion.js?v=20261113q";
-import { playJump } from "./audio.js?v=20261113q";
-import { getFloriColor, recolorCanvas } from "./flori-color.js?v=20261113q";
+import { draw, loadModel } from "./live2d/live2d.js?v=20261113r";
+import { createMotion } from "./live2d/flori-motion.js?v=20261113r";
+import { playJump } from "./audio.js?v=20261113r";
+import { getFloriColor, recolorCanvas } from "./flori-color.js?v=20261113r";
 
 // ポーズつきの絵のうち、動くフロリにかえるもの(かざりの位置が合う絵。decor-overlay.js の POSE と同じ)
 const POSE = /(?:wave_(?:nikkori|smile|wrong|surprised)\.png|body_wave\.webp)$/;
@@ -264,6 +264,15 @@ function frame(now) {
     if (canvas.parentElement?.classList.contains("has-live")) {
       canvas.style.scale = img.style.scale || "";
       canvas.style.transformOrigin = img.style.transformOrigin || "";
+    }
+    // 入れもの(hero-fig など)が 絵より たて長だと、%指定の canvas が たてに のびる。絵(img)の実際の位置・大きさに、px で そろえる(縦横比は 絵のまま)
+    if (img.offsetWidth > 0 && canvas.offsetParent === img.offsetParent) {
+      const ow = img.offsetWidth, oh = img.offsetHeight;
+      const cs = canvas.style;
+      cs.left = `${img.offsetLeft - MARGIN.x * ow}px`;
+      cs.top = `${img.offsetTop - MARGIN.y * oh}px`;
+      cs.width = `${(1 + 2 * MARGIN.x) * ow}px`;
+      cs.height = `${(1 + 2 * MARGIN.y) * oh}px`;
     }
     const dpr = Math.min(devicePixelRatio || 1, 2);
     const w = Math.round(Math.min(canvas.clientWidth * dpr, 640));
