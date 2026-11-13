@@ -23,7 +23,7 @@ import {
   previousDateKey,
   shuffleChoices,
   totalScore,
-} from "./game.js?v=20261114a";
+} from "./game.js?v=20261114b";
 import {
   addStars,
   loadStats,
@@ -37,18 +37,18 @@ import {
   recordWrong,
   recordRpg,
   recordRound,
-} from "./storage.js?v=20261114a";
-import { illustrationFor } from "./illustrations.js?v=20261114a";
-import { createTalker } from "./talk.js?v=20261114a";
-import { initTutorial, openTutorial } from "./tutorial.js?v=20261114a";
-import { initRules, openRules as resetRules } from "./rules.js?v=20261114a";
-import { openCredits, closeCredits } from "./credits.js?v=20261114a";
-import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js?v=20261114a";
-import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js?v=20261114a";
-import { hopFlori, startFamilyVisits, startLiveFlori } from "./live-flori.js?v=20261114a";
-import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js?v=20261114a";
-import { getVolume, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js?v=20261114a";
-import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=20261114a";
+} from "./storage.js?v=20261114b";
+import { illustrationFor } from "./illustrations.js?v=20261114b";
+import { createTalker } from "./talk.js?v=20261114b";
+import { initTutorial, openTutorial } from "./tutorial.js?v=20261114b";
+import { initRules, openRules as resetRules } from "./rules.js?v=20261114b";
+import { openCredits, closeCredits } from "./credits.js?v=20261114b";
+import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js?v=20261114b";
+import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js?v=20261114b";
+import { hopFlori, startFamilyVisits, startLiveFlori } from "./live-flori.js?v=20261114b";
+import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js?v=20261114b";
+import { currentBgm, getVolume, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js?v=20261114b";
+import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=20261114b";
 
 
 const QUESTIONS_URL = "../data/questions/questions.json?v=20261111a"; // 問題を変えたら、この値と index.html の ?v= を変える
@@ -1772,7 +1772,8 @@ function closeOpening() {
   setTimeout(() => opening.classList.add("is-leaving"), length);
   setTimeout(() => {
     opening.hidden = true;
-    setScene("cover"); // オープニングが終わったら、表紙のBGM(それまでは、オープニングの曲)
+    // オープニングの曲は、さわったあと(ファンファーレのあと)も、表紙に来てから少し(6秒)つづけて、表紙のBGMに つなぐ(さわった とたんに表紙に進むので、曲が ほとんど聞こえなかった)
+    setTimeout(() => { if (currentBgm() === "openwait") setScene(sceneOf(currentScreen)); }, 6000);
     startCoverIdle();
     talker.start(); // オープニングから表紙に来たときは、ふきだしを、ぱっと出す
   }, length + 600);
