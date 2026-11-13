@@ -13,7 +13,60 @@ const POSE = /(?:wave_(?:nikkori|smile|wrong|surprised)\.png|body_wave\.webp)$/;
 const MOOD = { wave_wrong: "こまった", wave_surprised: "びっくり" }; // 絵のポーズに合わせた、ずっと同じ表情
 const EXCLUDE = "#screen-question, #screen-rpg"; // クイズ画面は、動くフロリを出さない
 const TINT_PARTS = /^(体|顔|右足|左足|右手(コブシ|バンザイ)|左手(コブシ|バンザイ))$/; // 色をつけるパーツ
+const LINE_LUM = 150; // これより暗い所を「線」とみなして、太らせる
 const TINT_SCALE = 0.3; // 色をつけるときの、絵の縮め具合(もようの大きさを、静止画に近づける。大きいと、重い)
+
+// 絵を、scale 倍まで、半分ずつ縮める(線を欠けさせない)。小さい絵は、そのまま
+function shrink(source, scale = TINT_SCALE) {
+  const w0 = source.naturalWidth ?? source.width;
+  const h0 = source.naturalHeight ?? source.height;
+  const goalW = Math.max(1, Math.round(w0 * scale));
+  const goalH = Math.max(1, Math.round(h0 * scale));
+  if (w0 <= 700) return source;
+  let cur = source, w = w0, h = h0;
+  while (w > goalW) {
+    w = Math.max(goalW, Math.round(w / 2));
+    h = Math.max(goalH, Math.round(h / 2));
+    const c = document.createElement("canvas");
+    c.width = w;
+    c.height = h;
+    const ctx = c.getContext("2d");
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(cur, 0, 0, w, h);
+    cur = c;
+  }
+  return cur;
+}
+// 縮めた絵の、暗い線を、まわり1ピクセルぶん太らせる(縮めると、細い線が うすくなるので。静止画の線の太さに近づける)
+function thicken(canvas) {
+  const w = canvas.width, h = canvas.height;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  const src = ctx.getImageData(0, 0, w, h);
+  const out = ctx.createImageData(w, h);
+  const a = src.data, b = out.data;
+  b.set(a);
+  const lum = (i) => (a[i] + a[i + 1] + a[i + 2]) / 3;
+  for (let y = 1; y < h - 1; y += 1) {
+    for (let x = 1; x < w - 1; x += 1) {
+      const i = (y * w + x) * 4;
+      if (a[i + 3] < 128) continue;
+      let best = i, bl = lum(i);
+      for (const j of [i - 4, i + 4, i - w * 4, i + w * 4]) {
+        if (a[j + 3] < 128) continue;
+        const l = lum(j);
+        if (l < bl - 40 && l < LINE_LUM) { bl = l; best = j; }
+      }
+      if (best !== i) { b[i] = a[best]; b[i + 1] = a[best + 1]; b[i + 2] = a[best + 2]; }
+    }
+  }
+  ctx.putImageData(out, 0, 0);
+  return canvas;
+}
+function shrinkAll(m) {
+  const map = new Map();
+  for (const mesh of m.meshes) if (!map.has(mesh.img)) { const original = m.imgs.get(mesh.img); const small = shrink(original); map.set(mesh.img, small !== original ? thicken(small) : small); }
+  return map;
+}
 
 // 静止画(800×1003)の場所 → Live2D のキャンバスの座標: X = X0 + x / S、Y = Y0 + y / S(頭の大きさと位置を、静止画に合わせた。測り方は decisions その50 その31)
 const FRAME = { w: 800, h: 1003 };
@@ -54,6 +107,7 @@ const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const mounts = new Map(); // img → { canvas, motion, key, ready, size }
 let model = null;
 let loading = null;
+let base = null; // 大きい絵を、段階的に半分ずつ縮めた絵(Map)。一気に縮めると、細い線が欠けて、輪郭が細く見えるため
 let tint = null; // 色をつけた絵 { id, imgs: Map(ファイル → canvas) }
 let tintJob = 0;
 
@@ -63,6 +117,7 @@ const eligible = (img) => POSE.test(originalSrc(img)) && !img.closest(EXCLUDE);
 function ensureModel() {
   loading ??= loadModel(new URL("./live2d/", import.meta.url).href).then((m) => {
     model = m;
+    base = shrinkAll(m);
     retint();
     return m;
   });
@@ -83,7 +138,9 @@ async function retint() {
     if (!TINT_PARTS.test(mesh.name) || imgs.has(mesh.img)) continue;
     await new Promise((resolve) => setTimeout(resolve, 0));
     if (job !== tintJob) return;
-    imgs.set(mesh.img, recolorCanvas(model.imgs.get(mesh.img), color, TINT_SCALE, mesh.name === "顔" ? 0.87 : 0)); // 頭は、バイザーの下の影・ふちの混ざった色(明るさ 0.87 より暗い部分)に、色をつけない
+    const small = base?.get(mesh.img) ?? model.imgs.get(mesh.img);
+    const shrunk = small !== model.imgs.get(mesh.img); // 縮めてある絵は、そのまま(もう TINT_SCALE ぶん縮んでいる)
+    imgs.set(mesh.img, recolorCanvas(small, color, shrunk ? 1 : TINT_SCALE, mesh.name === "顔" ? 0.87 : 0)); // 頭は、バイザーの下の影・ふちの混ざった色(明るさ 0.87 より暗い部分)に、色をつけない
   }
   if (job === tintJob) tint = { id: color.id, imgs };
 }
@@ -91,6 +148,13 @@ document.addEventListener("flori-color", () => {
   tint = null;
   retint();
 });
+
+let mergedFor = null, merged = null;
+function drawImgs() {
+  if (!tint) return base;
+  if (mergedFor !== tint) { mergedFor = tint; merged = new Map([...base, ...tint.imgs]); }
+  return merged;
+}
 
 function view(bounce) {
   const mx = MARGIN.x * FRAME.w;
@@ -129,22 +193,19 @@ function mount(img) {
   const item = { canvas, motion: null, key: "", ready: false, size: "", box };
   if (img.closest("#screen-cover")) {
     canvas.style.pointerEvents = "auto";
-    canvas.addEventListener("pointerdown", () => item.motion?.hop(performance.now())); // 表紙は、クリックで ぴょん
+    canvas.addEventListener("pointerdown", () => { tapAt = performance.now(); item.motion?.hop(performance.now()); }); // 表紙は、クリックで ぴょん
   }
   mounts.set(img, item);
   return item;
 }
 
-// フロリの動きに合わせた音。よく起こる小さな動き(表情・眉)は、ときどきだけ、鳴らす。つづけて鳴らさない
-const MOVE_SOUND = { hop: ["floriHop", 1, 0], stretch: ["floriStretch", 1, 2500], cheer: ["floriCheer", 1, 2500], wave: ["floriWave", 1, 2500], expr: ["floriTouch", 0.3, 4000], brow: ["floriTouch", 0.25, 4000] };   // [音, 鳴らす確率, 前の音からの、あける時間(ms)]
-let lastMoveSound = 0;
+// フロリの動きの音:ひとりでに動くとき(ぴょん・伸び・手を振る・表情)は、鳴らさない(動くたびに鳴ってうるさいため)。
+// 表紙で、利用者がフロリを押して ぴょんと跳ねさせたときだけ、ぷよん、と鳴らす
+let tapAt = -99999;
 function moveSound(item, kind) {
-  const entry = MOVE_SOUND[kind];
-  if (!entry || document.hidden || reduced || item.box.closest("#opening")) return;   // オープニングは、専用の音がある
-  const now = performance.now();
-  if (now - lastMoveSound < entry[2] || Math.random() > entry[1]) return;
-  lastMoveSound = now;
-  playSe(entry[0]);
+  if (kind !== "hop" || document.hidden || reduced || item.box.closest("#opening")) return;   // オープニングは、専用の音がある
+  if (performance.now() - tapAt > 500) return;   // 押していない(ひとりでに跳ねた)ときは、鳴らさない
+  playSe("floriHop");
 }
 
 function configure(img, item) {
@@ -192,7 +253,7 @@ function frame(now) {
     }
     const m = reduced ? { bounce: 0, sx: 1, sy: 1 } : item.motion.update(now);
     const bg = model.meshes.findIndex((mesh) => mesh.name === "BG");
-    draw(model, canvas.getContext("2d"), view(m.bounce), { hide: new Set([bg]), squash: { sx: m.sx, sy: m.sy, ...FOOT }, imgs: tint?.imgs, before: (ctx) => shadow(ctx, m.bounce) });
+    draw(model, canvas.getContext("2d"), view(m.bounce), { hide: new Set([bg]), squash: { sx: m.sx, sy: m.sy, ...FOOT }, imgs: drawImgs(), before: (ctx) => shadow(ctx, m.bounce) });
     tiltDecor(img, reduced ? 0 : faceAngle(), m);
     if (!item.ready) {
       item.ready = true;

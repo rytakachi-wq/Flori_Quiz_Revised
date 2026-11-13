@@ -176,7 +176,9 @@ export function draw(model, ctx, view, opts = {}) {
   const ev = evaluate(model);
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.clearRect(0, 0, W, H);
-  const k = Math.min(W / view.w, H / view.h);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";   // 大きい絵を小さく貼るとき、細い線が欠けて薄くならないように(縮小の質を上げる)
+  const k =Math.min(W / view.w, H / view.h);
   ctx.setTransform(k, 0, 0, k, (W - view.w * k) / 2 - view.x * k, (H - view.h * k) / 2 - view.y * k);
   if (opts.before) opts.before(ctx);   // 動くフロリの下に、先に描くもの(足もとの影など。キャンバス座標)
   // つぶれ・のび(opts.squash = { sx, sy, px, py }。px,py はキャンバス座標の支点=足もと)

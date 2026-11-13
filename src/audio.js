@@ -207,6 +207,21 @@ export function playSe(name, maxMs = 0) {
   const sound = new Audio(BASE + se.file);
   sound.volume = Math.min(1, level);
   sound.play().catch(() => {});
+  if (maxMs > 0) {
+    // こちらの再生でも、長い音を、途中で、すっと消す(ハートが半分へる音を、短く保つため)
+    const fadeAt = Math.max(0, maxMs - 150);
+    const base = sound.volume;
+    setTimeout(() => {
+      const t0 = performance.now();
+      const step = () => {
+        const p = Math.min(1, (performance.now() - t0) / 150);
+        sound.volume = base * (1 - p);
+        if (p < 1) requestAnimationFrame(step);
+        else sound.pause();
+      };
+      step();
+    }, fadeAt);
+  }
   return { stop: () => sound.pause() };
 }
 
