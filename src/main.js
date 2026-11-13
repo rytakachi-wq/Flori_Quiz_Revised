@@ -1288,7 +1288,7 @@ $("btn-credits").addEventListener("click", showCredits);
 // プロローグは、はじめて開いたとき、だれにでも見せる。①〜⑤は、総合得点が 20・40・60・80・100点になったあと、つぎにゲームを始める前に、1回だけ見せる。
 // 「その他」の「ものがたり」では、見られるようになったものを、いつでも見られる。
 const MOVIE_SEEN_KEY = "floriQuiz.movieSeen";
-const MOVIE_VER = "20261113b";
+const MOVIE_VER = "20261113q";
 const MOVIE_INFO = [
   { id: "pro", need: 0 },
   { id: "ep1", need: 20 },
@@ -1347,6 +1347,8 @@ const MOVIE_TITLES = {
   ep1: ["第1話 ネズミとパパの帽子", "総合得点 20点で見られる"],
   ep2: ["第2話 カエルとママのリボン", "総合得点 40点で見られる"],
   ep3: ["第3話 決戦の前に", "総合得点 60点で見られる"],
+    $("story-movie-loading").hidden = false; // 読みこみ中は、フロリの絵と「読み込み中」を見せる(黒い画面にしない)
+    $("story-movie-skip").hidden = false;
   ep4: ["第4話 ドラゴンと最後の戦い", "総合得点 80点で見られる"],
   epi: ["エンディング", "総合得点 100点で見られる"],
 };
@@ -1377,8 +1379,8 @@ $("btn-story-movie").addEventListener("click", () => {
 $("btn-movie-pick-back").addEventListener("click", () => {
   $("movie-pick").hidden = true;
 });
-window.addEventListener("message", (event) => {
-  if (event.data !== "close-story-movie") return;
+// ムービーの外側の「飛ばす」:読みこみ中でも押せる(ムービーの JS に頼らない)
+function closeMovie() {
   $("story-movie").hidden = true;
   $("story-movie-frame").src = "about:blank"; // 止める
   setScene(sceneOf(currentScreen)); // ゲームのBGMにもどる
@@ -1404,6 +1406,14 @@ document.addEventListener("touchend", () => setTimeout(() => document.body.class
 document.addEventListener("touchcancel", () => document.body.classList.remove("is-touching"), { passive: true });
 
 function askRestart(action) {
+}
+$("story-movie-skip").addEventListener("click", closeMovie);
+window.addEventListener("message", (event) => {
+  if (event.data === "close-story-movie") closeMovie();
+  else if (event.data === "story-movie-ready") {
+    $("story-movie-loading").hidden = true; // ムービーが動きだした。読みこみ中の表示と、親の「飛ばす」は、もう要らない(ムービーの中に、同じボタンがある)
+    $("story-movie-skip").hidden = true;
+  }
   restartAction = action;
   $("dlg-restart").showModal();
 }

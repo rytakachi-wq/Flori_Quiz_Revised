@@ -3,13 +3,13 @@
 // ・見切れない:大きさは、画面の たて・よこの小さいほうに合わせる(--u)。カメラ(ズーム・パン)で、寄り・引きをつくる。
 // ・動きは場面に合わせる:かなしい場面は腕を動かさない(noArms)。ぴょん・ぶるぶるは、ここぞというときだけ。歩くときは、上下にゆれる。
 // ・単調にならない:広い絵・寄りの絵・切りかえ(暗転)・走る/追う/はねる 動き・ふきだしの順番。
-import { loadModel, draw } from './live2d.js?v=patch1';
-import { createMotion } from './flori-motion.js?v=hand1';
-import { recolorCanvas } from '../flori-color.js';
-import { HEADS } from '../badges.js';
-import { startFurigana } from '../furigana.js?v=fm11';
-import { MOVIES } from './storyboard.js?v=20261112a';
-import { playStoryBgm } from './story-bgm.js?v=20261113p';
+import { loadModel, draw } from './live2d.js?v=20261113q';
+import { createMotion } from './flori-motion.js?v=20261113q';
+import { recolorCanvas } from '../flori-color.js?v=20261113q';
+import { HEADS } from '../badges.js?v=20261113q';
+import { startFurigana } from '../furigana.js?v=20261113q';
+import { MOVIES } from './storyboard.js?v=20261113q';
+import { playStoryBgm } from './story-bgm.js?v=20261113q';
 
 startFurigana();
 
@@ -61,7 +61,7 @@ if (!draw.toString().includes('opts.patch')) document.title = '(古い live2d.js
 // ---- 顔の絵(表情の絵 wave_*.png の顔の部分を、動くフロリの顔に はりつける。端は ぼかさない) ----
 const FACE = { cx: 415, cy: 312, rx: 255, ry: 130 };
 const POSE_IMG = {};
-for (const k of ['surprised', 'wrong', 'nikkori', 'smile']) POSE_IMG[k] = await loadImg(`../assets/flori/m/wave_${k}.png`);
+await Promise.all(['surprised', 'wrong', 'nikkori', 'smile'].map(async k => { POSE_IMG[k] = await loadImg(`../assets/flori/m/wave_${k}.png`); }));   // いっぺんに読む
 const patchCache = {};
 const patchOf = key => patchCache[key] ??= (() => {
   const c = document.createElement('canvas'); c.width = FACE.rx * 2; c.height = FACE.ry * 2;
@@ -147,7 +147,9 @@ const ease = x => x * x * (3 - 2 * x);
 const lerp = (a, b, t) => a + (b - a) * t;
 const total = list => list.reduce((s, c) => s + c.dur, 0);
 const bgNames = [...new Set(MOVIES.flatMap(mv => mv.scenes.map(sc => sc.bg)))];
-for (const n of bgNames) { const d = document.createElement('div'); d.className = `bg bgs-${n}`; d.dataset.bg = n; d.style.opacity = 0; if (BGFILE[n]) { d.style.backgroundImage = `url(${artUrl(BGFILE[n])})`; d.style.backgroundSize = 'cover'; d.style.backgroundPosition = 'center bottom'; } bgsEl.append(d); }
+for (const n of bgNames) { const d = document.createElement('div'); d.className = `bg bgs-${n}`; d.dataset.bg = n; d.style.opacity = 0; bgsEl.append(d); }
+// 背景の絵は、いまの場面のものだけ先に読む(のこりは、あとから)。始まるまでの時間を みじかくする
+const ensureBg = d => { const n = d.dataset.bg; if (d.dataset.loaded || !BGFILE[n]) return; d.dataset.loaded = '1'; d.style.backgroundImage = `url(${artUrl(BGFILE[n])})`; d.style.backgroundSize = 'cover'; d.style.backgroundPosition = 'center bottom'; };
 
 let auto = false, autoKey = '', want = 0, sceneStart = 0, movie = PROLOGUE, sceneIdx = -1, fired = new Set(), chain = false, lastPart = 0, lastLine = -1, prevBg = '';
 // モード:story=ゲームの中で、じどうで出るとき(1本だけ。とじるでゲームへ)/ それ以外=「その他」の ものがたり(見られるものを えらべる)
@@ -170,6 +172,7 @@ const nextOpen = from => { for (let i = from; i < MOVIES.length; i++) if (isOpen
 function play(mv) {
   movie = mv; want = 0; sceneIdx = -1; fired = new Set(); prevBg = '';
   playStoryBgm(mv.id);   // お話ごとの専用BGM
+  setTimeout(() => { if (movie === mv) for (const sc of mv.scenes) { const d = [...bgsEl.children].find(x => x.dataset.bg === sc.bg); if (d) ensureBg(d); } }, 1500);   // このお話の、のこりの背景を、あとから読む
   for (const b of bar.querySelectorAll('button[data-id]')) b.classList.toggle('on', b.dataset.id === mv.id);
 }
 // 画面をさわっても、つぎには進まない。「次へ」のボタンで進む
@@ -179,7 +182,7 @@ nextBtn.onclick = () => goScene(want + 1);
 function setScene(i) {
   sceneIdx = i; lastLine = -1;
   const sc = movie.scenes[i];
-  for (const d of bgsEl.children) d.style.opacity = d.dataset.bg === sc.bg ? 1 : 0;
+  for (const d of bgsEl.children) { if (d.dataset.bg === sc.bg) ensureBg(d); d.style.opacity = d.dataset.bg === sc.bg ? 1 : 0; }
   // 場面が かわるときの 暗転は、やめた(利用者の指示)   // 場面が かわるとき、暗転ぎみに つなぐ
   prevBg = sc.bg;
   props.innerHTML = (sc.props || []).map(([art, x, y, h, o]) => `<img class="prop" alt="" src="${artUrl(art)}" style="left:${x}%;${o?.ground !== undefined ? `bottom:calc(var(--u)*${GROUND + o.ground})` : `top:calc(var(--u)*${y})`};height:calc(var(--u)*${h})">`).join('');
@@ -307,8 +310,14 @@ function frame(now) {
   }
   requestAnimationFrame(frame);
 }
-play(MOVIES.find(m => m.id === params.get('play')) || MOVIES.find(m => isOpen(m.id)) || PROLOGUE);
+const startMovie = MOVIES.find(m => m.id === params.get('play')) || MOVIES.find(m => isOpen(m.id)) || PROLOGUE;
+// 最初の場面の背景だけ、先に読む(長くても 4秒で、先へ進む)
+const firstBg = BGFILE[startMovie.scenes[0].bg];
+if (firstBg) await Promise.race([loadImg(artUrl(firstBg)), new Promise(ok => setTimeout(ok, 4000))]);
+play(startMovie);
 requestAnimationFrame(frame);
+let readySent = false; const sendReady = () => { if (!readySent) { readySent = true; parent.postMessage('story-movie-ready', '*'); } };
+requestAnimationFrame(sendReady); setTimeout(sendReady, 400);   // (画面が見えていなくて、rAF が止まっているときも、400ミリ秒で送る)   // 動きだした:親の「読み込み中」を消す
 window.play = play; window.MOVIES = MOVIES;
 window.warp = (t) => { sceneStart = performance.now() - t * 1000; };   // 試験用:コマの中の時刻へ
 window.seek = (n) => { want = Math.min(n, movie.scenes.length - 1); sceneIdx = -1; };   // n番目(0から)のコマへ

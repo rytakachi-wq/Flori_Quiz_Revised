@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
-  <link rel="stylesheet" href="style.css?v=20261113h">
+  <link rel="stylesheet" href="style.css?v=20261113q">
   <link rel="stylesheet" href="story-skin.css?v=32">
   <link rel="stylesheet" href="home-ui.css?v=5">
   <link rel="stylesheet" href="dress-bg.css?v=3">
@@ -23,7 +23,14 @@
     <img class="flori opening-flori" src="../assets/flori/m/body_wave.webp" alt="手を振るフロリ">
   </div>
   <!-- ものがたり(ムービー):別のページ(src/live2d/story-movie.html)を、画面の上に重ねて見せる -->
-  <div id="story-movie" class="overlay story-movie" role="dialog" aria-label="物語" hidden><iframe id="story-movie-frame" title="物語" allow="autoplay"></iframe></div>
+  <div id="story-movie" class="overlay story-movie" role="dialog" aria-label="物語" hidden><iframe id="story-movie-frame" title="物語" allow="autoplay"></iframe>
+    <!-- 読みこみ中の表示(iframe が動きだすまで。ここ=親のページにあるので、読みこみ中でも「飛ばす」が押せる) -->
+    <div id="story-movie-loading" class="story-movie-loading">
+      <img class="smv-flori" src="../assets/flori/m/wave_nikkori.png" alt="">
+      <p class="smv-text">読み込み中…</p>
+    </div>
+    <button id="story-movie-skip" class="story-movie-skip" type="button">飛ばす</button>
+  </div>
   <!-- ものがたり:見るムービーを えらぶ画面(「その他」の「ものがたり」から) -->
   <div id="movie-pick" class="overlay movie-pick" role="dialog" aria-label="物語を選ぶ" hidden>
     <div class="movie-pick-box">
@@ -604,6 +611,6 @@
       <button id="btn-oni-yes" class="btn btn-main" type="button">挑戦する!</button>
     </div>
   </dialog>
-  <script type="module" src="main.js?v=20261113p"></script>
+  <script type="module" src="main.js?v=20261113q"></script>
 </body>
 </html>
