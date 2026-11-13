@@ -1,7 +1,7 @@
 // スタッフクレジットの画面で遊べる、小さなシューティング。
 // ドラッグ(またはキーボード)でフロリを動かすと、星が自動で飛ぶ。落ちてくる風船などに当てて、点をかせぐ。
 // 記録は残さない(その場かぎりの遊び)。描画は canvas、文字や数字は画面の上の HTML(ふりがなが付くように)。
-import { playSe, playShun } from "./audio.js?v=20261113x";
+import { playSe, playShun } from "./audio.js?v=20261114a";
 
 const ENEMY_IMAGES = ["balloon", "bulb", "sakura", "candy", "butterfly", "bird", "bolt"];
 const LIVES = 3;

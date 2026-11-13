@@ -3,11 +3,11 @@
 //  - かざり(頭・体・顔)は、いままでどおり。絵の見えている場所にそろえて、重ねる(decor-overlay.js)。
 //  - 色(着せ替えの色)は、体・頭・手足の絵を、flori-color.js で色づけしてから、貼る。
 //  - 出さない画面:クイズ(問題・RPG)。表紙は、クリックで ぴょん。着せ替え画面でも、腕を動かす。
-import { draw, loadModel } from "./live2d/live2d.js?v=20261113x";
-import { createMotion } from "./live2d/flori-motion.js?v=20261113x";
-import { playJump } from "./audio.js?v=20261113x";
-import { getFloriColor, recolorCanvas } from "./flori-color.js?v=20261113x";
-import { HEADS } from "./badges.js?v=20261113x";
+import { draw, loadModel } from "./live2d/live2d.js?v=20261114a";
+import { createMotion } from "./live2d/flori-motion.js?v=20261114a";
+import { playJump } from "./audio.js?v=20261114a";
+import { getFloriColor, recolorCanvas } from "./flori-color.js?v=20261114a";
+import { HEADS } from "./badges.js?v=20261114a";
 
 // ポーズつきの絵のうち、動くフロリにかえるもの(かざりの位置が合う絵。decor-overlay.js の POSE と同じ)
 const POSE = /(?:wave_(?:nikkori|smile|wrong|surprised)\.png|body_wave\.webp)$/;

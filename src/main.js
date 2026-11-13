@@ -23,7 +23,7 @@ import {
   previousDateKey,
   shuffleChoices,
   totalScore,
-} from "./game.js?v=20261113x";
+} from "./game.js?v=20261114a";
 import {
   addStars,
   loadStats,
@@ -37,18 +37,18 @@ import {
   recordWrong,
   recordRpg,
   recordRound,
-} from "./storage.js?v=20261113u";
-import { illustrationFor } from "./illustrations.js?v=20261113x";
-import { createTalker } from "./talk.js?v=20261113x";
-import { initTutorial, openTutorial } from "./tutorial.js?v=20261113x";
-import { initRules, openRules as resetRules } from "./rules.js?v=20261113x";
-import { openCredits, closeCredits } from "./credits.js?v=20261113x";
-import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js?v=20261113x";
-import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js?v=20261113x";
-import { hopFlori, startFamilyVisits, startLiveFlori } from "./live-flori.js?v=20261113y";
-import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js?v=20261113x";
-import { getVolume, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js?v=20261113x";
-import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=20261113x";
+} from "./storage.js?v=20261114a";
+import { illustrationFor } from "./illustrations.js?v=20261114a";
+import { createTalker } from "./talk.js?v=20261114a";
+import { initTutorial, openTutorial } from "./tutorial.js?v=20261114a";
+import { initRules, openRules as resetRules } from "./rules.js?v=20261114a";
+import { openCredits, closeCredits } from "./credits.js?v=20261114a";
+import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js?v=20261114a";
+import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js?v=20261114a";
+import { hopFlori, startFamilyVisits, startLiveFlori } from "./live-flori.js?v=20261114a";
+import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js?v=20261114a";
+import { getVolume, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js?v=20261114a";
+import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=20261114a";
 
 
 const QUESTIONS_URL = "../data/questions/questions.json?v=20261111a"; // 問題を変えたら、この値と index.html の ?v= を変える
@@ -1409,7 +1409,7 @@ $("btn-credits").addEventListener("click", showCredits);
 // プロローグは、はじめて開いたとき、だれにでも見せる。①〜⑤は、総合得点が 20・40・60・80・100点になったあと、つぎにゲームを始める前に、1回だけ見せる。
 // 「その他」の「ものがたり」では、見られるようになったものを、いつでも見られる。
 const MOVIE_SEEN_KEY = "floriQuiz.movieSeen";
-const MOVIE_VER = "20261113r";
+const MOVIE_VER = "20261114a";
 const MOVIE_INFO = [
   { id: "pro", need: 0 },
   { id: "ep1", need: 20 },

@@ -3,7 +3,7 @@
 //
 // BGMは、このゲームのために作ったオリジナルの曲を、ブラウザの中で演奏する(music.js)。曲のファイルはない。
 
-import { MusicPlayer, jingleSeconds } from "./music.js?v=20261113x";
+import { MusicPlayer, jingleSeconds } from "./music.js?v=20261114a";
 
 const BASE = "../assets/audio/";
 const SETTINGS_KEY = "floriQuiz.settings.v2";
