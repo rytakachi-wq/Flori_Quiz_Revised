@@ -46,7 +46,7 @@ import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js";
 import { startLiveFlori } from "./live-flori.js?v=fit1";
 import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js";
 import { getVolume, loopName, playJingle, playSe, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js";
-import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js";
+import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=fm5";
 
 // 着せ替えの条件が変わったとき、前の条件で手に入れていたものを残す(初めて開いたときの1回だけ)
 {
@@ -321,10 +321,12 @@ function refreshCover() {
 function renderQuest() {
   const total = currentTotal();
   $("quest-score").textContent = `${total} / 100点`;
+  const rank = rankOf(total);
+  $("home-rank").textContent = `${rank.icon} ${rank.name}`; // ホーム上のまんなか:いまのランク
   $("quest-fill").style.width = `${Math.min(100, total)}%`;
   $("quest-flori").style.left = `${Math.min(100, total)}%`; // フロリは、線の上(いまの点のところ)
   const next = MOVIE_INFO.find((m) => m.need > total);
-  document.querySelector(".quest-ttl").textContent = next ? `つぎの ものがたりまで あと ${next.need - total}点!` : "ぜんぶの ものがたりが 見られるヨ!";
+  document.querySelector(".quest-ttl").textContent = next ? `次の 物語まで あと ${next.need - total}点!` : "全部の 物語が 見られるヨ!";
 }
 
 // 難しさの星(全部で4段階)
@@ -405,6 +407,7 @@ function showQuestion() {
   $("q-progress").textContent = `${prefix}第${play.asked + 1}問 / ${total}問`;
   // 進み具合のバー(感想 No.9):いま何問目かまで、うめる
   $("q-bar-fill").style.width = `${Math.round(((play.asked + 1) / total) * 100)}%`;
+  $("q-bar-fill").parentElement.hidden = mode === "daily"; // 毎日1問は1問だけなので、バーは出さない
   $("screen-question").dataset.player = ""; // (CSSが、この印を使っている)
   // 星は、せまい枠(文字を大きくしたとき)でも、はみ出さないように、すこし小さく詰めて出す
   const starsHtml = (text) => `<span class="q-stars">${text}</span>`;
@@ -476,13 +479,13 @@ function coachLine(asked, total, leveledUp) {
   const last = total > 1 && asked === total - 1;
   const base = (() => {
     if (asked === 0) {
-      if (mode === "hard") return { text: "難しいモード! さぁ がんばるぞ!" };
+      if (mode === "hard") return { text: "難しいモード! さぁ 頑張るぞ!" };
       if (mode === "oni") return { text: "オニ問題! 頑張って!" };
       if (mode === "daily") return { text: "今日の 1問! 頑張って!" };
-      if (mode === "review") return { text: "復習 さぁ がんばるぞ!" };
-      return { text: "さぁ がんばるぞ!" };
+      if (mode === "review") return { text: "復習 さぁ 頑張るぞ!" };
+      return { text: "さぁ 頑張るぞ!" };
     }
-    if (last) return { text: "ラスト 1問! がんばれー!" };
+    if (last) return { text: "ラスト 1問! 頑張れー!" };
     if (total >= 5 && asked === Math.floor(total / 2)) return { text: "ちょうど 半分! フレーフレー!" };
     if (total >= 5 && asked === total - 2) return { text: "あと ちょっと~!" };
     return lastCorrect === false ? { text: "どんまい! 次は 行けるヨ!" } : { text: "その調子 その調子!" };
@@ -821,6 +824,7 @@ function showResult() {
     const gained = currentTotal() - before;
     return gained > 0 ? `総合得点が${gained}点増えたヨ!` : "総合得点は 新しく正解したり ヒントなしで正解し直した時だけ増えるヨ。";
   };
+  $("screen-result").dataset.clear = ""; // クエストクリアのときだけ、金の見た目(home-ui.css)
   if (mode === "review") {
     // 復習:間違えた問題の一覧だけが変わる。成績の回数や、総合得点には入れない。
     const leftAll = recordReview(result.answers);
@@ -856,12 +860,13 @@ function showResult() {
     recordRpgResult(result);
     const saved = recordAdventure(result);
     $("r-title").textContent = result.cleared ? "クエスト クリア! 🏆" : "残念… ゲームオーバー";
+    $("screen-result").dataset.clear = result.cleared ? "1" : "";
     $("r-best-row").hidden = false;
     $("r-best").textContent = adventureBestText();
     $("r-record").hidden = !saved.isRecord;
     const wrongCount = new Set(result.answers.filter((a) => !a.correct || a.hinted).map((a) => a.id)).size; // 同じ問題は、1問と数える
     setNote.textContent = result.cleared
-      ? `ハート${heartsText(result.lives)} のこして クリア!${wrongCount > 0 ? `間違えた${wrongCount}問は 間違いノートに 入ったヨ。` : ""}`
+      ? `ハート${heartsText(result.lives)} 残して クリア!${wrongCount > 0 ? `間違えた${wrongCount}問は 間違いノートに 入ったヨ。` : ""}`
       : `${result.stage}マス目まで 進んだヨ。${wrongCount > 0 ? `間違えた${wrongCount}問は 間違いノートに 入ったヨ。` : ""}`;
     $("btn-again").textContent = "もう1度挑戦";
   } else if (mode === "hard") {
@@ -1071,7 +1076,6 @@ function showRecords() {
   $("s-total-bar").style.width = `${(currentTotal(s) / TOTAL_POINTS) * 100}%`;
   $("s-plays").textContent = `${s.plays}回`;
   $("s-dress").textContent = `${dressOwned(s)} / ${dressTotal()}個`;
-  $("s-stars").textContent = `⭐ ${s.stars}個`;
   // 毎日1問:きのうか今日やっていれば、続けた日数。それより前なら、0日(とぎれた)
   const today = dateKey();
   const running = s.dailyLast === today || s.dailyLast === previousDateKey(today) ? s.dailyStreak : 0;
@@ -1251,9 +1255,12 @@ $("btn-rules-back").addEventListener("click", () => {
   show("setup", -1);
 });
 $("btn-flow-back").addEventListener("click", () => show("cover", -1));
-$("btn-show-rules").addEventListener("click", () => {
-  resetRules("rpg"); // RPGクエストの、ルール説明
-  show("rules");
+// ルール説明:RPG・毎日1問・復習(押したボタンの種類で、中身と色がかわる)
+document.querySelectorAll(".rules-again").forEach((button) => {
+  button.addEventListener("click", () => {
+    resetRules(button.dataset.kind);
+    show("rules");
+  });
 });
 $("btn-menu-back").addEventListener("click", () => show("cover", -1));
 
@@ -1325,11 +1332,11 @@ async function showDueMovies(onlyPrologue = false) {
 // えらぶ画面(いまだけ・仮:ぜんぶ 見られる。ほんとうの条件は、MOVIE_INFO の need)
 const MOVIE_ALL_OPEN_NOW = true;
 const MOVIE_TITLES = {
-  pro: ["プロローグ", "フロリと 家族の おはなし"],
+  pro: ["プロローグ", "フロリと 家族の お話"],
   ep1: ["第1話 ネズミと パパの 帽子", "総合得点 20点で 見られる"],
   ep2: ["第2話 カエルと ママの リボン", "総合得点 40点で 見られる"],
   ep3: ["第3話 決戦の 前に", "総合得点 60点で 見られる"],
-  ep4: ["第4話 ドラゴンと さいごの たたかい", "総合得点 80点で 見られる"],
+  ep4: ["第4話 ドラゴンと 最後の 戦い", "総合得点 80点で 見られる"],
   epi: ["エンディング", "総合得点 100点で 見られる"],
 };
 function renderMoviePick() {
@@ -1633,11 +1640,11 @@ $("btn-tutorial").addEventListener("click", (event) => {
 // ホームの3つのボタン:えらぶ画面(おはなし・コレクション・おたのしみ)
 const HUBS = {
   story: {
-    title: "フロリの おはなし",
+    title: "フロリの お話",
     items: [
       { label: "遊び方", sub: "ムービーで 見る", icon: "clapper", go: () => playTutorial("rpg") },
-      { label: "ものがたり", sub: "フロリ家族の おはなし", icon: "scroll", go: () => { renderMoviePick(); $("movie-pick").hidden = false; } },
-      { label: "スタッフクレジット", sub: "つくった みんな", icon: "star_fill", go: () => showCredits() },
+      { label: "物語", sub: "フロリ家族の お話", icon: "scroll", go: () => { renderMoviePick(); $("movie-pick").hidden = false; } },
+      { label: "スタッフクレジット", sub: "作った みんな", icon: "star_fill", go: () => showCredits() },
     ],
   },
   records: {
@@ -2385,7 +2392,7 @@ function rpgIntro(stage, retries) {
   if (stage.kind === "chest") return "宝箱だ! 正解で ハート回復!";
   if (retries === 0) return `${stage.icon} ${name}が 現れた!`;
   const lines = [
-    `${name}が にやりと 笑った! もう1度!`,
+    `${name}が にやりと 笑った! つぎの 問題だ!`,
     `${name}は まだ 立ちはだかっている!`,
     `${name}の 怒りが 高まっている!`,
     `${name}が おそいかかってくる! あきらめるな!`,
@@ -2542,12 +2549,12 @@ function showGameOver() {
   const last = RPG_STAGES.length - 1;
   $("go-message").textContent =
     result.stage === 0
-      ? "最初の 敵に 負けちゃった…。次は がんばろう!"
+      ? "最初の 敵に 負けちゃった…。次は 頑張ろう!"
       : result.stage >= last
         ? "ドラゴンに やられちゃった…。あと少しだったヨ!"
         : result.stage >= 3
           ? "ボスの すぐ近くまで 来たのに…。くやしいネ!"
-          : "ここまで がんばったヨ。もう1度 行ってみよう!";
+          : "ここまで 頑張ったヨ。もう1度 行ってみよう!";
   $("go-path").replaceChildren(
     ...RPG_STAGES.map((stage, index) => {
       const item = document.createElement("li");

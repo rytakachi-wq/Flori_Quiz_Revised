@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
   <link rel="stylesheet" href="style.css?v=20261112b">
   <link rel="stylesheet" href="story-skin.css?v=32">
+  <link rel="stylesheet" href="home-ui.css?v=1">
 </head>
 <body>
   <div id="badge-bg" class="badge-bg" aria-hidden="true"></div>
@@ -16,18 +17,18 @@
     <div class="confetti" aria-hidden="true"><span>💖</span><span>🌸</span><span>🦋</span><span>🎈</span><span>🎵</span><span>🍀</span><span>💖</span><span>🌸</span><span>🎈</span><span>🦋</span></div>
     <img class="logo" src="../assets/flori/src/logo.png" alt="フロリ">
     <p class="opening-title" aria-label="ひらめきクイズ"><span style="--i:0">ひ</span><span style="--i:1">ら</span><span style="--i:2">め</span><span style="--i:3">き</span><span style="--i:4">ク</span><span style="--i:5">イ</span><span style="--i:6">ズ</span></p>
-    <p class="opening-hint">画面をタッチして スタート!</p>
+    <p class="opening-hint"><span>画面を タッチして スタート!</span></p>
     <button id="btn-tutorial" class="btn btn-sub opening-tutorial" type="button"><span aria-hidden="true">▶</span> 遊び方を 見る</button>
     <img class="flori opening-flori" src="../assets/flori/m/body_wave.webp" alt="手を振るフロリ">
   </div>
   <!-- ものがたり(ムービー):別のページ(src/live2d/story-movie.html)を、画面の上に重ねて見せる -->
-  <div id="story-movie" class="overlay story-movie" role="dialog" aria-label="ものがたり" hidden><iframe id="story-movie-frame" title="ものがたり" allow="autoplay"></iframe></div>
+  <div id="story-movie" class="overlay story-movie" role="dialog" aria-label="物語" hidden><iframe id="story-movie-frame" title="物語" allow="autoplay"></iframe></div>
   <!-- ものがたり:見るムービーを えらぶ画面(「その他」の「ものがたり」から) -->
-  <div id="movie-pick" class="overlay movie-pick" role="dialog" aria-label="ものがたりを えらぶ" hidden>
+  <div id="movie-pick" class="overlay movie-pick" role="dialog" aria-label="物語を 選ぶ" hidden>
     <div class="movie-pick-box">
       <button id="btn-movie-pick-back" class="back-btn" type="button"><span aria-hidden="true">↩</span> 戻る</button>
-      <h2 class="movie-pick-title">ものがたり</h2>
-      <p class="movie-pick-note">(仮)今だけ ぜんぶ 見られるヨ</p>
+      <h2 class="movie-pick-title">物語</h2>
+      <p class="movie-pick-note">(仮)今だけ 全部 見られるヨ</p>
       <div id="movie-pick-list" class="movie-pick-list"></div>
     </div>
   </div>
@@ -67,11 +68,12 @@
           <img src="../assets/flori/src/face_smile_clean.png" alt="">
         </button>
         <img class="logo logo-small" src="../assets/flori/src/logo.png" alt="フロリ">
+        <span id="home-rank" class="home-rank" aria-label="ランク"></span>
         <button id="btn-settings" class="cover-gear" type="button" aria-label="設定"><span aria-hidden="true">⚙️</span> 設定</button>
       </header>
       <h1 class="sr-only">Flori_Quiz</h1>
       <!-- ぼうけんの きろく(総合得点と、つぎの ものがたり) -->
-      <div id="quest-panel" class="quest-panel" aria-label="ぼうけんの きろく">
+      <div id="quest-panel" class="quest-panel" aria-label="冒険の 記録">
         <div class="quest-head"><span class="quest-ttl"></span><b id="quest-score" class="quest-score">0 / 100点</b></div>
         <div class="quest-bar" aria-hidden="true">
           <i id="quest-fill"></i>
@@ -91,9 +93,9 @@
           </div>
         </div>
       </div>
-      <button id="btn-quiz" class="play-btn" type="button"><img class="gi gi-img" src="../assets/illust/castle.webp" alt="" style="animation:none;transition:none"><span class="pb-text"><b>クイズ</b><small>スタート!</small></span><span class="pb-go" aria-hidden="true">▶</span></button>
+      <button id="btn-quiz" class="play-btn" type="button"><span class="pb-text"><b>クイズ</b><small>スタート!</small></span><span class="pb-go pb-arrow" aria-hidden="true"></span></button>
       <div class="home-sub">
-        <button id="btn-hub-story" class="home-help" type="button"><img class="hub-ico" src="../assets/illust/scroll.webp" alt=""><span>フロリの おはなし</span></button>
+        <button id="btn-hub-story" class="home-help" type="button"><img class="hub-ico" src="../assets/illust/scroll.webp" alt=""><span>フロリの お話</span></button>
         <button id="btn-hub-dress" class="home-help home-help-mid" type="button"><img class="hub-ico" src="../assets/illust/crown.webp" alt=""><span>着せ替え</span></button>
         <button id="btn-hub-records" class="home-help" type="button"><img class="hub-ico" src="../assets/illust/trophy.webp" alt=""><span>成績・問題図鑑</span></button>
       </div>
@@ -130,7 +132,11 @@
         <button id="btn-daily" class="mode-btn m-daily" type="button"><span class="tile-icon" aria-hidden="true"><img class="mode-ico" src="../assets/illust/daycal.webp" alt=""></span><span class="tile-text"><span class="tile-label">毎日1問</span><span class="tile-sub">1日に1問だけ</span></span><span class="tile-dot" hidden></span></button>
         <button id="btn-review" class="mode-btn m-review" type="button"><span class="tile-icon" aria-hidden="true"><img class="mode-ico" src="../assets/illust/notebook.webp" alt=""></span><span class="tile-text"><span class="tile-label">復習</span><span class="tile-sub">間違えた問題を もう1度</span></span><span class="tile-dot" hidden></span></button>
       </div>
-      <button id="btn-show-rules" class="rules-again" type="button">📖 ルールを もう1度 見る</button>
+      <div class="rules-row" aria-label="ルールを見る">
+        <button id="btn-show-rules" class="rules-again r-rpg" type="button" data-kind="rpg"><b>RPG</b><small>📖 ルール</small></button>
+        <button id="btn-show-rules-daily" class="rules-again r-daily" type="button" data-kind="daily"><b>毎日1問</b><small>📖 ルール</small></button>
+        <button id="btn-show-rules-review" class="rules-again r-review" type="button" data-kind="review"><b>復習</b><small>📖 ルール</small></button>
+      </div>
       <div id="flow-reward" class="reward-card" hidden></div>
     </section>
 
@@ -259,7 +265,6 @@
       <p id="s-rank-next" class="rank-next"></p>
       <dl class="scores">
         <div><dt>👑 着せ替え</dt><dd id="s-dress"></dd></div>
-        <div><dt>⭐ ご褒美の星</dt><dd id="s-stars"></dd></div>
         <div><dt>🎮 遊んだ回数</dt><dd id="s-plays"></dd></div>
         <div><dt>📅 毎日1問</dt><dd id="s-daily"></dd></div>
         <div><dt>📖 復習待ち</dt><dd id="s-wrong"></dd></div>
@@ -597,6 +602,6 @@
       <button id="btn-oni-yes" class="btn btn-main" type="button">挑戦する!</button>
     </div>
   </dialog>
-  <script type="module" src="main.js?v=20261112q"></script>
+  <script type="module" src="main.js?v=20261113e"></script>
 </body>
 </html>

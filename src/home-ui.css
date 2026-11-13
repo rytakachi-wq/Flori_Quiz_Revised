@@ -1,0 +1,93 @@
+/* 項目A(home-ui)の追加分。story-skin.css のあとに読みこむ */
+
+/* ===== はじめの画面(タッチして スタート):文字を読みやすく ===== */
+.opening .opening-title { filter: drop-shadow(0 3px 0 rgba(58, 36, 24, 0.55)); }
+.opening .opening-title span { color: #fff3cf !important; -webkit-text-stroke: 7px #5a2a14; paint-order: stroke fill; letter-spacing: 0.02em; }
+.opening .opening-title span:nth-child(odd) { color: #ffe46a !important; }
+.opening .opening-hint { padding: 5px 20px; font-size: 18px; font-weight: bold; color: #fff3cf; background: rgba(90, 42, 20, 0.85); border: 3px solid #ffd25a; border-radius: 999px; text-shadow: 0 2px 0 #3a2418; }
+
+/* ===== ホーム ===== */
+/* 上の1行:左=オニフロリ・まんなか=ランク・右=設定(高さ・大きさをそろえる) */
+#screen-cover .home-top { position: absolute !important; top: 8px; left: 12px !important; right: 12px !important; width: auto !important; display: flex !important; align-items: center; justify-content: space-between; z-index: 5; }
+#screen-cover .home-top .logo-small { display: none !important; }
+#screen-cover .home-top .corner-flori, #screen-cover .home-top .cover-gear { display: inline-flex !important; align-items: center; justify-content: center; position: static; box-sizing: border-box; width: 76px; height: 30px; min-height: 30px; padding: 0 !important; margin: 0; font-size: 13px; }
+#screen-cover .home-top .corner-flori { background: var(--sk-paper); border: 3px solid var(--sk-brown); border-radius: 999px; box-shadow: 0 3px 0 var(--sk-brown2); opacity: 1; }
+#screen-cover .home-top .corner-flori img { width: 22px; height: 22px; object-fit: contain; }
+#screen-cover .home-rank { display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; height: 30px; padding: 0 12px; font-size: 13px; font-weight: bold; white-space: nowrap; color: #5a2a14; background: var(--sk-paper); border: 3px solid var(--sk-brown); border-radius: 999px; box-shadow: 0 3px 0 var(--sk-brown2); }
+#screen-cover .home-rank:empty { visibility: hidden; }
+
+/* きろく:フロリは 線の下(旗と かさならない) */
+.quest-flori { bottom: auto !important; top: 100%; margin-top: -4px; margin-bottom: 0 !important; }
+.quest-bar { margin-bottom: 30px !important; }
+
+/* クイズ スタート:▶の色 */
+.play-btn .pb-go { color: #7a2a10; text-shadow: 0 2px 0 #fff3cf, 0 0 6px rgba(255, 243, 207, 0.9); }
+
+/* ===== クイズの えらぶ画面 ===== */
+#screen-setup .mode-list { gap: 12px; }
+.mode-btn.m-rpg { min-height: 96px; padding-top: 10px; padding-bottom: 10px; }
+.mode-btn.m-rpg .tile-label { font-size: clamp(22px, calc(3.8 * var(--dvh)), 28px); }
+.mode-btn.m-rpg .tile-icon { width: 64px; height: 64px; }
+.mode-btn.m-rpg .mode-ico { width: 60px; height: 60px; }
+.mode-btn { transition: transform 0.12s; }
+#screen-setup { background-image: linear-gradient(180deg, rgba(255, 243, 207, 0.15), rgba(244, 216, 160, 0.35)), url("../assets/movie/bg_castle_hd.webp") !important; background-size: cover !important; background-position: center bottom !important; }
+.mode-btn.m-rpg { animation: sk-pulse 2.2s ease-in-out infinite; }
+@keyframes sk-pulse { 50% { transform: scale(1.025); } }
+@media (prefers-reduced-motion: reduce) { .mode-btn.m-rpg { animation: none; } }
+/* ルールボタン(3つ。色で見分ける) */
+.rules-row { flex: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 100%; }
+.rules-row .rules-again { display: flex !important; flex-direction: column; align-items: center; justify-content: center; gap: 1px; min-height: 48px; padding: 4px 4px; font-size: 13px; line-height: 1.2; text-align: center; border-width: 3px; border-radius: 14px; color: #fff; }
+.rules-row .r-rpg { background: linear-gradient(180deg, #ef7a6c, #c8483c); border-color: #7a2418; box-shadow: 0 4px 0 #7a2418; text-shadow: 0 2px 0 #7a2418; }
+.rules-row .r-daily { background: linear-gradient(180deg, #ffc860, #e08a1c); border-color: #8a4a10; box-shadow: 0 4px 0 #8a4a10; text-shadow: 0 2px 0 #8a4a10; }
+.rules-row .r-review { background: linear-gradient(180deg, #7a9ae0, #4a64b8); border-color: #243a78; box-shadow: 0 4px 0 #243a78; text-shadow: 0 2px 0 #243a78; }
+@media (max-height: 620px) { .rules-row .rules-again { display: flex !important; min-height: 40px; } }
+/* ルール画面の色(毎日1問=オレンジ・復習=青) */
+#screen-rules.rf-daily { --rf-bd: #f0b050; --rf-bg1: #fff6e0; --rf-bg2: #ffe0a0; --rf-cap: #ffefc8; --rf-capbd: #e0a030; --rf-ac: #a8620a; --rf-screen: #fffaf0; }
+#screen-rules.rf-review { --rf-bd: #8aa4e8; --rf-bg1: #eef2ff; --rf-bg2: #cdd8f8; --rf-cap: #dde6ff; --rf-capbd: #7a94d8; --rf-ac: #2f4aa0; --rf-screen: #f7f9ff; }
+.rf-dot-daily.is-on { background: #f0a030; border-color: #a8620a; }
+.rf-dot-review.is-on { background: #5a74c8; border-color: #2f4aa0; }
+#screen-rules.rf-daily .rf-next { background: linear-gradient(180deg, #ffe6a8, #ffb84a); border-color: #c8841a; color: #5a3000; box-shadow: 0 6px 0 rgba(170, 100, 20, 0.45); }
+#screen-rules.rf-review .rf-next { background: linear-gradient(180deg, #d6e0ff, #8aa4e8); border-color: #3a56b0; color: #14286a; box-shadow: 0 6px 0 rgba(50, 80, 170, 0.4); }
+
+/* ホームのフロリ:うしろの白いまるを消す・縦に のびないように(絵の ひりつを まもる。横幅は そのまま) */
+#screen-cover .home-stage .home-hero, #screen-cover .home-hero { background: none !important; }
+#screen-cover .home-hero::before, #screen-cover .home-hero::after, #screen-cover .home-hero .hero-fig::before, #screen-cover .home-hero .hero-fig::after { background: none !important; }
+#screen-cover.cover-home .home-stage .home-hero .flori-cover { height: auto !important; max-height: 100%; width: auto !important; max-width: 100%; object-fit: contain; }
+.opening .opening-hint { position: relative; z-index: 4; animation: sk-hint 1.6s ease-in-out infinite; }
+@keyframes sk-hint { 50% { transform: scale(1.05); } }
+@media (prefers-reduced-motion: reduce) { .opening .opening-hint { animation: none; } }
+.opening .opening-title { position: relative; z-index: 4; }
+/* クイズ スタートの ▶ :絵文字ではなく、色を かえられる三角 */
+.play-btn .pb-arrow { display: block; width: 0; height: 0; margin-left: 4px; border-style: solid; border-width: 15px 0 15px 24px; border-color: transparent transparent transparent #7a2a10; filter: drop-shadow(0 2px 0 #fff3cf) drop-shadow(0 0 3px rgba(255, 243, 207, 0.9)); }
+.rules-row .rules-again b { font-size: 15px; }
+.rules-row .rules-again small { font-size: 11px; opacity: 0.95; }
+.rules-row .rules-again { height: 50px; }
+#screen-setup .screen-head .title { color: #fff3cf; -webkit-text-stroke: 5px #5a2a14; paint-order: stroke fill; text-shadow: none; font-size: 28px; }
+
+/* ===== ゲームオーバー:夜の空+赤いけむり。板は 茶と金 ===== */
+#screen-gameover.gameover-screen { background: radial-gradient(circle at 50% 28%, rgba(200, 60, 50, 0.45), rgba(30, 14, 40, 0) 62%), linear-gradient(180deg, rgba(36, 22, 60, 0.82), rgba(20, 10, 36, 0.92)), url("../assets/movie/bg_night_hd.webp") center bottom / cover !important; border-color: #3a2418; }
+#screen-gameover .screen-head .title { color: #ff8a7a; -webkit-text-stroke: 6px #2a1018; paint-order: stroke fill; text-shadow: none; font-size: 26px; }
+#screen-gameover .go-stage { position: relative; }
+#screen-gameover .go-stage::before { content: ""; position: absolute; left: 50%; bottom: 0; width: 72%; height: 28px; transform: translateX(-50%); background: radial-gradient(ellipse, rgba(0, 0, 0, 0.55), transparent 70%); }
+#screen-gameover .go-flori { position: relative; filter: grayscale(0.5) brightness(0.9) drop-shadow(0 0 14px rgba(255, 90, 80, 0.6)); }
+#screen-gameover .go-message { color: #fff3cf; background: rgba(58, 36, 24, 0.9); border: 3px solid #d9a441; box-shadow: 0 4px 0 rgba(0, 0, 0, 0.4); font-size: 16px; }
+#screen-gameover .go-path li { background: #4a3428; border-color: #7a5a40; color: #fff3cf; opacity: 0.8; }
+#screen-gameover .go-path li.is-done { background: #2f5a3a; border-color: #7ad08a; opacity: 1; }
+#screen-gameover .go-path li.is-fell { background: #7a2a28; border-color: #ff8a7a; box-shadow: 0 0 0 3px #3a2418, 0 0 12px 4px rgba(255, 90, 80, 0.7); }
+#screen-gameover .go-scores > div { background: linear-gradient(180deg, #4a3428, #2f2018); border: 3px solid #d9a441; box-shadow: 0 4px 0 rgba(0, 0, 0, 0.4); }
+#screen-gameover .go-scores dt { color: #ffd98a; }
+#screen-gameover .go-scores dd { color: #fff3cf; font-size: 26px; text-shadow: 0 2px 0 #1a0e08; }
+#screen-gameover .go-note { color: #ffe9c0; }
+#screen-gameover .back-btn { z-index: 2; }
+
+/* ===== クエスト クリア:金の光が まわる ===== */
+#screen-result[data-clear="1"] { background: radial-gradient(circle at 50% 30%, rgba(255, 250, 200, 0.95), rgba(255, 220, 120, 0) 55%), repeating-conic-gradient(from 0deg at 50% 30%, rgba(255, 215, 90, 0.35) 0deg 10deg, rgba(255, 243, 207, 0) 10deg 20deg), linear-gradient(180deg, #fff3cf 0%, #ffe39a 55%, #f6c864 100%) !important; border-color: #8a5a10; }
+#screen-result[data-clear="1"] .screen-head .title { color: #fff3cf; -webkit-text-stroke: 6px #8a4a10; paint-order: stroke fill; text-shadow: none; }
+#screen-result[data-clear="1"] .scores > div { background: linear-gradient(180deg, #fff6d8, #ffe39a); border: 3px solid #b8741c; box-shadow: 0 4px 0 #8a4a10; }
+#screen-result[data-clear="1"] .bubble { background: #fff6d8; border: 3px solid #b8741c; }
+#screen-result[data-clear="1"] .record { color: #c0381c; text-shadow: 0 2px 0 #fff; }
+/* 結果発表:点数の板を、ものがたり風に */
+#screen-result .scores > div { border: 3px solid var(--sk-brown); box-shadow: 0 3px 0 var(--sk-brown2); background: linear-gradient(180deg, #fff6d8, #f6dca0); }
+#screen-result .scores dd { color: #c04a1c; }
+#screen-gameover.gameover-screen { --go-h: clamp(110px, calc(24 * var(--dvh)), 230px); }
+@media (max-height: 620px) { #screen-gameover.gameover-screen { --go-h: 90px; } }

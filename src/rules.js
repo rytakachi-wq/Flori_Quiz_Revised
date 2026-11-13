@@ -91,8 +91,38 @@ const RPG = [
   },
 ];
 
+// 毎日1問
+const DAILY = [
+  {
+    title: "① 1日に 1問",
+    caption: "毎日 1問だけ 出る 特別な問題だよ。1日に 1回 挑戦できるよ。",
+    html: SEQ([["📅", "毎日 1問"], ["🤔", "挑戦"], ["⭕", "正解"]]),
+  },
+  {
+    title: "② 毎日 つづけよう",
+    caption: "毎日 続けて 挑戦しよう。明日は また 新しい 問題が 出るよ。",
+    html: SEQ([["🌙", "明日"], ["📅", "新しい 問題"], ["🏆", "続けよう"]]),
+  },
+];
+
+// 復習
+const REVIEW = [
+  {
+    title: "① 間違えた 問題",
+    caption: "間違えた 問題は 間違いノートに 入るよ。",
+    html: SEQ([["❌", "間違い"], ["📓", "ノート"]]),
+  },
+  {
+    title: "② もう1度 挑戦",
+    caption: "ノートの 問題を もう1度 解いて、しっかり 覚えよう!",
+    html: SEQ([["📓", "ノート"], ["🤔", "もう1度"], ["⭕", "覚えた!"]]),
+  },
+];
+
 // 遊び方ごとの、場面・色・名札
 const KINDS = {
+  daily: { theme: "daily", tag: "📅 毎日1問", scenes: () => DAILY },
+  review: { theme: "review", tag: "📓 復習", scenes: () => REVIEW },
   normal: { theme: "solo", tag: "🌱 1人で 普通", scenes: () => [...COMMON, ...SOLO] },
   hard: { theme: "hard", tag: "🔥 1人で 難しい", scenes: () => [...COMMON, SOLO[0], ...HARD] },
   rpg: { theme: "rpg", tag: "🗡️ RPGクエスト", scenes: () => RPG },
@@ -109,12 +139,12 @@ function render() {
   const scene = SCENES[index];
   const screen = $("screen-rules");
   const info = KINDS[kind];
-  screen.classList.remove("rf-solo", "rf-hard", "rf-rpg");
+  screen.classList.remove("rf-solo", "rf-hard", "rf-rpg", "rf-daily", "rf-review");
   screen.classList.add(`rf-${info.theme}`);
   $("rf-tag").textContent = info.tag;
   $("rf-title").textContent = `${CIRCLED[index] ?? ""} ${scene.title.replace(/^[①-⑩]\s*/, "")}`; // 番号は、場面の順につける
   $("rf-caption").textContent = scene.caption;
-  $("rf-skip").textContent = `ルールを とばして ${lastEndLabel === "クイズのモード選択へ" ? "モード選択へ" : lastEndLabel}`;
+  $("rf-skip").textContent = `ルールを 飛ばして ${lastEndLabel === "クイズのモード選択へ" ? "モード選択へ" : lastEndLabel}`;
   const stage = $("rf-stage");
   stage.replaceChildren();
   stage.insertAdjacentHTML("beforeend", scene.html);
