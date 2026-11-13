@@ -286,9 +286,10 @@ export const RPG_STAGES = [
 ];
 
 // 段階がいちばん近い、まだ出していない問題を選ぶ(同じ近さなら、下の段階を先に)。
-function pickByLevel(questions, used, target, rng) {
+// すでに正解したことがある問題(avoid)は、なるべく出さない(ほかに近い段階の問題があれば、そちらを先に)。
+function pickByLevel(questions, used, target, rng, avoid = new Set()) {
   const pool = questions.filter((q) => !used.has(q.id));
-  const distance = (q) => Math.abs(q.level - target) + (q.level > target ? 0.5 : 0);
+  const distance = (q) => Math.abs(q.level - target) + (q.level > target ? 0.5 : 0) + (avoid.has(q.uid ?? q.id) ? 2 : 0);
   const best = Math.min(...pool.map(distance));
   const candidates = pool.filter((q) => distance(q) === best);
   return candidates[Math.floor(rng() * candidates.length)];
@@ -296,9 +297,10 @@ function pickByLevel(questions, used, target, rng) {
 
 // 成績の「遊んだ回数」「正解率」「総合得点」には入れない(オニ・皆で対戦と同じ)。
 export class RpgRound {
-  constructor(questions, rng = Math.random) {
+  constructor(questions, rng = Math.random, avoid = new Set()) {
     this.questions = questions;
     this.rng = rng;
+    this.avoid = avoid; // 前に正解した問題(uid)。なるべく出さない
     this.startRound();
   }
 
@@ -332,7 +334,9 @@ export class RpgRound {
   // 敵の問題は、間違えるたびに、ちがう問題に変わる(答えた問題は used に入るので、同じものは出ない)
   nextQuestion() {
     if (this.pending) return { question: this.pending, leveledUp: false };
-    return { question: pickByLevel(this.questions, this.used, this.current.level, this.rng), leveledUp: false };
+    // 同じ敵で間違えるたびに、問題の段階が1つずつ下がる(いちばん下は 1)
+    const target = Math.max(1, this.current.level - this.retries);
+    return { question: pickByLevel(this.questions, this.used, target, this.rng, this.avoid), leveledUp: false };
   }
 
   // event:"hit"(敵にダメージ)"defeat"(敵を倒した)"damage"(自分がダメージ)"heal"(宝箱で回復)"miss"(宝箱をのがした)

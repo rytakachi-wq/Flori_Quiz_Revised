@@ -3741,3 +3741,17 @@ html[data-pattern] :is(#screen-menu, #screen-note, #screen-credits, #screen-dex,
 @media (max-width: 340px) {
   .dex-tab rt { font-size: 7.5px; }
 }
+
+/* ---- 宝箱から、ハートが飛び出す / 成績のフロリを、少し下げる ---- */
+.rpg-field .rpg-foe-icon { position: relative; }
+.rpg-heart-pop { position: absolute; left: 50%; bottom: 30%; width: clamp(30px, calc(var(--rpg-field-h) * 0.3), 52px); height: auto; margin-left: calc(clamp(30px, calc(var(--rpg-field-h) * 0.3), 52px) / -2); z-index: 5; pointer-events: none; opacity: 0; animation: rpgHeartPop 1.4s ease-out forwards; filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3)); }
+@keyframes rpgHeartPop {
+  0% { transform: translateY(0) scale(0.3); opacity: 0; }
+  20% { opacity: 1; }
+  45% { transform: translateY(calc(var(--rpg-field-h) * -0.45)) scale(1.25); opacity: 1; }
+  70% { transform: translateY(calc(var(--rpg-field-h) * -0.38)) scale(1); opacity: 1; }
+  100% { transform: translateY(calc(var(--rpg-field-h) * -0.5)) scale(1); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .rpg-heart-pop { animation: none; opacity: 1; transform: translateY(calc(var(--rpg-field-h) * -0.4)); } }
+#screen-records .rec-flori { position: relative; top: 14px; }
+@media (max-height: 700px) { #screen-records .rec-flori { top: 8px; } }

@@ -41,7 +41,7 @@ import { createTalker } from "./talk.js?v=fam3";
 import { initTutorial, openTutorial } from "./tutorial.js";
 import { initRules, openRules as resetRules } from "./rules.js";
 import { openCredits, closeCredits } from "./credits.js?v=dusk1";
-import { BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js";
+import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js";
 import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js";
 import { startLiveFlori } from "./live-flori.js?v=fit1";
 import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js";
@@ -377,7 +377,7 @@ function startPlayNow(nextMode, startMessage = null) {
   } else if (mode === "daily") {
     play = new PracticeRound([dailyQuestion(playableQuestions, dateKey())]);
   } else if (mode === "rpg") {
-    play = new RpgRound(adventurePool());
+    play = new RpgRound(adventurePool(), Math.random, new Set(loadStats().right));
     rpgShownStage = -1;
     announce("クエスト スタート!", "start", showRpg, "../assets/flori/m/body_wave.webp");
     return;
@@ -825,7 +825,7 @@ function showResult() {
     const gained = currentTotal() - before;
     return gained > 0 ? `総合得点が${gained}点増えたヨ!` : "総合得点は新しく正解したりヒントなしで正解し直した時だけ増えるヨ。";
   };
-  $("screen-result").dataset.clear = ""; // クエストクリアのときだけ、金の見た目(home-ui.css)
+  $("screen-result").dataset.clear = "1"; // ゲームオーバー以外は、クエストクリアと同じ金の見た目(home-ui.css)。RPGで失敗したときだけ、下で外す
   if (mode === "review") {
     // 復習:間違えた問題の一覧だけが変わる。成績の回数や、総合得点には入れない。
     const leftAll = recordReview(result.answers);
@@ -1915,7 +1915,7 @@ function celebrateUnlocks() {
   $("dlg-unlock").showModal();
   playSe("levelup");
 }
-const KIND_WORD = { color: "フロリの色", head: "頭の飾り", body: "体の飾り", face: "顔の飾り" };
+const KIND_WORD = { color: "フロリの色", bg: "背景", head: "頭の飾り", body: "体の飾り", face: "顔の飾り" };
 async function showUnlock() {
   const [kind, id] = unlockQueue[unlockIndex].split(":");
   const item = DRESS_LISTS[kind].find((entry) => entry.id === id);
@@ -2348,7 +2348,18 @@ function renderRpgStatus(stage = play.current, foeHp = play.hp) {
   $("rpg-foe-icon").replaceChildren(foeImage(stage));
   $("rpg-field").dataset.foe = FOE_ART[stage.name]?.key ?? "mouse"; // 背景も、ものがたりの絵にそろえる
   $("rpg-foe-name").textContent = stage.kind === "chest" ? "宝箱" : stage.kind === "boss" ? `ボス ${stage.name}` : stage.name;
-  $("rpg-foe-hp").textContent = stage.kind === "chest" ? "正解でハート回復" : `${"💗".repeat(Math.max(0, foeHp))}${"🤍".repeat(stage.hp - Math.max(0, foeHp))}`;
+  $("rpg-foe-hp").textContent = stage.kind === "chest" ? "" : `${"💗".repeat(Math.max(0, foeHp))}${"🤍".repeat(stage.hp - Math.max(0, foeHp))}`;
+}
+
+// 宝箱が開いて、ハートが飛び出す
+function popChestHeart() {
+  const foe = $("rpg-foe-icon");
+  const heart = document.createElement("img");
+  heart.className = "rpg-heart-pop";
+  heart.src = HEART_IMG;
+  heart.alt = "";
+  foe.append(heart);
+  setTimeout(() => heart.remove(), 1500);
 }
 
 function rpgPose(src, alt) {
@@ -2389,7 +2400,7 @@ function fitRpgWindow() {
 // 「現れた!」の文。同じ敵に、間違えるたびに、ちがう文にする
 function rpgIntro(stage, retries) {
   const name = stage.kind === "boss" ? `ボス ${stage.name}` : stage.name;
-  if (stage.kind === "chest") return "宝箱だ! 正解でハート回復!";
+  if (stage.kind === "chest") return "宝箱だ! 何が入っているカナ?";
   if (retries === 0) return `${stage.icon} ${name}が現れた!`;
   const lines = [
     `${name}がにやりと笑った! つぎの問題だ!`,
@@ -2500,13 +2511,14 @@ function rpgAnswer(index, timedUp = false) {
     hit: `⚔️ 攻撃! ${foe.name}にダメージ!`,
     defeat: `💥 ${foe.name}を倒した!`,
     damage: `💢 ${foe.name}の攻撃! ハート -1`,
-    heal: "💖 宝箱が開いた! ハート +1",
+    heal: "💖 宝箱が開いて、ハートが出てきた! ハート +1",
     miss: "🎁 宝箱は開けられなかった…",
   }[event];
   rpgFx("", event === "damage" ? "is-hurt" : "is-strike"); // 動きだけ(文字は、下の正解/残念の行に出す。ウィンドウに収めるため)
   if (event === "defeat") setTimeout(() => $("rpg-field").classList.add("is-defeat"), 400);
   rpgPose(correct ? IMG.correct : IMG.wrong, correct ? "笑うフロリ" : "目をつぶるフロリ");
-  renderRpgStatus(foe, event === "defeat" ? 0 : play.hp); // 倒した敵(foe)を出したまま、HPを0に。次の敵は、次の問題で出る
+  renderRpgStatus(foe, event === "defeat" ? 0 : play.hp);
+  if (event === "heal") popChestHeart(); // 倒した敵(foe)を出したまま、HPを0に。次の敵は、次の問題で出る
   $("btn-rpg-hint").hidden = true;
   $("rpg-hint").hidden = true;
   $("rpg-choices").hidden = true; // 答えたあとは、答えと解説だけ(問題文と選択肢は、かくす。1画面に収めるため)
@@ -2545,7 +2557,7 @@ function showGameOver() {
   recordDex(result.answers); // 図鑑
   recordWrong(result.answers); // 間違えた問題は、間違いノートへ
   recordRpgResult(result);
-  const wrongCount = new Set(result.answers.filter((a) => !a.correct).map((a) => a.id)).size; // 同じ問題は、1問と数える
+  const wrongCount = new Set(result.answers.filter((a) => !a.correct || a.hinted).map((a) => a.id)).size; // 同じ問題は、1問と数える(ヒントを見た問題も)
   const last = RPG_STAGES.length - 1;
   $("go-message").textContent =
     result.stage === 0
@@ -2609,7 +2621,7 @@ document.addEventListener("keydown", (event) => {
 
 // ================= 着せ替え・背景 =================
 let dress = loadDress();
-const DRESS_LISTS = { color: COLORS, head: HEADS, body: BODIES, face: FACES }; // 背景(theme)は、着せ替えから なくした(利用者の指示)
+const DRESS_LISTS = { color: COLORS, bg: BGS, head: HEADS, body: BODIES, face: FACES }; // 背景(theme)は、着せ替えから なくした(利用者の指示)
 
 // フロリの絵の上に、頭・体・顔のかざりを重ねる(場所と大きさは、badges.js の pos。うしろに回るものは、フロリのうしろに)
 function setDecor(containerId, items) {
@@ -2637,6 +2649,12 @@ function wornItems(over = {}) {
   return [BODIES.find((i) => i.id === now.body), HEADS.find((i) => i.id === now.head), FACES.find((i) => i.id === now.face)];
 }
 
+// 着せ替えの背景(ものがたりの絵)。ホームと、着せ替え画面のフロリの後ろに出す(--flori-bg。dress-bg.css)
+function setStageBg(id) {
+  const bg = BGS.find((item) => item.id === id) ?? BGS[0];
+  document.documentElement.style.setProperty("--flori-bg", `url("${bg.url}")`);
+}
+
 function applyDress() {
   const theme = THEMES[0]; // 背景は、ひとつに固定(着せ替えでは変えられない)
   document.documentElement.dataset.theme = theme.id;
@@ -2650,6 +2668,7 @@ function applyDress() {
     else root.removeProperty(name);
   }
   setFloriColor(COLORS.find((color) => color.id === dress.color) ?? null);
+  setStageBg(dress.bg);
   setDecor("hero-decor", wornItems());
   setAutoDecor(wornItems());
   setDecor("menu-decor", wornItems());
@@ -2696,9 +2715,11 @@ function openDress() {
 
 // マウスをのせたとき、付ける前に、見ためを、ためせる(かざり・背景)
 function previewDress(kind, item) {
+  if (kind === "bg") setStageBg(item.id);
   if (kind === "head" || kind === "body" || kind === "face") setDecor("dress-decor", wornItems({ [kind]: item.id }));
 }
 function endPreview() {
+  setStageBg(dress.bg);
   setDecor("dress-decor", wornItems());
 }
 
@@ -2796,7 +2817,7 @@ function renderDress() {
       count = document.createElement("small");
       tab.append(count);
     }
-    count.textContent = `${have}/${list.length}`;
+    count.textContent = list.length ? `${have}/${list.length}` : "";
     tab.classList.toggle("has-new", !seenTabs.has(kind) && [...freshKeys].some((key) => key.startsWith(`${kind}:`))); // 開いた種類の NEW は、消える
   }
   const kind = dressTab;
@@ -2829,6 +2850,7 @@ function renderDress() {
         pat.style.background = paint;
         art.append(pat);
       } else if (kind === "color") art.style.background = paint;
+      else if (kind === "bg") art.style.background = `url("${choice.url}") center / cover`;
       else if (choice.img) {
         const pic = document.createElement("img");
         pic.addEventListener("load", () => fitIcon(pic)); // 細長いもの・横長のものも、見かけの大きさが、そろうように
