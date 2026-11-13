@@ -9,7 +9,7 @@ import { recolorCanvas } from '../flori-color.js';
 import { HEADS } from '../badges.js';
 import { startFurigana } from '../furigana.js?v=fm11';
 import { MOVIES } from './storyboard.js?v=20261112a';
-import { playStoryBgm } from './story-bgm.js';
+import { playStoryBgm } from './story-bgm.js?v=20261113p';
 
 startFurigana();
 

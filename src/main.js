@@ -22,7 +22,7 @@ import {
   previousDateKey,
   shuffleChoices,
   totalScore,
-} from "./game.js";
+} from "./game.js?v=20261113p";
 import {
   addStars,
   loadStats,
@@ -35,17 +35,17 @@ import {
   recordWrong,
   recordRpg,
   recordRound,
-} from "./storage.js";
-import { illustrationFor } from "./illustrations.js";
+} from "./storage.js?v=20261113p";
+import { illustrationFor } from "./illustrations.js?v=20261113p";
 import { createTalker } from "./talk.js?v=fam3";
-import { initTutorial, openTutorial } from "./tutorial.js";
-import { initRules, openRules as resetRules } from "./rules.js";
+import { initTutorial, openTutorial } from "./tutorial.js?v=20261113p";
+import { initRules, openRules as resetRules } from "./rules.js?v=20261113p";
 import { openCredits, closeCredits } from "./credits.js?v=dusk1";
-import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js";
-import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js";
+import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js?v=20261113p";
+import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js?v=20261113p";
 import { hopFlori, startLiveFlori } from "./live-flori.js?v=fit2";
-import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js";
-import { getVolume, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js";
+import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js?v=20261113p";
+import { getVolume, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js?v=20261113p";
 import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=fm11";
 
 // 着せ替えの条件が変わったとき、前の条件で手に入れていたものを残す(初めて開いたときの1回だけ)

@@ -132,7 +132,7 @@
 
 /* ===== 2回目のまとめ ===== */
 /* オープニング:ロゴの色みを、夕やけ+ちゃいろのふちに そろえる */
-.opening .logo { filter: sepia(0.55) saturate(1.8) hue-rotate(-12deg) brightness(1.05) drop-shadow(0 3px 0 #5a2a14) drop-shadow(0 0 2px #5a2a14); }
+.opening .logo { filter: none; }
 
 /* ホーム上の1行:オニフロリは わくなし・大きく。ランクは まんなかに、「ランク:」つき */
 #screen-cover .home-top { top: 4px; }
