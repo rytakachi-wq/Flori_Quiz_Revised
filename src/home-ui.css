@@ -91,6 +91,7 @@
 #screen-result .scores dd { color: #c04a1c; }
 #screen-gameover.gameover-screen { --go-h: clamp(110px, calc(24 * var(--dvh)), 230px); }
 @media (max-height: 620px) { #screen-gameover.gameover-screen { --go-h: 90px; } }
+@media (max-height: 600px) { #screen-gameover.gameover-screen { --go-h: 72px; } }
 
 /* ===== 遊び方(チュートリアル)・ルール説明:ものがたりの テンション・見た目に ===== */
 .tutorial { background: radial-gradient(circle at 50% 30%, rgba(120, 70, 150, 0.55), rgba(20, 12, 44, 0.9) 75%), url("../assets/movie/bg_night_hd.webp") center bottom / cover; }
