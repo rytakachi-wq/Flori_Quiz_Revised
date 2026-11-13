@@ -3,7 +3,7 @@
 //
 // BGMは、このゲームのために作ったオリジナルの曲を、ブラウザの中で演奏する(music.js)。曲のファイルはない。
 
-import { MusicPlayer, jingleSeconds } from "./music.js?v=20261114c";
+import { MusicPlayer, jingleSeconds } from "./music.js?v=20261114a";
 
 const BASE = "../assets/audio/";
 const SETTINGS_KEY = "floriQuiz.settings.v2";
@@ -168,18 +168,6 @@ export function unlock() {
   unlocked = true;
   if (!context) prepare();
   else if (context.state !== "running") context.resume().catch(() => {}); // 止まっている(suspended)・割りこまれた(interrupted)ときは、動かしなおす
-}
-
-// ページを開いた直後に、音の準備と再生を、ためしにやってみる(画面をさわる前の、オープニングの曲のため)。
-// ブラウザが許せば(PCのChromeなど)、すぐ鳴る。許さなければ、準備だけしておいて、最初の操作の瞬間(unlock)に、そのまま鳴りはじめる。
-export function tryAutoStart() {
-  if (!window.AudioContext) return;
-  if (!context) prepare();
-  context?.resume().catch(() => {}); // 許されなければ、止まったまま(あとの最初の操作で動く)
-}
-// いまの音の状態(確かめ用。"running" なら鳴っている。"suspended" はブラウザに止められている)
-export function audioState() {
-  return context?.state ?? "none";
 }
 
 // ゲームの画面を見ていないとき(ほかのタブや、ほかのアプリを見ているとき)は、音を止める。もどったら、つづきから。

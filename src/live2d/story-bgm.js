@@ -1,8 +1,8 @@
 // ものがたり(ムービー)の、お話ごとの専用BGM。ゲームの BGM(music.js)と同じしくみで、ここで曲を足して、ここで鳴らす。
 // (music.js の TRACKS に、このページの中だけ曲を足す。ゲーム本体の BGM は ふやさない)
 // メロディの書きかた:"E5/4 G5/4 -/2 C6/2" = 音/長さ(ステップ。16で1小節)を、順に。"-" は休み。
-import { MusicPlayer, TRACKS } from '../music.js?v=20261114c';
-import { curve, getVolume } from '../audio.js?v=20261114c';
+import { MusicPlayer, TRACKS } from '../music.js?v=20261114a';
+import { curve, getVolume } from '../audio.js?v=20261114a';
 
 const bars = (...list) => list.map((text) => {
   let step = 0;
