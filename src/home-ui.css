@@ -2,7 +2,7 @@
 
 /* ===== はじめの画面(タッチして スタート):文字を読みやすく ===== */
 .opening .opening-title { filter: drop-shadow(0 3px 0 rgba(58, 36, 24, 0.55)); }
-.opening .opening-title span { color: #fff3cf !important; -webkit-text-stroke: 7px #5a2a14; paint-order: stroke fill; letter-spacing: 0.02em; }
+.opening .opening-title span { color: #fff3cf !important; text-shadow: none; -webkit-text-stroke: 7px #5a2a14; paint-order: stroke fill; letter-spacing: 0.02em; }
 .opening .opening-title span:nth-child(odd) { color: #ffe46a !important; }
 .opening .opening-hint { padding: 5px 20px; font-size: 18px; font-weight: bold; color: #fff3cf; background: rgba(90, 42, 20, 0.85); border: 3px solid #ffd25a; border-radius: 999px; text-shadow: 0 2px 0 #3a2418; }
 

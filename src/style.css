@@ -3333,9 +3333,9 @@ body.is-moving .badge-bg span, body.is-touching .badge-bg span { animation-play-
 .rpg-text { color: var(--text, #2a3a46); }
 .rpg-toprow { display: flex; align-items: center; justify-content: space-between; gap: 6px; min-height: 30px; }
 .rpg-toprow .rpg-fx { flex: 1 1 0; min-width: 0; align-self: center; color: #6b4a00; background: #fff3c4; border: 2px solid #f0c75a; }
-.rpg-toprow .rpg-hint-btn { flex: none; align-self: center; margin: 0; min-height: 30px; padding: 1px 10px; font-size: 13px; color: #6b4a00; background: #fff3c4; border: 2px solid #f0c75a; }
+.rpg-toprow .rpg-hint-btn { flex: none; align-self: center; margin: 0; min-height: 30px; padding: 1px 10px; font-size: 13px; color: #6b4a00; text-shadow: none; background: #fff3c4; border: 2px solid #f0c75a; }
 .rpg-choice { color: var(--text, #2a3a46); background: #fff; border: 3px solid var(--blue, #7ec3e0); }
-.rpg-choice .rpg-no { color: var(--text, #2a3a46); background: var(--blue, #7ec3e0); }
+.rpg-choice .rpg-no { text-shadow: none; color: var(--text, #2a3a46); background: var(--blue, #7ec3e0); }
 .rpg-choice:hover:not(:disabled), .rpg-choice:focus-visible { background: #eaf6fc; border-color: var(--blue-dark, #4a8fb5); }
 .rpg-choice.is-right { background: #dff3df; border-color: #4aa86b; }
 .rpg-choice.is-wrong { background: #fde3e1; border-color: #d9534f; }
