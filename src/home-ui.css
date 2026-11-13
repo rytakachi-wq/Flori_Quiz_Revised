@@ -109,3 +109,22 @@
 /* 暗い茶色・紫のボタンの上の ふりがな(rt)を 明るく */
 .home-help rt, .cover-gear rt, .back-btn rt, .rules-row rt, .home-rank rt, .tut-caption rt, .rf-caption rt, .rpg-hint-btn rt, .rpg-next rt, .rpg-settings rt, .chip-button rt { color: #ffe9c0 !important; text-shadow: 0 1px 0 #3a2418; }
 .home-help-mid rt { color: #5a2a14 !important; text-shadow: none; }
+
+/* ===== ルール説明(RPG・毎日1問・復習):フロリがいる・大きさをそろえる・ボタンの文字を はっきり ===== */
+.rf-scene { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 4px; padding: 6px 8px; }
+.rf-scene .rf-fl { flex: none; width: 34%; max-height: 92%; height: auto; object-fit: contain; align-self: flex-end; }
+.rf-scene .rf-side { position: relative; flex: 1 1 0; min-width: 0; height: 100%; display: flex; align-items: center; justify-content: center; }
+.rf-scene .rf-seq, .rf-scene .rf-stack { position: static; inset: auto; }
+.rf-scene .rf-seq { gap: clamp(6px, 2.5cqw, 14px); flex-wrap: wrap; }
+.rf-scene .rf-seq-item b { font-size: clamp(30px, 9dvh, 52px); }
+.rf-scene .rf-seq-item small { font-size: 12px; }
+#screen-rules .rf-box { flex: 1 1 0; }
+#screen-rules .rf-stage { flex: 0 0 auto; height: clamp(170px, calc(32 * var(--dvh)), 300px); }
+#screen-rules .rf-title { min-height: 1.3em; }
+#screen-rules .rf-caption { min-height: calc(1.55em * 3 + 14px); display: flex; align-items: center; justify-content: center; text-align: center; }
+#screen-rules .rf-next, #screen-rules .go-btn.rf-next { text-shadow: none !important; -webkit-text-stroke: 0; font-weight: bold; letter-spacing: 0; color: #5a2a14; }
+#screen-rules.rf-rpg .rf-next { color: #6a1a16; }
+#screen-rules.rf-review .rf-next { color: #14286a; }
+#screen-rules .rf-skip { text-shadow: none; }
+#screen-rules .rf-title { white-space: nowrap; overflow: hidden; height: 1.4em; font-size: clamp(18px, calc(3 * var(--dvh)), 24px); }
+#screen-rules .rf-caption { box-sizing: border-box; height: 116px; min-height: 116px; overflow: hidden; }

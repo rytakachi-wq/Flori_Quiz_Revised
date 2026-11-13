@@ -57,65 +57,70 @@ const HARD = [
   },
 ];
 
+// フロリが いっしょに 出る場面(ものがたり調)。絵は フロリ+ひつような ものだけ
+const FL = '<img class="rf-fl" src="../assets/flori/m/wave_nikkori.png" alt="">';
+const SCENE = (...parts) => `<div class="rf-scene">${FL}<div class="rf-side">${parts.join("")}</div></div>`;
+const ONE = (icon, note) => `<div class="rf-seq"><span class="rf-seq-item" style="--n:0"><b>${icon}</b><small>${note}</small></span></div>`;
+
 // RPGクエスト
 const RPG = [
   {
-    title: "① 5つのマス",
-    caption: "5つのマスを進んでボスのドラゴンを倒そう!",
-    html: SEQ([["🐭", "ザコ"], ["🎁", "宝箱"], ["🦂", "強い敵"], ["🐉", "ボス"]]),
+    title: "① ドラゴンのお城へ",
+    caption: "ボクはお城のドラゴンに会いに行くヨ! 5つのマスを進んで、ボスを倒そう!",
+    html: SCENE(SEQ([["🐭", "ザコ"], ["🎁", "宝箱"], ["🦂", "強い敵"], ["🐉", "ボス"]])),
   },
   {
     title: "② ハートは 4つ",
-    caption: "ハートは 4つ。間違えると 1つ減って、0になるとゲームオーバーだよ。",
-    html: STACK(HEARTS([HEART, HEART, HEART, HEART], "rf-lose"), '<span class="rf-note">間違えると… ハート -1</span>'),
+    caption: "ボクのハートは 4つ。間違えると 1つ減って、全部なくなるとゲームオーバーだヨ…!",
+    html: SCENE(HEARTS([HEART, HEART, HEART, HEART], "rf-lose")),
   },
   {
     title: "③ 戦い",
-    caption: "正解すると敵に攻撃! 間違えると敵にやられてハートが 1つ減るよ。",
-    html: SEQ([["✅", "正解"], ["⚔️", "攻撃"], ["❌", "間違い"], ["💔", "ハート -1"]]),
+    caption: "正解するとえいっ! と攻撃。間違えると敵にやられて、ハートが 1つ減るヨ。",
+    html: SCENE(SEQ([["⚔️", "正解で攻撃"], ["💔", "間違いで −1"]])),
   },
   {
     title: "④ ヒント",
-    caption: "ヒントを見るとハートが半分減るよ。ハートが半分しかない時は見られないよ。",
-    html: STACK(SEQ([["💡", "ヒントを見る"]]), HEARTS([HEART, HEART, HEART, HEART_HALF]), '<span class="rf-note">ハート半分</span>'),
+    caption: "困ったらヒントを見よう。ハートが半分減るけど、ボクが助けてあげるヨ!",
+    html: SCENE(STACK(ONE("💡", "ヒント"), HEARTS([HEART, HEART, HEART, HEART_HALF]))),
   },
   {
-    title: "⑤ 宝箱・ボス",
-    caption: "宝箱は正解でハートが 1つ回復! ボスは 2回正解すると倒せるよ。",
-    html: SEQ([["🎁", "回復"], ["🐉", "ボス"], ["⚔️", "2回攻撃"]]),
+    title: "⑤ 宝箱とボス",
+    caption: "宝箱は正解でハートが 1つ回復! ボスは 2回正解すると倒せるヨ。",
+    html: SCENE(SEQ([["🎁", "回復"], ["🐉", "2回で倒す"]])),
   },
   {
-    title: "⑥ 間違い・クリア",
-    caption: "間違えた問題は間違いノートに入るよ。ハートが 0になる前にドラゴンを倒そう!",
-    html: SEQ([["❌", "間違い"], ["📓", "ノート"], ["🏆", "クリア"]]),
+    title: "⑥ ノートとクリア",
+    caption: "間違えた問題はノートに残るヨ。ハートがなくなる前に、ドラゴンを倒してクリアだ!",
+    html: SCENE(SEQ([["📓", "ノート"], ["🏆", "クリア"]])),
   },
 ];
 
 // 毎日1問
 const DAILY = [
   {
-    title: "① 1日に 1問",
-    caption: "毎日 1問だけ出る特別な問題だよ。1日に 1回挑戦できるよ。",
-    html: SEQ([["📅", "毎日 1問"], ["🤔", "挑戦"], ["⭕", "正解"]]),
+    title: "① 今日の 1問",
+    caption: "今日もフロリのおうちに、特別な問題が 1問届いたヨ! 1日に 1回、挑戦できるんだ。",
+    html: SCENE(ONE("📅", "毎日 1問")),
   },
   {
-    title: "② 毎日つづけよう",
-    caption: "毎日続けて挑戦しよう。明日はまた新しい問題が出るよ。",
-    html: SEQ([["🌙", "明日"], ["📅", "新しい問題"], ["🏆", "続けよう"]]),
+    title: "② また 明日",
+    caption: "間違えても大丈夫。明日になれば、また新しい問題が届くヨ。毎日 続けてみよう!",
+    html: SCENE(SEQ([["🌙", "明日"], ["📅", "新しい問題"]])),
   },
 ];
 
 // 復習
 const REVIEW = [
   {
-    title: "① 間違えた問題",
-    caption: "間違えた問題は間違いノートに入るよ。",
-    html: SEQ([["❌", "間違い"], ["📓", "ノート"]]),
+    title: "① 間違いノート",
+    caption: "間違えた問題は、ボクの間違いノートに入っているヨ。",
+    html: SCENE(ONE("📓", "間違いノート")),
   },
   {
-    title: "② もう1度挑戦",
-    caption: "ノートの問題をもう1度解いて、しっかり覚えよう!",
-    html: SEQ([["📓", "ノート"], ["🤔", "もう1度"], ["⭕", "覚えた!"]]),
+    title: "② もう1度 挑戦",
+    caption: "ノートの問題をもう1度解いて、しっかり覚えよう! 次はきっと正解できるヨ!",
+    html: SCENE(SEQ([["📓", "ノート"], ["⭕", "覚えた!"]])),
   },
 ];
 
