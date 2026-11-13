@@ -25,3 +25,6 @@
 #screen-cover .home-speech { animation: speechBob 3.6s ease-in-out infinite; }
 #screen-cover .home-speech.talk-change { animation: speechBob 3.6s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { #screen-cover .home-speech, #screen-cover .home-speech.talk-change { animation: none; } }
+
+/* ホームだけ:頭・顔のかざり(帽子・メガネなど)を、少し下げる(帽子が、頭から5pxほど浮いて見えたため。利用者の指示)。ほかの画面は、そのまま */
+#screen-cover .decor .decor-tilt { translate: 0 2%; }
