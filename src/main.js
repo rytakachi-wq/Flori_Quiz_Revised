@@ -323,7 +323,7 @@ function renderQuest() {
   const total = currentTotal();
   $("quest-score").textContent = `${total} / 100点`;
   const rank = rankOf(total);
-  $("home-rank").textContent = `${rank.icon} ${rank.name}`; // ホーム上のまんなか:いまのランク
+  $("home-rank").textContent = `ランク: ${rank.icon} ${rank.name}`; // ホーム上のまんなか:いまのランク
   $("quest-fill").style.width = `${Math.min(100, total)}%`;
   $("quest-flori").style.left = `${Math.min(100, total)}%`; // フロリは、線の上(いまの点のところ)
   const next = MOVIE_INFO.find((m) => m.need > total);
@@ -954,7 +954,7 @@ function celebrateResult(result) {
     stars.replaceChildren(
       ...Array.from({ length: 5 }, (_, i) => {
         const star = document.createElement("span");
-        star.textContent = "💡"; // ひらめきの電球(とれた数だけ、光る)
+        star.textContent = screen.dataset.clear === "1" ? "⭐" : "💡"; // ひらめきの電球(とれた数だけ、光る)。クエストクリアは 星
         star.className = i < filled ? "on" : "off";
         star.style.setProperty("--i", String(i));
         return star;
@@ -965,6 +965,7 @@ function celebrateResult(result) {
   const icons = ["🎉", "⭐", "✨", "🎊", "🌟", "💖"];
   // 紙ふぶき:画面のあちこちに、まばらに ぽんと出て、ゆっくり、ひらひら、散っていく(1人でも皆でも同じ)
   const count = ratio === 0 ? 0 : mood === "perfect" ? 30 : 22;
+  if (mode === "daily") stars.replaceChildren(); // 毎日1問は、電球を出さない
   $("r-fx").replaceChildren(
     ...Array.from({ length: count }, (_, i) => {
       const bit = document.createElement("span");
@@ -1280,7 +1281,7 @@ $("btn-credits").addEventListener("click", showCredits);
 // プロローグは、はじめて開いたとき、だれにでも見せる。①〜⑤は、総合得点が 20・40・60・80・100点になったあと、つぎにゲームを始める前に、1回だけ見せる。
 // 「その他」の「ものがたり」では、見られるようになったものを、いつでも見られる。
 const MOVIE_SEEN_KEY = "floriQuiz.movieSeen";
-const MOVIE_VER = "20261112b";
+const MOVIE_VER = "20261113b";
 const MOVIE_INFO = [
   { id: "pro", need: 0 },
   { id: "ep1", need: 20 },
@@ -1325,6 +1326,7 @@ function openMovie(query) {
 }
 async function showDueMovies(onlyPrologue = false) {
   for (let m = dueMovie(); m; m = dueMovie()) {
+    setScene("movie"); // ゲームのBGMは止める(ムービーの中で、お話ごとの専用BGMが鳴る)
     if (onlyPrologue && m.id !== "pro") break;
     markMovieSeen(m.id);
     await openMovie(`mode=story&play=${m.id}`);
@@ -1352,7 +1354,7 @@ function renderMoviePick() {
       const strong = document.createElement("b");
       strong.textContent = title;
       const small = document.createElement("span");
-      small.textContent = open.has(m.id) ? (m.need > 0 && MOVIE_ALL_OPEN_NOW ? `(仮)今だけ見られる / ${note}` : note) : `まだ見られない(${note})`;
+      small.textContent = open.has(m.id) ? note : `まだ見られない(${note})`;
       button.append(strong, small);
       button.disabled = !open.has(m.id);
       button.addEventListener("click", () => openMovie(`mode=gallery&play=${m.id}`));
@@ -1375,6 +1377,7 @@ window.addEventListener("message", (event) => {
   movieDone = null;
   done?.();
 });
+  setScene(sceneOf(currentScreen)); // ゲームのBGMにもどる
 $("btn-credits-back").addEventListener("click", () => show("cover", -1));
 const PAGE_OPEN = {
   cover: () => show("cover"),
@@ -2348,7 +2351,11 @@ function renderRpgStatus(stage = play.current, foeHp = play.hp) {
   $("rpg-foe-icon").replaceChildren(foeImage(stage));
   $("rpg-field").dataset.foe = FOE_ART[stage.name]?.key ?? "mouse"; // 背景も、ものがたりの絵にそろえる
   $("rpg-foe-name").textContent = stage.kind === "chest" ? "宝箱" : stage.kind === "boss" ? `ボス ${stage.name}` : stage.name;
-  $("rpg-foe-hp").textContent = stage.kind === "chest" ? "" : `${"💗".repeat(Math.max(0, foeHp))}${"🤍".repeat(stage.hp - Math.max(0, foeHp))}`;
+  { // 敵のハート:イラストの ハート(のこりは、うすい灰色)
+    const heart = (off) => `<img class="rpg-foe-heart${off ? " is-off" : ""}" src="../assets/illust/heart.webp" alt="">`;
+    const left = Math.max(0, foeHp);
+    $("rpg-foe-hp").innerHTML = stage.kind === "chest" ? "" : heart(false).repeat(left) + heart(true).repeat(Math.max(0, stage.hp - left));
+  }
 }
 
 // 宝箱が開いて、ハートが飛び出す

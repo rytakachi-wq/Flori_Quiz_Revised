@@ -128,3 +128,44 @@
 #screen-rules .rf-skip { text-shadow: none; }
 #screen-rules .rf-title { white-space: nowrap; overflow: hidden; height: 1.4em; font-size: clamp(18px, calc(3 * var(--dvh)), 24px); }
 #screen-rules .rf-caption { box-sizing: border-box; height: 116px; min-height: 116px; overflow: hidden; }
+
+/* ===== 2回目のまとめ ===== */
+/* オープニング:ロゴの色みを、夕やけ+ちゃいろのふちに そろえる */
+.opening .logo { filter: sepia(0.55) saturate(1.8) hue-rotate(-12deg) brightness(1.05) drop-shadow(0 3px 0 #5a2a14) drop-shadow(0 0 2px #5a2a14); }
+
+/* ホーム上の1行:オニフロリは わくなし・大きく。ランクは まんなかに、「ランク:」つき */
+#screen-cover .home-top { top: 4px; }
+#screen-cover .home-top .corner-flori { width: 52px; height: 52px; min-height: 52px; background: none !important; border: 0 !important; box-shadow: none !important; border-radius: 0; }
+#screen-cover .home-top .corner-flori img { width: 52px; height: 52px; }
+#screen-cover .home-rank { position: absolute; left: 50%; top: 11px; transform: translateX(-50%); padding: 0 16px; min-width: 150px; }
+#screen-cover .home-top .cover-gear { margin-top: 0; position: relative; top: 7px; }
+#screen-cover.cover-home { padding-top: 54px; }
+/* 次の ものがたりまでの フロリ:大きく */
+.quest-flori { width: 40px !important; height: 40px !important; margin-left: -20px !important; margin-top: -6px; }
+.quest-bar { margin-bottom: 36px !important; }
+
+/* クイズの えらぶ画面:RPGは 動かさない・たてを すこし 大きく。ルールの ボタンは クイズの すぐ下 */
+.mode-btn.m-rpg { animation: none !important; min-height: 112px; }
+#screen-setup .mode-list { flex: 0 0 auto; }
+#screen-setup .rules-row { margin-top: 2px; }
+
+/* ヒント・分からないの ダイアログ:やめとく(小)・見る(大) */
+.hint-dialog #btn-hint-no, .hint-dialog #btn-rpg-hint-no { flex: 1 1 0; min-height: 46px; font-size: 15px; }
+.hint-dialog #btn-hint-yes, .hint-dialog #btn-rpg-hint-yes { flex: 2.4 1 0; min-height: 66px; font-size: 22px; }
+#dlg-giveup .buttons { display: flex; flex-wrap: nowrap; }
+#dlg-giveup #btn-giveup-no { order: 1; flex: 1 1 0; min-height: 46px; font-size: 15px; }
+#dlg-giveup #btn-giveup-yes { order: 2; flex: 2.4 1 0; min-height: 66px; font-size: 22px; }
+
+/* RPGの敵のハート:イラスト・わくなし・大きく */
+.rpg-field .rpg-foe-hp { background: none !important; border: 0 !important; box-shadow: none !important; padding: 0 !important; gap: 3px; }
+.rpg-foe-heart { display: block; width: clamp(24px, calc(var(--rpg-field-h, 160px) * 0.2), 36px); height: auto; filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.35)); }
+.rpg-foe-heart.is-off { filter: grayscale(1) brightness(1.3) drop-shadow(0 2px 0 rgba(0, 0, 0, 0.3)); opacity: 0.55; }
+/* 警告:2回だけ 点滅 */
+.rpg-warn { animation-iteration-count: 2 !important; }
+
+/* 新しい かざり(ほうび)の ボタン:よこならび */
+.unlock-dialog .buttons { display: flex; flex-direction: row !important; flex-wrap: nowrap !important; gap: 8px; width: 100%; }
+.unlock-dialog .buttons .btn { flex: 1 1 0; min-width: 0; padding-left: 8px; padding-right: 8px; white-space: nowrap; }
+.unlock-dialog #btn-unlock-wear { flex: 1.5 1 0; }
+/* クエスト クリア:下の よはくを なくして、そのぶん フロリを大きく(のこりの場所を フロリが つかう) */
+#screen-result[data-clear="1"] .screen-head + .flori-cover, #screen-result[data-clear="1"] > .flori-cover { flex: 1 1 0 !important; height: auto !important; min-height: 110px; max-height: none !important; width: auto !important; max-width: 85% !important; align-self: center; object-fit: contain; }
