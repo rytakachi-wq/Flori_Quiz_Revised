@@ -4,13 +4,59 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Flori_Quiz</title>
+  <script>
+    // 起動の見はり番(古いキャッシュ・保存データなどで、main.js が止まったとき、気づけるように)。
+    // ・main.js が、起動したら、window.__floriBoot = true にする。5秒たっても、ならなければ、「読みこみなおす」を出す。
+    // ・アドレスに ?debug=1 を付けたときだけ、エラーの内容を、画面の下に出す(スマホで、原因を見るため)。
+    (function () {
+      var debug = /[?&]debug=1/.test(location.search);
+      var lines = [];
+      var box = null;
+      function ensureBox() {
+        if (box || !document.body) return box;
+        box = document.createElement("pre");
+        box.id = "debug-log";
+        box.style.cssText = "position:fixed;left:0;right:0;bottom:0;max-height:40%;overflow:auto;margin:0;padding:6px 8px;font:11px/1.4 monospace;color:#fff;background:rgba(160,20,20,.92);z-index:99999;white-space:pre-wrap;word-break:break-all;";
+        document.body.appendChild(box);
+        return box;
+      }
+      function log(text) {
+        lines.push(text);
+        if (!debug) return;
+        var b = ensureBox();
+        if (b) b.textContent = lines.join("\n");
+      }
+      window.__floriLog = log;
+      window.addEventListener("error", function (e) {
+        log("[error] " + e.message + " (" + String(e.filename || "").split("/").pop() + ":" + e.lineno + ")");
+      });
+      window.addEventListener("unhandledrejection", function (e) {
+        var r = e.reason;
+        log("[promise] " + (r && r.stack ? r.stack.split("\n").slice(0, 2).join(" ") : String(r)));
+      });
+      if (debug) document.addEventListener("DOMContentLoaded", function () { log("debug=1 / " + navigator.userAgent); });
+      setTimeout(function () {
+        if (window.__floriBoot || document.getElementById("boot-fail")) return;
+        var n = document.createElement("div");
+        n.id = "boot-fail";
+        n.style.cssText = "position:fixed;left:12px;right:12px;bottom:14px;z-index:99998;padding:10px 12px;background:#fff3cf;color:#4a3428;border:3px solid #8a4a10;border-radius:14px;font:bold 14px/1.5 sans-serif;text-align:center;";
+        n.innerHTML = '読みこみが、うまくいかなかったみたい。<br><button type="button" style="margin-top:6px;padding:6px 16px;font:inherit;border:3px solid #8a4a10;border-radius:999px;background:#ffe46a;color:#4a3428;">もう1度 読みこむ</button>';
+        n.querySelector("button").onclick = function () {
+          var u = location.pathname + "?r=" + Date.now() + (debug ? "&debug=1" : "");
+          location.replace(u);
+        };
+        (document.body || document.documentElement).appendChild(n);
+        log("[boot] main.js が5秒たっても、起動しなかった");
+      }, 5000);
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
   <link rel="stylesheet" href="style.css?v=20261113q">
   <link rel="stylesheet" href="story-skin.css?v=32">
   <link rel="stylesheet" href="home-ui.css?v=5">
-  <link rel="stylesheet" href="dress-bg.css?v=3">
+  <link rel="stylesheet" href="dress-bg.css?v=4">
 </head>
 <body>
   <div id="badge-bg" class="badge-bg" aria-hidden="true"></div>

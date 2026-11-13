@@ -16,7 +16,9 @@
 #screen-dress .dress-item.rare-3 .dress-rare { color: #e0409a; text-shadow: none; }
 
 /* オープニング:動くフロリの用意ができるまで、フロリ(静止画)・かざりを出さない。静止画が一瞬 出るのを防ぐ(live-flori.js が live-ready を付ける) */
-#opening:not(.live-ready) .opening-flori, #opening:not(.live-ready) .decor-auto { visibility: hidden; }
+#opening:not(.live-ready) .opening-flori, #opening:not(.live-ready) .decor-auto { visibility: hidden; animation: op-reveal 0s linear 3.5s forwards; }
+/* JS が止まっても、3.5秒たったら、静止画のフロリを出す(スマホで、フロリが出ないままになるのを防ぐ) */
+@keyframes op-reveal { to { visibility: visible; } }
 
 /* ホームのふきだし:ほんの少しだけ、ふわふわ動く(2px) */
 @keyframes speechBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }

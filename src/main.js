@@ -22,7 +22,7 @@ import {
   previousDateKey,
   shuffleChoices,
   totalScore,
-} from "./game.js?v=20261113p";
+} from "./game.js?v=20261113q";
 import {
   addStars,
   loadStats,
@@ -35,24 +35,19 @@ import {
   recordWrong,
   recordRpg,
   recordRound,
-} from "./storage.js?v=20261113p";
-import { illustrationFor } from "./illustrations.js?v=20261113p";
-import { createTalker } from "./talk.js?v=fam3";
-import { initTutorial, openTutorial } from "./tutorial.js?v=20261113p";
-import { initRules, openRules as resetRules } from "./rules.js?v=20261113p";
-import { openCredits, closeCredits } from "./credits.js?v=dusk1";
-import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js?v=20261113p";
-import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js?v=20261113p";
-import { hopFlori, startLiveFlori } from "./live-flori.js?v=fit2";
-import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js?v=20261113p";
-import { getVolume, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js?v=20261113p";
-import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=fm11";
+} from "./storage.js?v=20261113q";
+import { illustrationFor } from "./illustrations.js?v=20261113q";
+import { createTalker } from "./talk.js?v=20261113q";
+import { initTutorial, openTutorial } from "./tutorial.js?v=20261113q";
+import { initRules, openRules as resetRules } from "./rules.js?v=20261113q";
+import { openCredits, closeCredits } from "./credits.js?v=20261113q";
+import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js?v=20261113q";
+import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js?v=20261113q";
+import { hopFlori, startLiveFlori } from "./live-flori.js?v=20261113q";
+import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js?v=20261113q";
+import { getVolume, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js?v=20261113q";
+import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=20261113q";
 
-// 着せ替えの条件が変わったとき、前の条件で手に入れていたものを残す(初めて開いたときの1回だけ)
-{
-  const start = loadStats();
-  keepOwned({ have: new Set(start.badges), stars: start.stars });
-}
 
 const QUESTIONS_URL = "../data/questions/questions.json?v=20261111a"; // 問題を変えたら、この値と index.html の ?v= を変える
 const ONI_TAPS = 5; // 表紙のすみのフロリを、この回数押すと、オニ問題が出る
@@ -64,11 +59,35 @@ const IMG = {
 };
 
 const $ = (id) => document.getElementById(id);
-// 最初の画面(オープニング)は、あとの処理で何かあっても、さわれるように、いちばん先に つなぐ
-$("opening").addEventListener("click", closeOpening);
+// 最初の画面(オープニング)は、あとの処理で何かあっても、さわれるように、いちばん先に つなぐ(このあとの初期化は、失敗しても、オープニングは進める)
+$("opening").addEventListener("click", () => closeOpeningSafe());
 $("opening").addEventListener("keydown", (event) => {
-  if (event.target === $("opening") && (event.key === "Enter" || event.key === " ")) closeOpening();
+  if (event.target === $("opening") && (event.key === "Enter" || event.key === " ")) closeOpeningSafe();
 });
+window.__floriBoot = true; // index.html の見はり番に、起動したことを知らせる
+function closeOpeningSafe() {
+  try {
+    closeOpening();
+  } catch (error) {
+    // どこかで例外が出ても、オープニングは閉じて、表紙に進む
+    console.error(error);
+    window.__floriLog?.("[closeOpening] " + error);
+    const opening = $("opening");
+    opening.classList.add("is-leaving");
+    setTimeout(() => {
+      opening.hidden = true;
+      $("screen-cover")?.removeAttribute("hidden");
+    }, 400);
+  }
+}
+// 着せ替えの条件が変わったとき、前の条件で手に入れていたものを残す(初めて開いたときの1回だけ)
+try {
+  const start = loadStats();
+  keepOwned({ have: new Set(start.badges), stars: start.stars });
+} catch (error) {
+  console.error(error); // 古い保存データなどで例外が出ても、オープニングは進める(?debug=1 で内容が見られる)
+  window.__floriLog?.("[keepOwned] " + error);
+}
 const SCREENS = ["cover", "rules", "setup", "menu", "credits", "note", "records", "settings", "dex", "dress", "question", "rpg", "gameover", "result", "error"];
 
 let coverTaps = 0;
@@ -1581,7 +1600,12 @@ async function init() {
   }
 }
 
-startFurigana();
+try {
+  startFurigana();
+} catch (error) {
+  console.error(error);
+  window.__floriLog?.("[furigana] " + error);
+}
 init();
 
 // ゲームを開いたときのオープニング。画面をさわると、曲がなって、表紙になる(ブラウザは、さわるまで音を出せない)。
@@ -1599,10 +1623,15 @@ let openingJingleDone = false; // 「画面をタッチして スタート!」�
 function closeOpening() {
   const opening = $("opening");
   if (opening.hidden || opening.classList.contains("is-playing")) return;
-  unlock();
-  hopFlori("#opening"); // 画面をさわったら、動くフロリが、ぴょんと跳ねる
-  playJump();
-  setScene("cover"); // オープニングの曲は、さわったら止める(つづく曲は、表紙のもの)
+  // 音・動くフロリは、失敗しても、オープニングは進める
+  for (const step of [unlock, () => hopFlori("#opening"), playJump, () => setScene("cover")]) {
+    // 画面をさわったら、動くフロリが、ぴょんと跳ねる。オープニングの曲は、さわったら止める(つづく曲は、表紙のもの)
+    try {
+      step();
+    } catch (error) {
+      window.__floriLog?.("[opening] " + error);
+    }
+  }
   if (!opening.classList.contains("is-idle") && !introSeen()) {
     // はじめて開いたときは、先に遊び方を見せる(知っている人は、「スキップ」で、すぐ始められる)
     if (!openingJingleDone) {

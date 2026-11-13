@@ -3,10 +3,10 @@
 //  - かざり(頭・体・顔)は、いままでどおり。絵の見えている場所にそろえて、重ねる(decor-overlay.js)。
 //  - 色(着せ替えの色)は、体・頭・手足の絵を、flori-color.js で色づけしてから、貼る。
 //  - 出さない画面:クイズ(問題・RPG)。表紙は、クリックで ぴょん。着せ替え画面でも、腕を動かす。
-import { draw, loadModel } from "./live2d/live2d.js?v=20261113p";
-import { createMotion } from "./live2d/flori-motion.js?v=20261113p";
-import { playJump } from "./audio.js?v=20261113p";
-import { getFloriColor, recolorCanvas } from "./flori-color.js?v=20261113p";
+import { draw, loadModel } from "./live2d/live2d.js?v=20261113q";
+import { createMotion } from "./live2d/flori-motion.js?v=20261113q";
+import { playJump } from "./audio.js?v=20261113q";
+import { getFloriColor, recolorCanvas } from "./flori-color.js?v=20261113q";
 
 // ポーズつきの絵のうち、動くフロリにかえるもの(かざりの位置が合う絵。decor-overlay.js の POSE と同じ)
 const POSE = /(?:wave_(?:nikkori|smile|wrong|surprised)\.png|body_wave\.webp)$/;
@@ -120,9 +120,22 @@ function ensureModel() {
     base = shrinkAll(m);
     retint();
     return m;
+  }).catch((error) => {
+    // 動くフロリの用意に失敗したら、静止画のフロリを、必ず見せる
+    console.error(error);
+    window.__floriLog?.("[live-flori] " + error);
+    showStillFlori();
   });
   return loading;
 }
+
+// 動くフロリが出せないとき(読みこみ失敗・描けない)の保険:静止画のフロリを出す
+function showStillFlori() {
+  for (const img of document.querySelectorAll("img.flori")) img.style.visibility = "";
+  document.getElementById("opening")?.classList.add("live-ready");
+  failed = true;
+}
+let failed = false;
 
 // 色づけ(着せ替えの色が変わるたび。重いので、パーツごとに間をあける)
 async function retint() {
@@ -300,4 +313,11 @@ export function startLiveFlori() {
   setInterval(scan, 1000);
   scan();
   requestAnimationFrame(frame);
+  // 4秒たっても、1つも描けていなければ、静止画のフロリを出す(スマホで、動くフロリが描けない場合の保険)
+  setTimeout(() => {
+    if (![...mounts.values()].some((item) => item.ready)) {
+      window.__floriLog?.("[live-flori] 4秒たっても、動くフロリが描けていない。静止画を出す");
+      showStillFlori();
+    }
+  }, 4000);
 }
