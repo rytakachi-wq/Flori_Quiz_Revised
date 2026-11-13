@@ -57,9 +57,11 @@ const HARD = [
   },
 ];
 
-// フロリが いっしょに 出る場面(ものがたり調)。絵は フロリ+ひつような ものだけ
-const FL = '<img class="rf-fl" src="../assets/flori/m/wave_nikkori.png" alt="">';
-const SCENE = (...parts) => `<div class="rf-scene">${FL}<div class="rf-side">${parts.join("")}</div></div>`;
+// フロリが いっしょに 出る場面(ものがたり調)。絵は イラスト(絵文字はつかわない)。フロリの顔は、場面に合わせる
+const FACE = { smile: "wave_nikkori.png", wink: "wave_smile.png", wow: "wave_surprised.png", sad: "wave_wrong.png" };
+const FL = (face = "smile") => `<img class="rf-fl" src="../assets/flori/m/${FACE[face]}" alt="">`;
+const SCENE = (face, ...parts) => `<div class="rf-scene">${FL(face)}<div class="rf-side">${parts.join("")}</div></div>`;
+const IC = (src) => `<img class="rf-ico" src="../assets/${src}" alt="">`;
 const ONE = (icon, note) => `<div class="rf-seq"><span class="rf-seq-item" style="--n:0"><b>${icon}</b><small>${note}</small></span></div>`;
 
 // RPGクエスト
@@ -67,32 +69,37 @@ const RPG = [
   {
     title: "① ドラゴンのお城へ",
     caption: "ボクはお城のドラゴンに会いに行くヨ! 5つのマスを進んで、ボスを倒そう!",
-    html: SCENE(SEQ([["🐭", "ザコ"], ["🎁", "宝箱"], ["🦂", "強い敵"], ["🐉", "ボス"]])),
+    html: SCENE("smile", SEQ([[IC("movie/mouse_run1.webp"), "ネズミ"], [IC("movie/frog_jump_mid.webp"), "カエル"], [IC("illust/gift.webp"), "宝箱"], [IC("movie/scorpion_angry.webp"), "サソリ"], [IC("movie/dragon_1.webp"), "ボス"]], "rf-tight")),
   },
   {
     title: "② ハートは 4つ",
     caption: "ボクのハートは 4つ。間違えると 1つ減って、全部なくなるとゲームオーバーだヨ…!",
-    html: SCENE(HEARTS([HEART, HEART, HEART, HEART], "rf-lose")),
+    html: SCENE("sad", HEARTS([HEART, HEART, HEART, HEART], "rf-lose")),
   },
   {
     title: "③ 戦い",
     caption: "正解するとえいっ! と攻撃。間違えると敵にやられて、ハートが 1つ減るヨ。",
-    html: SCENE(SEQ([["⚔️", "正解で攻撃"], ["💔", "間違いで −1"]])),
+    html: SCENE("wow", SEQ([[IC("illust/circle_red.webp"), "正解で攻撃"], [IC("illust/cross_red.webp"), "間違いで −1"]])),
   },
   {
     title: "④ ヒント",
     caption: "困ったらヒントを見よう。ハートが半分減るけど、ボクが助けてあげるヨ!",
-    html: SCENE(STACK(ONE("💡", "ヒント"), HEARTS([HEART, HEART, HEART, HEART_HALF]))),
+    html: SCENE("wink", STACK(ONE(IC("illust/bulb.webp"), "ヒント"), HEARTS([HEART, HEART, HEART, HEART_HALF]))),
   },
   {
     title: "⑤ 宝箱とボス",
-    caption: "宝箱は正解するとハートが出てきて 1つ回復! ボスは 2回正解すると倒せるヨ。",
-    html: SCENE(SEQ([["🎁", "回復"], ["🐉", "2回で倒す"]])),
+    caption: "宝箱は正解でハートが 1つ回復! ボスは 2回正解すると倒せるヨ。",
+    html: SCENE("smile", SEQ([[IC("illust/gift.webp"), "回復"], [IC("movie/dragon_1.webp"), "2回で倒す"]])),
   },
   {
-    title: "⑥ ノートとクリア",
-    caption: "間違えた問題や、ヒントを見た問題はノートに残るヨ。ハートがなくなる前に、ドラゴンを倒してクリアだ!",
-    html: SCENE(SEQ([["📓", "ノート"], ["🏆", "クリア"]])),
+    title: "⑥ 間違いノート",
+    caption: "間違えた問題は、ノートに残るヨ。あとで復習して、ちゃんと覚えよう!",
+    html: SCENE("sad", SEQ([[IC("illust/cross_red.webp"), "間違い"], [IC("illust/notebook.webp"), "ノート"]])),
+  },
+  {
+    title: "⑦ クリアを めざせ",
+    caption: "ハートがなくなる前にドラゴンを倒せたら、クエストクリアだヨ!",
+    html: SCENE("smile", SEQ([[IC("movie/dragon_1.webp"), "ボス"], [IC("illust/trophy.webp"), "クリア"]])),
   },
 ];
 
@@ -101,12 +108,12 @@ const DAILY = [
   {
     title: "① 今日の 1問",
     caption: "今日もフロリのおうちに、特別な問題が 1問届いたヨ! 1日に 1回、挑戦できるんだ。",
-    html: SCENE(ONE("📅", "毎日 1問")),
+    html: SCENE("smile", ONE(IC("illust/daycal.webp"), "毎日 1問")),
   },
   {
     title: "② また 明日",
     caption: "間違えても大丈夫。明日になれば、また新しい問題が届くヨ。毎日 続けてみよう!",
-    html: SCENE(SEQ([["🌙", "明日"], ["📅", "新しい問題"]])),
+    html: SCENE("wink", SEQ([[IC("illust/moon.webp"), "明日"], [IC("illust/daycal.webp"), "新しい問題"]])),
   },
 ];
 
@@ -114,13 +121,13 @@ const DAILY = [
 const REVIEW = [
   {
     title: "① 間違いノート",
-    caption: "間違えた問題と、ヒントを見て解いた問題は、ボクの間違いノートに入っているヨ。",
-    html: SCENE(ONE("📓", "間違いノート")),
+    caption: "間違えた問題は、ボクの間違いノートに入っているヨ。",
+    html: SCENE("sad", ONE(IC("illust/notebook.webp"), "間違いノート")),
   },
   {
     title: "② もう1度 挑戦",
-    caption: "ノートの問題を、ヒントなしでもう1度解いて、しっかり覚えよう! 正解するとノートから消えるヨ!",
-    html: SCENE(SEQ([["📓", "ノート"], ["⭕", "覚えた!"]])),
+    caption: "ノートの問題をもう1度解いて、しっかり覚えよう! 次はきっと正解できるヨ!",
+    html: SCENE("smile", SEQ([[IC("illust/notebook.webp"), "ノート"], [IC("illust/circle_red.webp"), "覚えた!"]])),
   },
 ];
 
