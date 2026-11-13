@@ -7,7 +7,7 @@ import { loadModel, draw } from './live2d.js?v=patch1';
 import { createMotion } from './flori-motion.js?v=hand1';
 import { recolorCanvas } from '../flori-color.js';
 import { HEADS } from '../badges.js';
-import { startFurigana } from '../furigana.js?v=fm5';
+import { startFurigana } from '../furigana.js?v=fm6';
 import { MOVIES } from './storyboard.js?v=20261112a';
 
 startFurigana();
