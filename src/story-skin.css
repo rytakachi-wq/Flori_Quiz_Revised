@@ -320,6 +320,23 @@ body.has-pager { padding-bottom: 0 !important; }
 #screen-credits .credits-stage::before { content: ""; position: absolute; inset: 0; z-index: 0; background: url("../assets/movie/bg_night_hd.webp") center bottom / cover; opacity: var(--dusk, 0); pointer-events: none; }
 #screen-credits .credits-roll { z-index: 1; color: color-mix(in srgb, #fff3cf calc(var(--dusk, 0) * 100%), #4a3428); text-shadow: 0 1px 0 rgba(0, 0, 0, calc(var(--dusk, 0) * 0.5)); }
 #screen-credits .credits-roll * { color: inherit; }
+/* 見やすさ:ロールの文字は、朝も夜も クリーム色+こい茶色のふちどり */
+#screen-credits .credits-roll { color: #fff3cf; text-shadow: 0 2px 4px rgba(40, 20, 8, 0.7); }
+#screen-credits .credits-roll :is(.cr-title-sub, .cr-title-main, .cr-section, .cr-role, .cr-name, .cr-note, .cr-end) { color: #fff3cf; -webkit-text-stroke: 4px #3a2418; paint-order: stroke fill; text-shadow: 0 2px 5px rgba(40, 20, 8, 0.6); }
+#screen-credits .credits-roll .cr-role { color: #ffd98a; }
+#screen-credits .credits-roll .cr-note { color: #ffe9c0; }
+#screen-credits .credits-roll .cr-section { border-top-color: #ffd98a; }
+/* 点数(ゲーム中):大きく・金の文字・茶色の板 */
+#screen-credits .credits-hud { left: 10px; right: 10px; top: 8px; }
+#screen-credits .credits-score { font-size: 26px; line-height: 1; padding: 6px 14px; color: #ffe08a; text-shadow: 0 2px 0 #3a2418; background: rgba(58, 36, 24, 0.82); border: 3px solid #d9a441; border-radius: 999px; }
+#screen-credits .credits-msg { color: #4a3428; background: #fff3cf; border: 3px solid #5a3a2a; text-shadow: none; }
+/* 結果発表:フロリを大きく・見やすい板に */
+#screen-credits .credits-result { z-index: 3; gap: 8px; background: rgba(40, 24, 12, 0.86); }
+#screen-credits :is(.credits-hud, .credits-msg) { z-index: 2; }
+#screen-credits .cres-flori { height: clamp(120px, calc(28 * var(--dvh)), 230px); }
+#screen-credits .cres-title { font-size: 24px; color: #fff3cf; text-shadow: 0 2px 0 #3a2418; }
+#screen-credits .cres-score { font-size: 52px; color: #ffe08a; text-shadow: 0 3px 0 #3a2418; }
+#screen-credits .cres-kills { font-size: 18px; color: #fff3cf; text-shadow: 0 2px 0 #3a2418; }
 
 /* 設定は、おはなしの中へ。ホームの上には、つぎの ものがたりまでの きろくだけ */
 .cover-home .home-top { display: none !important; }
