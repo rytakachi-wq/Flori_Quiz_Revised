@@ -1313,7 +1313,8 @@ function markMovieSeen(id) {
 }
 function unlockedMovies() {
   const total = allQuestions.length ? currentTotal() : 0;
-  return MOVIE_INFO.filter((m) => m.need <= total).map((m) => m.id);
+  // 今だけ(仮)ぜんぶ ひらいている間は、まだ見ていない物語が、「クイズ スタート」のあとに、ぜんぶ つづけて出る
+  return MOVIE_INFO.filter((m) => MOVIE_ALL_OPEN_NOW || m.need <= total).map((m) => m.id);
 }
 function dueMovie() {
   if (allQuestions.length === 0) return null;
