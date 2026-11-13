@@ -3755,3 +3755,13 @@ html[data-pattern] :is(#screen-menu, #screen-note, #screen-credits, #screen-dex,
 @media (prefers-reduced-motion: reduce) { .rpg-heart-pop { animation: none; opacity: 1; transform: translateY(calc(var(--rpg-field-h) * -0.4)); } }
 #screen-records .rec-flori { position: relative; top: 14px; }
 @media (max-height: 700px) { #screen-records .rec-flori { top: 8px; } }
+
+/* 選択肢が長くても、画面の横幅に収めて、折り返す(横スクロールしない) */
+.choices { grid-template-columns: minmax(0, 1fr); }
+.choices > li { min-width: 0; }
+.choice { min-width: 0; max-width: 100%; box-sizing: border-box; }
+.choice-text { flex: 1 1 0; min-width: 0; overflow-wrap: anywhere; }
+#screen-question.is-tight3 .choice-text { font-size: 13px; line-height: 1.55; }
+#screen-question.is-tight3 .choice { min-height: 30px; gap: 8px; }
+#screen-question.is-tight3 .choice-no { width: 24px; height: 24px; font-size: 13px; }
+#screen-question.is-tight3 .question { font-size: 15px; }

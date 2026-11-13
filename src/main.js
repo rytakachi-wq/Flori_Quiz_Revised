@@ -472,11 +472,13 @@ function showQuestion() {
 function fitQuestion(screenId = "screen-question") {
   const screen = $(screenId);
   if (screen.hidden || screen.classList.contains("is-answered")) return;
-  screen.classList.remove("is-tight1", "is-tight2");
+  screen.classList.remove("is-tight1", "is-tight2", "is-tight3");
   if (screen.scrollHeight <= screen.clientHeight + 1) return;
   screen.classList.add("is-tight1");
   if (screen.scrollHeight <= screen.clientHeight + 1) return;
   screen.classList.add("is-tight2");
+  if (screen.scrollHeight <= screen.clientHeight + 1) return;
+  screen.classList.add("is-tight3"); // 長い選択肢は、文字と行の間を、さらに小さくする
 }
 window.addEventListener("resize", () => fitQuestion());
 
@@ -966,11 +968,11 @@ function celebrateResult(result) {
       }),
     );
   }
+  if (mode === "daily") stars.replaceChildren(); // 毎日1問は、電球を出さない
   // 紙ふぶき(盛り上がるほど、多く)。発表のときに、降る
   const icons = ["🎉", "⭐", "✨", "🎊", "🌟", "💖"];
   // 紙ふぶき:画面のあちこちに、まばらに ぽんと出て、ゆっくり、ひらひら、散っていく(1人でも皆でも同じ)
   const count = ratio === 0 ? 0 : mood === "perfect" ? 30 : 22;
-  if (mode === "daily") stars.replaceChildren(); // 毎日1問は、電球を出さない
   $("r-fx").replaceChildren(
     ...Array.from({ length: count }, (_, i) => {
       const bit = document.createElement("span");
@@ -1328,11 +1330,11 @@ function openMovie(query) {
     movieDone = resolve;
     $("story-movie-frame").src = `./live2d/story-movie.html?v=${MOVIE_VER}&${query}`;
     $("story-movie").hidden = false;
+    setScene("movie"); // ゲームのBGMは止める(ムービーの中で、お話ごとの専用BGMが鳴る)
   });
 }
 async function showDueMovies(onlyPrologue = false) {
   for (let m = dueMovie(); m; m = dueMovie()) {
-    setScene("movie"); // ゲームのBGMは止める(ムービーの中で、お話ごとの専用BGMが鳴る)
     if (onlyPrologue && m.id !== "pro") break;
     markMovieSeen(m.id);
     await openMovie(`mode=story&play=${m.id}`);
@@ -1379,11 +1381,11 @@ window.addEventListener("message", (event) => {
   if (event.data !== "close-story-movie") return;
   $("story-movie").hidden = true;
   $("story-movie-frame").src = "about:blank"; // 止める
+  setScene(sceneOf(currentScreen)); // ゲームのBGMにもどる
   const done = movieDone;
   movieDone = null;
   done?.();
 });
-  setScene(sceneOf(currentScreen)); // ゲームのBGMにもどる
 $("btn-credits-back").addEventListener("click", () => show("cover", -1));
 const PAGE_OPEN = {
   cover: () => show("cover"),
@@ -2407,11 +2409,21 @@ function updateRpgHintButton() {
 // ウィンドウに収まらないとき(長い問題・長い解説)は、文字と選択肢を、少しずつ小さくして収める(6割まで)
 function fitRpgWindow() {
   const win = $("screen-rpg").querySelector(".rpg-window");
+  const screen = $("screen-rpg");
   win.style.removeProperty("--rpg-scale");
+  screen.style.removeProperty("--rpg-field-h");
   let scale = 1;
   while (win.scrollHeight > win.clientHeight + 1 && scale > 0.6) {
     scale -= 0.05;
     win.style.setProperty("--rpg-scale", scale.toFixed(2));
+  }
+  // それでも収まらないとき(小さい画面)は、上の戦いの場面を、少しずつ低くして、スクロールなしで全部見えるようにする
+  if (win.scrollHeight > win.clientHeight + 1) {
+    let h = parseFloat(getComputedStyle($("rpg-field")).height);
+    while (win.scrollHeight > win.clientHeight + 1 && h > 56) {
+      h -= 6;
+      screen.style.setProperty("--rpg-field-h", `${h}px`);
+    }
   }
 }
 
@@ -2853,6 +2865,7 @@ function renderDress() {
       button.type = "button";
       button.className = `dress-item${dress[kind] === choice.id ? " is-on" : ""}${open ? "" : " is-locked"}${isNew ? " is-new" : ""}${choice.rarity === undefined ? "" : ` rare-${choice.rarity}`}`;
       button.style.setProperty("--tint", choice.tint);
+      button.dataset.noSe = "1"; // 押した音は、下で、種類ごとに鳴らす(ボタンの音と重ねない)
       // 絵だけを見せる(名前や、もらいかたは、押したときや、マウスをのせたときに出す)
       const art = document.createElement("span");
       art.className = `dress-art is-${kind}`;
@@ -2863,7 +2876,6 @@ function renderDress() {
         art.textContent = "？";
       } else if (choice.trial && paint.includes("px")) {
         // 模様のあるもの:大きな絵を縮めて入れて、模様の間隔を、せまくする
-      button.dataset.noSe = "1"; // 押した音は、下で、種類ごとに鳴らす(ボタンの音と重ねない)
         art.classList.add("has-pat");
         const pat = document.createElement("i");
         pat.style.background = paint;
