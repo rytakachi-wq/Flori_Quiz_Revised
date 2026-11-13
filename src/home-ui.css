@@ -260,3 +260,11 @@
 /* 下の すきまを なくして、そのぶん 各ルールの下に 空白 */
 #screen-setup .mode-list { flex: 1 1 0 !important; min-height: 0; justify-content: space-between; gap: 0 !important; padding-bottom: 6px; }
 #screen-setup .reward-card { flex: none; }
+/* 次の ご褒美:みじかい画面でも 消さない(ちぢめて のこす) */
+#screen-setup .reward-card { display: flex !important; }
+@media (max-height: 700px) {
+  .mode-btn.m-rpg { min-height: 76px; }
+  .mode-btn.m-daily, .mode-btn.m-review { min-height: 58px; }
+  .mode-row .rules-again { height: 28px; min-height: 28px; font-size: 14px; }
+  #screen-setup .reward-card { padding: 4px 10px; }
+}
