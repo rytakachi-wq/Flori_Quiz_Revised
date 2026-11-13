@@ -516,7 +516,7 @@ rt { font-size: 0.52em; font-weight: normal; line-height: 1; color: var(--blue-d
 .opening-flori[hidden], .announce-flori[hidden] { display: none; }
 /* 頭の飾りをつけていても、「ひらめきクイズ」の文字と重ならないよう、フロリを下げる */
 .opening-flori { margin-top: clamp(72px, calc(13 * var(--dvh)), 110px); }
-.opening.is-playing .opening-hint { display: none; }
+.opening.is-playing .opening-hint { visibility: hidden; }   /* display:none だと、場所がつまって、フロリが縦に動く */
 @keyframes flori-in {
   0% { transform: translateX(calc(-90 * var(--vw))) rotate(-25deg); opacity: 0; }
   55% { transform: translateX(0) rotate(8deg); opacity: 1; }
@@ -1563,7 +1563,7 @@ img.hero-hat[data-hat="apron"] { left: 18%; top: 52%; width: 64%; }
 
 /* ===== オープニングの、あそびかたボタン ===== */
 .opening-tutorial { margin-top: 10px; min-height: 52px; padding: 6px 22px; font-size: 18px; z-index: 3; }
-.opening.is-playing .opening-tutorial { display: none; }
+.opening.is-playing .opening-tutorial { visibility: hidden; }
 
 /* ===== 横スワイプで行き来する画面:ページのしるし・すべる動き ===== */
 .pager { position: fixed; left: 50%; bottom: 8px; z-index: 40; display: flex; gap: 6px; padding: 4px 8px; transform: translateX(-50%); background: rgba(255, 255, 255, 0.9); border: 2px solid var(--blue); border-color: var(--blue-bc, var(--blue)); border-radius: 999px; box-shadow: 0 3px 0 rgba(70, 85, 94, 0.25); }

@@ -91,3 +91,17 @@
 #screen-result .scores dd { color: #c04a1c; }
 #screen-gameover.gameover-screen { --go-h: clamp(110px, calc(24 * var(--dvh)), 230px); }
 @media (max-height: 620px) { #screen-gameover.gameover-screen { --go-h: 90px; } }
+
+/* ===== 遊び方(チュートリアル)・ルール説明:ものがたりの テンション・見た目に ===== */
+.tutorial { background: radial-gradient(circle at 50% 30%, rgba(120, 70, 150, 0.55), rgba(20, 12, 44, 0.9) 75%), url("../assets/movie/bg_night_hd.webp") center bottom / cover; }
+.tut-box { background: linear-gradient(180deg, #fff3cf, #f4d8a0); border: 5px solid var(--sk-brown); border-radius: 26px; box-shadow: 0 8px 0 rgba(30, 16, 10, 0.55), 0 0 0 3px #d9a85e inset, 0 0 24px rgba(255, 210, 90, 0.35); }
+.tut-title { color: #fff3cf; -webkit-text-stroke: 6px #5a2a14; paint-order: stroke fill; text-shadow: none; letter-spacing: 0.04em; }
+.tut-stage { background: linear-gradient(180deg, rgba(40, 30, 80, 0.25), rgba(255, 255, 255, 0) 60%), url("../assets/movie/bg_sunrise_hd.webp") center bottom / cover; border: 4px solid var(--sk-brown); border-radius: 18px; }
+.tut-caption { color: #fff3cf; background: rgba(90, 42, 20, 0.92); border: 3px solid #ffd25a; text-shadow: 0 2px 0 #3a2418; }
+#screen-rules { background: linear-gradient(180deg, rgba(40, 30, 80, 0.55), rgba(20, 12, 44, 0.8)), url("../assets/movie/bg_night_hd.webp") center bottom / cover !important; border-color: #3a2418; }
+#screen-rules .screen-head .title { color: #fff3cf; -webkit-text-stroke: 5px #5a2a14; paint-order: stroke fill; text-shadow: none; }
+#screen-rules .rf-box { padding: 8px; background: linear-gradient(180deg, #fff3cf, #f4d8a0); border: 4px solid var(--sk-brown); border-radius: 22px; box-shadow: 0 6px 0 rgba(30, 16, 10, 0.5), 0 0 0 2px #d9a85e inset; }
+#screen-rules .rf-title { color: #5a2a14; text-shadow: 0 2px 0 rgba(255, 255, 255, 0.7); }
+#screen-rules .rf-stage { border: 4px solid var(--sk-brown); background: linear-gradient(180deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.1)), url("../assets/movie/bg_sunrise_hd.webp") center bottom / cover; }
+#screen-rules .rf-caption { color: #fff3cf; background: rgba(90, 42, 20, 0.92); border: 3px solid #ffd25a; text-shadow: 0 2px 0 #3a2418; }
+#screen-rules .rf-skip { color: #ffe9c0; }

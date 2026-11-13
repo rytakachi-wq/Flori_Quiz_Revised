@@ -60,10 +60,10 @@ export const CREDITS = [
 
   { space: 90 },
   { section: "Special Thanks" },
-  { role: "", names: ["あそんでくれた あなた"] },
+  { role: "", names: ["遊んでくれた あなた"] },
 ];
 
-export const CREDITS_THANKS = "あそんでくれて ありがとう!";
+export const CREDITS_THANKS = "遊んでくれて ありがとう!";
 const ROLL_SPEED = 62; // 流れる速さ(1秒に進むピクセル)
 const NO_SPAWN_LEFT = 320; // ロールの終わりまで、これより近づいたら、落ちものを出さない(ピクセル)
 const PER_LINE = 3; // 同じ行に ならべる数(最大)
@@ -174,7 +174,7 @@ function tick(now) {
   shooter.draw();
 }
 
-// スタッフロールが流れ終わったら、シューティングの結果発表(点とたおした数だけ。ランクのような ひとことは つけない)
+// スタッフロールが流れ終わったら、シューティングの結果発表(点と倒した数だけ。ランクのような ひとことは つけない)
 // 流れ終わったら、「スタッフロール 終了!」のホイッスル → ドラムロール → 結果発表
 function beginResult() {
   finished = true;
@@ -200,7 +200,7 @@ function showResult() {
   $("credits-msg").hidden = true;
   $("cres-title").textContent = played ? "シューティング 結果発表!" : "スタッフロール 終わり";
   $("cres-score").textContent = played ? `${best}/${ideal}点` : "";
-  $("cres-kills").textContent = played ? `たおした数 ${kills}こ` : "";
+  $("cres-kills").textContent = played ? `倒した数 ${kills}こ` : "";
   $("credits-result").hidden = false;
   playSe("rollend");
   setScene("credits"); // 結果発表のあとは、BGMが、また始まる

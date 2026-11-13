@@ -11,7 +11,7 @@ import { getFloriColor, recolorCanvas } from "./flori-color.js";
 // ポーズつきの絵のうち、動くフロリにかえるもの(かざりの位置が合う絵。decor-overlay.js の POSE と同じ)
 const POSE = /(?:wave_(?:nikkori|smile|wrong|surprised)\.png|body_wave\.webp)$/;
 const MOOD = { wave_wrong: "こまった", wave_surprised: "びっくり" }; // 絵のポーズに合わせた、ずっと同じ表情
-const EXCLUDE = "#screen-question, #screen-rpg"; // クイズ画面は、動くフロリを出さない
+const EXCLUDE = "#screen-question, #screen-rpg, #screen-gameover, #dlg-unlock, .hint-dialog"; // クイズ画面・ゲームオーバー・新しいかざりをゲットのダイアログ・ヒントのダイアログは、動くフロリを出さない(動かない絵)
 const TINT_PARTS = /^(体|顔|右足|左足|右手(コブシ|バンザイ)|左手(コブシ|バンザイ))$/; // 色をつけるパーツ
 const LINE_LUM = 150; // これより暗い所を「線」とみなして、太らせる
 const TINT_SCALE = 0.3; // 色をつけるときの、絵の縮め具合(もようの大きさを、静止画に近づける。大きいと、重い)

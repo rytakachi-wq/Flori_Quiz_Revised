@@ -1609,8 +1609,7 @@ function closeOpening() {
   }
   opening.classList.add("is-playing"); // フロリが、動いて登場する
   opening.classList.add("is-hit"); // ロゴ・文字が、ぽんと はねる
-  // 動きに合わせた音(ブラウザの決まりで、画面をさわるまで音は出せないので、さわったときに、鳴らす)
-  for (const [ms, name] of [[0, "openPa"], [90, "rpgAppear"], [320, "rpgAppear"], [560, "openPa"], [980, "openPetta"]]) setTimeout(() => playSe(name), ms);
+  // 画面をさわったときの、ぽん・ぺたっという効果音は、鳴らさない(利用者の指示)。曲(jingle)だけ
   opening.querySelector(".opening-flori").hidden = false;
   const length = Math.max(2600, (openingJingleDone ? 0 : playJingle("opening")) + 400);
   openingJingleDone = false;
