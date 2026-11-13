@@ -85,6 +85,7 @@ function sceneOf(name) {
   }
   if (name === "result") return "result";
   if (name === "credits") return "credits";
+  if (name === "rules") return "tutorial"; // ルール説明(RPG・毎日1問・復習・普通・難しい)は、遊び方と同じ、ルール用のBGM
   return name === "error" ? null : "cover";
 }
 
