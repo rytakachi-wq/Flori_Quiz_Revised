@@ -40,6 +40,7 @@ const EMPTY = {
   hardCounter: 0, // 難しいモードの「つづきから」:難しさのカウンター
   qpts: {}, // 問題ごとの、これまでの最高の点(ヒントなしで正解=2、ヒントを見て正解=1)。総合得点に使う
   courses: {}, // 「つづきから」:分類(理系・文系・ひらめき)×むずかしさごとの、難しさのカウンターと、もう出した問題 { "理系-normal": { counter, used } }
+  fieldLog: {}, // 分野ごとの、さいきんの正誤(新しい順に最大20個。"1"=正解 "0"=まちがい)。苦手な分野をさがすのに使う { "算数・数学": "1101" }
   scoreVer: 2, // 点数のつけかた(2=1問2点。ないものは、1問5点だったころの記録)
 };
 
@@ -72,6 +73,17 @@ function cleanCourses(raw) {
   return out;
 }
 
+const FIELD_LOG_MAX = 20; // 分野ごとに、さいきんの何問を見るか
+function cleanFieldLog(raw) {
+  const out = {};
+  if (raw && typeof raw === "object") {
+    for (const [field, log] of Object.entries(raw)) {
+      if (typeof log === "string" && /^[01]+$/.test(log)) out[field] = log.slice(0, FIELD_LOG_MAX);
+    }
+  }
+  return out;
+}
+
 function clean(raw) {
   const old = raw?.scoreVer !== 2 && raw !== EMPTY; // 点数のつけかたが変わる前の記録
   const convert = old ? oldToNew : number;
@@ -83,6 +95,7 @@ function clean(raw) {
     scoreVer: 2,
     courses: cleanCourses(raw?.courses),
     qpts,
+    fieldLog: cleanFieldLog(raw?.fieldLog),
     best: convert(raw?.best),
     bestHard: convert(raw?.bestHard),
     plays: number(raw?.plays),
@@ -137,7 +150,7 @@ export function reconcile(stats) {
 }
 
 export function loadStats() {
-  if (cache) return { ...cache, qpts: { ...cache.qpts }, courses: JSON.parse(JSON.stringify(cache.courses)), seen: [...cache.seen], right: [...cache.right], oniRight: [...cache.oniRight], wrong: [...cache.wrong], dex: [...cache.dex], badges: [...cache.badges], courseUsed: [...cache.courseUsed], hardUsed: [...cache.hardUsed] };
+  if (cache) return { ...cache, fieldLog: { ...cache.fieldLog }, qpts: { ...cache.qpts }, courses: JSON.parse(JSON.stringify(cache.courses)), seen: [...cache.seen], right: [...cache.right], oniRight: [...cache.oniRight], wrong: [...cache.wrong], dex: [...cache.dex], badges: [...cache.badges], courseUsed: [...cache.courseUsed], hardUsed: [...cache.hardUsed] };
   let stats = clean(EMPTY);
   try {
     const saved = localStorage.getItem(KEY);
@@ -256,6 +269,18 @@ export function recordDex(answers = []) {
   const before = stats.dex.length;
   stats.dex = ids([...stats.dex, ...answers.map((answer) => answer.id)]);
   if (stats.dex.length !== before) save(stats);
+}
+
+// 分野ごとの、さいきんの正誤を記録する(苦手な分野をさがすため)。entries: [{ field, correct }]
+// 新しい答えを先頭に入れて、最大20個まで。ヒントを見て正解した問題も、正解と数える。
+export function recordFieldResults(entries = []) {
+  const list = entries.filter((entry) => typeof entry?.field === "string");
+  if (list.length === 0) return;
+  const stats = loadStats();
+  for (const { field, correct } of list) {
+    stats.fieldLog[field] = ((correct ? "1" : "0") + (stats.fieldLog[field] ?? "")).slice(0, FIELD_LOG_MAX);
+  }
+  save(stats);
 }
 
 // もらったバッジを、おぼえておく。

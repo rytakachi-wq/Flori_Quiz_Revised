@@ -3769,7 +3769,23 @@ html[data-pattern] :is(#screen-menu, #screen-note, #screen-credits, #screen-dex,
 #screen-question.is-tight3 .choice-text { font-size: 13px; line-height: 1.55; }
 #screen-question.is-tight3 .choice { min-height: 30px; gap: 8px; }
 #screen-question.is-tight3 .choice-no { width: 24px; height: 24px; font-size: 13px; }
+#screen-question.is-tight3 .question { font-size: 15px; }
 
 /* RPGの読み上げボタン:🔊だけの小さい丸(ヒントのボタンと同じ高さ) */
 .rpg-toprow .rpg-read-btn { padding: 1px 10px; min-width: 42px; }
-#screen-question.is-tight3 .question { font-size: 15px; }
+
+/* にがてな分野さがし(成績):分野ごとの正答率・苦手かも・復習ボタン */
+.weak-box { display: grid; gap: 4px; width: min(640px, 100%); padding: 6px 10px; background: #fff; border: 2px solid #cfe3ee; border-radius: 12px; box-sizing: border-box; }
+.weak-title { margin: 0; font-size: 13px; color: var(--blue-dark, #4a8fb5); }
+.weak-list { display: grid; gap: 3px; margin: 0; padding: 0; list-style: none; }
+.weak-list li { display: grid; grid-template-columns: auto 1fr; grid-template-areas: "name num" "bar bar"; align-items: baseline; gap: 0 6px; min-width: 0; font-size: 13px; font-weight: bold; }
+.weak-list li.is-weak { color: #b3402a; }
+.weak-list li.is-weak .gb-bar i { background: linear-gradient(90deg, #f3a58a, #e8704f); }
+.weak-list .gb-bar { height: 6px; }
+.weak-list .gb-num { font-size: 13px; }
+.weak-msg { margin: 0; font-size: 13px; font-weight: bold; line-height: 1.4; }
+.weak-btn { justify-self: center; min-height: 40px; padding: 4px 18px; font-size: 15px; }
+.weak-btn[hidden] { display: none; }
+/* 成績:分野さがしを足したので、画面に収まらないときは、たてに スクロールできるように */
+#screen-records.screen:not([hidden]) { overflow-y: auto; overflow-x: clip; justify-content: flex-start; }
+#screen-records > * { flex-shrink: 0; }

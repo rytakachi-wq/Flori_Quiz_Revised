@@ -30,12 +30,13 @@ import {
   recordBadges,
   recordDaily,
   recordDex,
+  recordFieldResults,
   recordOni,
   recordReview,
   recordWrong,
   recordRpg,
   recordRound,
-} from "./storage.js?v=20261113r";
+} from "./storage.js?v=20261113s";
 import { illustrationFor } from "./illustrations.js?v=20261113r";
 import { createTalker } from "./talk.js?v=20261113r";
 import { initTutorial, openTutorial } from "./tutorial.js?v=20261113r";
@@ -296,6 +297,35 @@ const FIELDS = ["算数・数学", "理科・科学", "社会・地理歴史", "
 const FIELD_ICON = { "算数・数学": "🔢", "理科・科学": "🔬", "社会・地理歴史": "🗾", "国語・言語文化": "📖", "生活・水平思考": "💡" };
 const genreOf = (q) => q.genre ?? "生活（ふつう）";
 const fieldOf = (q) => FIELDS[Math.floor(Math.max(0, GENRES.indexOf(genreOf(q))) / 2)];
+// 問題の番号 → 問題(分野をしらべるため)
+function questionOf(id) {
+  return playableQuestions.find((q) => (q.uid ?? q.id) === id);
+}
+// 答えた問題を、分野ごとの「さいきんの正誤」に記録する(苦手な分野をさがすため。オニ問題は数えない)
+function logFields(answers = []) {
+  try {
+    recordFieldResults(
+      answers.flatMap((answer) => {
+        const question = questionOf(answer.id);
+        return question ? [{ field: fieldOf(question), correct: Boolean(answer.correct) }] : [];
+      }),
+    );
+  } catch (error) {
+    window.__floriLog?.("[fieldLog] " + error);
+  }
+}
+// 分野ごとの、さいきんの正答率。苦手=5問以上答えていて、正答率が8割より低いなかで、いちばん低い分野
+const WEAK_MIN_ANSWERS = 5;
+const WEAK_RATE = 0.8;
+function fieldReport(stats) {
+  const rows = FIELDS.map((field) => {
+    const log = stats.fieldLog?.[field] ?? "";
+    const right = [...log].filter((c) => c === "1").length;
+    return { field, total: log.length, right, rate: log.length ? right / log.length : 0, known: log.length >= WEAK_MIN_ANSWERS };
+  });
+  const weakRows = rows.filter((row) => row.known && row.rate < WEAK_RATE).sort((a, b) => a.rate - b.rate);
+  return { rows, weak: weakRows[0] ?? null };
+}
 const genreShort = (name) => name.replace(/（.*?）/, ""); // 「算数（ふつう）」→「算数」
 let play; // いま遊んでいるもの(session・hardSession・オニ問題など)
 let current = null; // 今出している問題
@@ -851,6 +881,7 @@ function showResult() {
   const adventure = mode === "rpg";
   $("r-best-row").querySelector("dt").textContent = adventure ? "最短記録" : "最高得点"; // RPG=いちばん少ない問題数でクリア
   recordDex(result.answers); // 図鑑(どのモードでも)
+  logFields(result.answers); // 分野ごとの、さいきんの正誤(苦手さがし)
   $("r-correct-row").hidden = false;
   {
     $("r-correct").textContent = `${result.correct} / ${result.total}問`;
@@ -1161,9 +1192,51 @@ function showRecords() {
   $("s-full").textContent = `${full}問`;
   $("s-half").textContent = `${rightPlayable.length - full}問`;
   $("s-rate").textContent = s.answered ? `${Math.round((s.correct / s.answered) * 100)}%(${s.correct}/${s.answered}問)` : "まだないよ";
+  renderWeak(s);
   markSeen("records");
   show("records");
 }
+
+// にがてな分野さがし:分野ごとの正答率(さいきん20問)・苦手かも・復習ボタン
+let weakWrongIds = [];
+function renderWeak(s) {
+  const { rows, weak } = fieldReport(s);
+  const list = rows.map((row) => {
+    const item = document.createElement("li");
+    item.className = row === weak ? "is-weak" : "";
+    item.innerHTML = '<span class="gb-name"></span><span class="gb-bar"><i></i></span><b class="gb-num"></b>';
+    item.querySelector(".gb-name").textContent = `${FIELD_ICON[row.field]} ${row.field}`;
+    item.querySelector(".gb-bar i").style.width = `${row.known ? row.rate * 100 : 0}%`;
+    item.querySelector(".gb-num").textContent = !row.total ? "まだ分からない" : row.known ? `${Math.round(row.rate * 100)}%(${row.right}/${row.total})${row === weak ? " 苦手かも" : ""}` : `あと${WEAK_MIN_ANSWERS - row.total}問で分かるヨ`;
+    return item;
+  });
+  $("s-weak-list").replaceChildren(...list);
+  const button = $("btn-weak-review");
+  weakWrongIds = [];
+  button.hidden = true;
+  if (!weak) {
+    const anyKnown = rows.some((row) => row.known);
+    $("s-weak-msg").textContent = anyKnown ? "どの分野も、よくできているヨ! 苦手な分野は、今のところ ないネ。" : `分野ごとに${WEAK_MIN_ANSWERS}問ずつ答えると、苦手な分野が分かるヨ。`;
+    return;
+  }
+  const wrong = new Set(s.wrong);
+  weakWrongIds = playableQuestions.filter((q) => fieldOf(q) === weak.field && wrong.has(q.uid ?? q.id)).map((q) => q.uid ?? q.id);
+  if (weakWrongIds.length) {
+    $("s-weak-msg").textContent = `${weak.field}が ちょっと苦手みたい。間違えた${weakWrongIds.length}問を、復習してみる?`;
+    button.textContent = `${FIELD_ICON[weak.field]} ${weak.field}を復習する`;
+    button.hidden = false;
+  } else {
+    $("s-weak-msg").textContent = `${weak.field}が ちょっと苦手みたい。クイズで、この分野を練習してみよう!`;
+  }
+}
+$("btn-weak-review").addEventListener("click", () => {
+  if (weakWrongIds.length === 0) return;
+  reviewOnly = [...weakWrongIds];
+  reviewFromQuiz = false;
+  reviewScope = [];
+  timeLimit = false;
+  guideOnce("review", () => startPlay("review"));
+});
 
 // ランクの一覧:いまのランクに しるしをつける
 function openRankInfo() {
@@ -2554,7 +2627,6 @@ function showRpg() {
   setTimeout(fitRpgWindow, 150); // ふりがなが付いたあとに、もう1度
   if (timeLimit) startRpgTimer();
   else $("rpg-timer").hidden = true;
-}
   stopSpeaking();
   // 自動の読み上げ(設定でチェックを入れたとき。400ミリ秒のあいだに、答えたり、他の画面にいったときは、読まない)
   if (readAloud() && canSpeak) {
@@ -2562,6 +2634,7 @@ function showRpg() {
       if (rpgQuestion === question && !rpgAnswered && !$("screen-rpg").hidden) speak(readableRpg(question));
     }, 400);
   }
+}
 
 // RPGの制限時間(1問30秒)。時間切れは、間違いと同じ(ハートが減る)。設定・やめるの確認を開いている間は、とまる
 let rpgTimerId = 0;
@@ -2623,9 +2696,9 @@ function rpgAnswer(index, timedUp = false) {
   $("rpg-verdict").textContent = `${correct ? "正解!" : timedUp ? "時間切れ…" : "残念…"} ${message}${correct && rpgHinted ? "(ヒントを使ったヨ)" : ""}`;
   $("rpg-explain").textContent = `正解は「${question.choices[question.answer]}」\n${question.explanation}`;
   $("rpg-after").hidden = false;
-  $("screen-rpg").classList.add("is-answered"); // 低い画面では、答えたあと、上の絵を小さくして、解説の場所をあける
   stopSpeaking();
   if (readAloud()) speak(`${$("rpg-verdict").textContent}。${$("rpg-explain").textContent}`); // 正解と解説も読み上げる
+  $("screen-rpg").classList.add("is-answered"); // 低い画面では、答えたあと、上の絵を小さくして、解説の場所をあける
   $("btn-rpg-next").textContent = play.roundFinished ? "結果を見る ▶" : "次へ ▶";
   $("screen-rpg").querySelector(".rpg-window").scrollTop = 0;
   $("btn-rpg-next").focus({ preventScroll: true });
@@ -2645,8 +2718,8 @@ function rpgSounds(event) {
 }
 
 function rpgNext() {
-  if (play.roundFinished && !play.cleared) showGameOver(); // ゲームオーバーは、専用の画面
   stopSpeaking(); // 先へ進んだら、読み上げは止める
+  if (play.roundFinished && !play.cleared) showGameOver(); // ゲームオーバーは、専用の画面
   else if (play.roundFinished) announce("クエスト クリア〜!", "result", showResult, "../assets/flori/m/wave_surprised.png");
   else showRpg();
 }
@@ -2655,6 +2728,7 @@ function rpgNext() {
 function showGameOver() {
   const result = play.finishRound();
   recordDex(result.answers); // 図鑑
+  logFields(result.answers);
   recordWrong(result.answers); // 間違えた問題は、間違いノートへ
   recordRpgResult(result);
   const wrongCount = new Set(result.answers.filter((a) => !a.correct || a.hinted).map((a) => a.id)).size; // 同じ問題は、1問と数える(ヒントを見た問題も)
@@ -3086,12 +3160,12 @@ $("btn-read").addEventListener("click", () => {
   if (answered) speak(answerReading());
   else speak(`${readableQuestion(current)}${hinted ? `。ヒント。${current.hint}` : ""}`);
 });
-
 // RPGの「読み上げ」:問題と選択肢(ヒントを見ていたらヒントも)を読む
 $("btn-rpg-read").addEventListener("click", () => {
   if (!rpgQuestion || rpgAnswered) return;
   speak(`${readableRpg(rpgQuestion)}${rpgHinted ? `。ヒント。${rpgQuestion.hint}` : ""}`);
 });
+
 // ================= 文字の大きさ =================
 const SIZE_KEY = "floriQuiz.textSize";
 const SIZES = { small: 0.9, normal: 1, large: 1.15, xlarge: 1.3 };
