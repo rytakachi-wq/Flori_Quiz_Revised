@@ -275,6 +275,16 @@ function frame(now) {
       cs.width = `${(1 + 2 * MARGIN.x) * ow}px`;
       cs.height = `${(1 + 2 * MARGIN.y) * oh}px`;
     }
+    // ホームの かざりの入れもの(#hero-decor)は、hero-fig いっぱい(絵より たて長)で、かざりの位置が、ほかの画面より ずれる。絵(img)の位置・大きさに、そろえる
+    const hd = img.closest("#screen-cover") ? img.parentElement.querySelector(":scope > #hero-decor") : null;
+    if (hd && img.offsetWidth > 0) {
+      const hs = hd.style;
+      hs.inset = "auto";
+      hs.left = `${img.offsetLeft}px`;
+      hs.top = `${img.offsetTop}px`;
+      hs.width = `${img.offsetWidth}px`;
+      hs.height = `${img.offsetHeight}px`;
+    }
     const dpr = Math.min(devicePixelRatio || 1, 2);
     const w = Math.round(Math.min(canvas.clientWidth * dpr, 640));
     const h = Math.round((w * (1 + 2 * MARGIN.y) * FRAME.h) / ((1 + 2 * MARGIN.x) * FRAME.w));
