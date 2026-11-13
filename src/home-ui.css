@@ -105,3 +105,7 @@
 #screen-rules .rf-stage { border: 4px solid var(--sk-brown); background: linear-gradient(180deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.1)), url("../assets/movie/bg_sunrise_hd.webp") center bottom / cover; }
 #screen-rules .rf-caption { color: #fff3cf; background: rgba(90, 42, 20, 0.92); border: 3px solid #ffd25a; text-shadow: 0 2px 0 #3a2418; }
 #screen-rules .rf-skip { color: #ffe9c0; }
+
+/* 暗い茶色・紫のボタンの上の ふりがな(rt)を 明るく */
+.home-help rt, .cover-gear rt, .back-btn rt, .rules-row rt, .home-rank rt, .tut-caption rt, .rf-caption rt, .rpg-hint-btn rt, .rpg-next rt, .rpg-settings rt, .chip-button rt { color: #ffe9c0 !important; text-shadow: 0 1px 0 #3a2418; }
+.home-help-mid rt { color: #5a2a14 !important; text-shadow: none; }
