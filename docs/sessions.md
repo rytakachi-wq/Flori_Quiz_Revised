@@ -10,6 +10,7 @@
 | B | story-movie | ものがたり(ムービー)・オープニング・スタッフクレジット・出る条件(解放)・絵コンテ | `src/live2d/story-movie.*`、`src/live2d/storyboard.js`、`src/credits.js`、`assets/movie/`、`_proto/` |
 | C | flori-dress | 動くフロリ(Live2D)・着せ替え・かざりの位置・音・BGM・ふきだし・豆知識(家族の話) | `src/live2d/*`、`src/live-flori.js`、`src/decor-overlay.js`、`src/badges.js`、`src/dress-unlocks.js`、`src/audio.js`、`src/music.js`、`src/talk.js` |
 | D | quiz-data | 問題・解説・クイズの流れ・点数・図鑑・成績・総合得点・復習・毎日1問・RPG | `data/questions/`、`src/game.js`、`src/storage.js`、`src/main.js`(出題・結果・図鑑・成績)、`docs/question-*.md` |
+| E | overall-fix | 全体的な修正:複数の項目にまたがる直し・全画面の統一(漢字・ふりがな・文言・収まり・ボタンや色の統一)・バグの一斉点検・記録の整理 | 複数。直す前に関係するセッションへ知らせる |
 | 司会 | 最初のセッション(1号フォルダ) | 公開(main へのマージと push)・全体の確認・記録の整理 | `docs/decisions.md`、`docs/handoff.md`、この表 |
 
 ## 全員の約束
@@ -39,4 +40,5 @@
 | B | story-movie | local_0e66ca22-2c3d-4c7b-a02a-2678065cb129 |
 | C | flori-dress | local_7121df44-5977-44f5-8cba-368e5aa4160f |
 | D | quiz-data | local_beee8a97-836f-4532-95cf-194117c20a2c |
+| E | overall-fix | local_b901e0a0-c47a-49c5-9fc2-4952e8cb3127 |
 | 司会 | 最初のセッション | (利用者の最初のセッション。公開はここ) |
