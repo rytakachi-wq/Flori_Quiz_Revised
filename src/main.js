@@ -1347,6 +1347,8 @@ let movieDone = null;
 function openMovie(query) {
   return new Promise((resolve) => {
     movieDone = resolve;
+    $("story-movie-loading").hidden = false; // 読みこみ中は、フロリの絵と「読み込み中」を見せる(黒い画面にしない)
+    $("story-movie-skip").hidden = false;
     $("story-movie-frame").src = `./live2d/story-movie.html?v=${MOVIE_VER}&${query}`;
     $("story-movie").hidden = false;
     setScene("movie"); // ゲームのBGMは止める(ムービーの中で、お話ごとの専用BGMが鳴る)
@@ -1366,8 +1368,6 @@ const MOVIE_TITLES = {
   ep1: ["第1話 ネズミとパパの帽子", "総合得点 20点で見られる"],
   ep2: ["第2話 カエルとママのリボン", "総合得点 40点で見られる"],
   ep3: ["第3話 決戦の前に", "総合得点 60点で見られる"],
-    $("story-movie-loading").hidden = false; // 読みこみ中は、フロリの絵と「読み込み中」を見せる(黒い画面にしない)
-    $("story-movie-skip").hidden = false;
   ep4: ["第4話 ドラゴンと最後の戦い", "総合得点 80点で見られる"],
   epi: ["エンディング", "総合得点 100点で見られる"],
 };
@@ -1406,6 +1406,14 @@ function closeMovie() {
   const done = movieDone;
   movieDone = null;
   done?.();
+}
+$("story-movie-skip").addEventListener("click", closeMovie);
+window.addEventListener("message", (event) => {
+  if (event.data === "close-story-movie") closeMovie();
+  else if (event.data === "story-movie-ready") {
+    $("story-movie-loading").hidden = true; // ムービーが動きだした。読みこみ中の表示と、親の「飛ばす」は、もう要らない(ムービーの中に、同じボタンがある)
+    $("story-movie-skip").hidden = true;
+  }
 });
 $("btn-credits-back").addEventListener("click", () => show("cover", -1));
 const PAGE_OPEN = {
@@ -1425,14 +1433,6 @@ document.addEventListener("touchend", () => setTimeout(() => document.body.class
 document.addEventListener("touchcancel", () => document.body.classList.remove("is-touching"), { passive: true });
 
 function askRestart(action) {
-}
-$("story-movie-skip").addEventListener("click", closeMovie);
-window.addEventListener("message", (event) => {
-  if (event.data === "close-story-movie") closeMovie();
-  else if (event.data === "story-movie-ready") {
-    $("story-movie-loading").hidden = true; // ムービーが動きだした。読みこみ中の表示と、親の「飛ばす」は、もう要らない(ムービーの中に、同じボタンがある)
-    $("story-movie-skip").hidden = true;
-  }
   restartAction = action;
   $("dlg-restart").showModal();
 }
