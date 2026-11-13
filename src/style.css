@@ -3714,3 +3714,10 @@ html[data-pattern] :is(#screen-menu, #screen-note, #screen-credits, #screen-dex,
   #screen-records .rec-top .rank-line #s-rank-icon { font-size: 22px; }
   #screen-records .rec-top .rank-line b { font-size: 19px; line-height: 1; }
 }
+
+/* 図鑑・ノートの分類:5つの分野+「全て」を、3つずつ2段に並べる(横にスクロールしない) */
+#screen-dex .dex-filter, #screen-note .dex-filter { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; overflow: visible; }
+#screen-dex .dex-filter .dex-tab, #screen-note .dex-filter .dex-tab { flex: none; font-size: 12px; letter-spacing: -0.04em; padding: 2px 0; }
+#screen-dex .dex-filter .dt-name, #screen-note .dex-filter .dt-name { font-size: 11.5px; letter-spacing: -0.06em; white-space: nowrap; }
+#screen-dex .dex-filter .dt-name .emi, #screen-note .dex-filter .dt-name .emi { display: none; }
+@media (max-width: 380px) { #screen-dex .dex-filter .dt-name, #screen-note .dex-filter .dt-name { font-size: 10px; letter-spacing: -0.08em; } }

@@ -2017,7 +2017,7 @@ function openDexCard(question, label, owned) {
 }
 
 let dexFilter = "全て"; // 図鑑で、いま見ている分類
-const DEX_FILTER_ICON = { 全て: "📚", ...GENRE_ICON, オニ: "👹" };
+const DEX_FILTER_ICON = { 全て: "📚", ...GENRE_ICON, ...FIELD_ICON, オニ: "👹" };
 
 function showDex() {
   const stats = loadStats();
@@ -2078,7 +2078,7 @@ function showDex() {
   const numbered = playableList.map((q, i) => ({ q, label: `No.${i + 1}` }));
   const oniOpen = oniList.some((q) => met.has(q.uid ?? q.id)); // オニを解放するまでは「？？」
   const oniAll = oniList.map((q, i) => ({ q, label: oniOpen ? `オニ${i + 1}` : "？？" })); // オニも、全部のカードを並べる(まだのカードは「？」)
-  const rows = dexFilter === "オニ" ? oniAll : dexFilter === "全て" ? [...numbered, ...oniAll] : numbered.filter(({ q }) => genreOf(q) === dexFilter);
+  const rows = dexFilter === "オニ" ? oniAll : dexFilter === "全て" ? [...numbered, ...oniAll] : numbered.filter(({ q }) => fieldOf(q) === dexFilter);
   const cards = rows.map(({ q, label }) => card(q, label));
   const everyList = [...playableList, ...oniList];
   const have = everyList.filter((q) => met.has(q.uid ?? q.id)).length;
@@ -2086,8 +2086,8 @@ function showDex() {
   $("dex-count").textContent = `カード ${have} / ${everyList.length}枚(${percent}%)`;
   $("dex-meter-bar").style.width = `${percent}%`;
   // 分類のボタン(いくつ集めたか)
-  const tabs = ["全て", ...GENRES].map((name) => {
-    const list = name === "全て" ? everyList : name === "オニ" ? oniList : playableList.filter((q) => genreOf(q) === name);
+  const tabs = ["全て", ...FIELDS].map((name) => {
+    const list = name === "全て" ? everyList : name === "オニ" ? oniList : playableList.filter((q) => fieldOf(q) === name);
     const got = list.filter((q) => met.has(q.uid ?? q.id)).length;
     const button = document.createElement("button");
     button.type = "button";
@@ -2178,7 +2178,7 @@ function showNote() {
   const items = noteQuestions();
   const sorted = [...allQuestions].sort((a, b) => a.id.localeCompare(b.id));
   const numberOf = new Map(sorted.filter((q) => q.level <= HARD_LEVEL).map((q, i) => [q.uid ?? q.id, i + 1]));
-  const inFilter = (q) => noteFilter === "全て" || genreOf(q) === noteFilter;
+  const inFilter = (q) => noteFilter === "全て" || fieldOf(q) === noteFilter;
   if (noteFilter !== "全て" && !items.some(inFilter)) noteFilter = "全て"; // 見ていた分類が空になったら、全てに戻す
   const cards = items
     .filter(inFilter)
@@ -2217,8 +2217,8 @@ function showNote() {
     });
   $("note-grid").replaceChildren(...cards);
   $("note-grid").scrollTop = 0;
-  const tabs = ["全て", ...GENRES].map((name) => {
-    const count = name === "全て" ? items.length : items.filter((q) => genreOf(q) === name).length;
+  const tabs = ["全て", ...FIELDS].map((name) => {
+    const count = name === "全て" ? items.length : items.filter((q) => fieldOf(q) === name).length;
     const button = document.createElement("button");
     button.type = "button";
     button.className = `dex-tab${name === noteFilter ? " is-on" : ""}`;
@@ -2234,7 +2234,7 @@ function showNote() {
   });
   $("note-filter").replaceChildren(...tabs);
   $("note-count").textContent = items.length > 0 ? `ノートの問題 ${items.length}問` : "ノートは まっさら!";
-  const byGroup = GENRES.map((name) => [genreShort(name), items.filter((q) => genreOf(q) === name).length]);
+  const byGroup = FIELDS.map((name) => [name, items.filter((q) => fieldOf(q) === name).length]);
   const [top, topCount] = byGroup.reduce((a, b) => (b[1] > a[1] ? b : a));
   $("note-comment").textContent =
     items.length === 0
