@@ -378,6 +378,7 @@ const SKIP_TAGS = new Set(["SCRIPT", "STYLE", "TEXTAREA", "INPUT", "TITLE", "RT"
 // ふりがなの文字が、漢字より横に長いとき(例:「心配」の上の「しんぱい」)、まわりに すき間があいて見える。
 // 読みがはみ出す分だけ、となりが ふつうの文字(ルビのついていない文字)のときは、そちらへ ふりがなを かぶせて、すき間をつめる。
 function overhang(host) {
+  const todo = []; // 先に全部はかってから、まとめて書く(はかるたびに画面を組みなおさないため)
   for (const ruby of host.querySelectorAll("ruby")) {
     const rt = ruby.querySelector("rt");
     const base = ruby.firstChild;
@@ -387,12 +388,23 @@ function overhang(host) {
     if (!baseSize || !rtSize) continue;
     // 文字の幅のめやす:全角=1em、半角(数字・英字・記号)=0.55em
     const widthEm = (text) => [...text].reduce((sum, ch) => sum + (ch.charCodeAt(0) < 0x300 ? 0.55 : 1), 0);
-    const extra = ((widthEm(rt.textContent) * rtSize) - (widthEm(base.textContent) * baseSize)) / baseSize / 2; // 左右それぞれ、何emはみ出すか
+    let extra = ((widthEm(rt.textContent) * rtSize) - (widthEm(base.textContent) * baseSize)) / baseSize / 2; // 左右それぞれ、何emはみ出すか(めやす)
+    if (rt.getClientRects().length) {   // 画面に出ているときは、実際の幅ではかる
+      const range = document.createRange();
+      range.selectNodeContents(base);
+      const baseWidth = range.getBoundingClientRect().width;
+      const rtWidth = rt.getBoundingClientRect().width;
+      if (baseWidth > 0 && rtWidth > 0) extra = (rtWidth - baseWidth) / 2 / baseSize;
+    }
+    extra *= 0.85; // ぴったりにすると、となりの字に さわるので、少し あける
     if (extra <= 0.04) continue;
     // となりが、ふつうの文字のときだけ、かぶせる(となりにも ふりがながあるときは、ぶつかるので かぶせない)
     const room = (node) => (node && node.nodeType === Node.TEXT_NODE && node.textContent.trim() ? Math.min(0.9, node.textContent.length * 0.45) : 0);
     const left = Math.min(extra, 0.6, room(ruby.previousSibling));
     const right = Math.min(extra, 0.6, room(ruby.nextSibling));
+    todo.push([ruby, left, right]);
+  }
+  for (const [ruby, left, right] of todo) {
     if (left > 0.02) ruby.style.marginLeft = `${-left.toFixed(2)}em`;
     if (right > 0.02) ruby.style.marginRight = `${-right.toFixed(2)}em`;
   }

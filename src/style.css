@@ -3737,3 +3737,7 @@ html[data-pattern] :is(#screen-menu, #screen-note, #screen-credits, #screen-dex,
   .rpg-screen:has(.rpg-hint:not([hidden])) { --rpg-field-h: 88px; }
   .rpg-screen:has(.rpg-hint:not([hidden])) .rpg-path { display: none; }
 }
+/* 項目E:320px幅の図鑑・ノートの分類ボタンで、長い名前(「生活・水平思考」)のふりがなが、ボタンからはみ出すのを直す */
+@media (max-width: 340px) {
+  .dex-tab rt { font-size: 7.5px; }
+}
