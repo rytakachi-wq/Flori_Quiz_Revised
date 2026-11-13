@@ -36,7 +36,7 @@ import {
   recordWrong,
   recordRpg,
   recordRound,
-} from "./storage.js?v=20261113t";
+} from "./storage.js?v=20261113u";
 import { illustrationFor } from "./illustrations.js?v=20261113x";
 import { createTalker } from "./talk.js?v=20261113x";
 import { initTutorial, openTutorial } from "./tutorial.js?v=20261113x";
@@ -314,13 +314,14 @@ function logFields(answers = []) {
     window.__floriLog?.("[fieldLog] " + error);
   }
 }
-// 分野ごとの、全部の答えの正答率。苦手=5問以上答えていて、正答率が8割より低いなかで、いちばん低い分野
+// 分野ごとの、さいきん20問の正答率。苦手=5問以上答えていて、正答率が8割より低いなかで、いちばん低い分野
 const WEAK_MIN_ANSWERS = 5;
 const WEAK_RATE = 0.8;
 function fieldReport(stats) {
   const rows = FIELDS.map((field) => {
-    const row = stats.fieldLog?.[field] ?? { r: 0, n: 0 };
-    return { field, total: row.n, right: row.r, rate: row.n ? row.r / row.n : 0, known: row.n >= WEAK_MIN_ANSWERS };
+    const log = stats.fieldLog?.[field] ?? "";
+    const right = [...log].filter((c) => c === "1").length;
+    return { field, total: log.length, right, rate: log.length ? right / log.length : 0, known: log.length >= WEAK_MIN_ANSWERS };
   });
   const weakRows = rows.filter((row) => row.known && row.rate < WEAK_RATE).sort((a, b) => a.rate - b.rate);
   return { rows, weak: weakRows[0] ?? null };
@@ -880,7 +881,7 @@ function showResult() {
   const adventure = mode === "rpg";
   $("r-best-row").querySelector("dt").textContent = adventure ? "最短記録" : "最高得点"; // RPG=いちばん少ない問題数でクリア
   recordDex(result.answers); // 図鑑(どのモードでも)
-  logFields(result.answers); // 分野ごとの正解数(苦手さがし)
+  logFields(result.answers); // 分野ごとの、さいきんの正誤(苦手さがし)
   $("r-correct-row").hidden = false;
   {
     $("r-correct").textContent = `${result.correct} / ${result.total}問`;
