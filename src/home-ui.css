@@ -255,3 +255,5 @@
 @media (max-height: 640px) { .mode-btn.m-rpg { min-height: 70px; } .mode-btn.m-daily, .mode-btn.m-review { min-height: 54px; } .mode-row .rules-again { height: 28px; min-height: 28px; } }
 .mode-row .mode-btn { flex: 0 0 auto; width: 100%; }
 .mode-row .rules-again { flex: 0 0 auto; }
+#screen-setup .mode-list { display: flex !important; flex-direction: column; gap: 10px; grid-template-rows: none !important; }
+.mode-row { flex: 0 0 auto; }
