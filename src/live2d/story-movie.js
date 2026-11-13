@@ -3,13 +3,13 @@
 // ・見切れない:大きさは、画面の たて・よこの小さいほうに合わせる(--u)。カメラ(ズーム・パン)で、寄り・引きをつくる。
 // ・動きは場面に合わせる:かなしい場面は腕を動かさない(noArms)。ぴょん・ぶるぶるは、ここぞというときだけ。歩くときは、上下にゆれる。
 // ・単調にならない:広い絵・寄りの絵・切りかえ(暗転)・走る/追う/はねる 動き・ふきだしの順番。
-import { loadModel, draw } from './live2d.js?v=20261114a';
-import { createMotion } from './flori-motion.js?v=20261114a';
-import { recolorCanvas } from '../flori-color.js?v=20261114a';
-import { HEADS } from '../badges.js?v=20261114a';
-import { startFurigana } from '../furigana.js?v=20261114a';
-import { MOVIES } from './storyboard.js?v=20261114a';
-import { playStoryBgm } from './story-bgm.js?v=20261114a';
+import { loadModel, draw } from './live2d.js?v=20261114d';
+import { createMotion } from './flori-motion.js?v=20261114d';
+import { recolorCanvas } from '../flori-color.js?v=20261114d';
+import { HEADS } from '../badges.js?v=20261114d';
+import { startFurigana } from '../furigana.js?v=20261114d';
+import { MOVIES } from './storyboard.js?v=20261114d';
+import { playStoryBgm } from './story-bgm.js?v=20261114d';
 
 startFurigana();
 

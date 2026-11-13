@@ -1,7 +1,7 @@
 // 端末内に保存する成績。名前や個人情報は入れない。
 // 保存できない環境でも遊べるように、失敗しても、そのページを開いている間は覚えておく。
 
-import { MAX_SCORE, QUESTIONS_PER_ROUND } from "./game.js?v=20261114a";
+import { MAX_SCORE, QUESTIONS_PER_ROUND } from "./game.js?v=20261114d";
 
 const KEY = "floriQuiz.stats";
 const OLD_BEST_KEY = "floriQuiz.bestScore"; // 最高得点だけだったころの保存
