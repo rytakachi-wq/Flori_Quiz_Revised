@@ -170,3 +170,12 @@
 .unlock-dialog #btn-unlock-wear { flex: 1.5 1 0; }
 /* クエスト クリア:下の よはくを なくして、そのぶん フロリを大きく(のこりの場所を フロリが つかう) */
 #screen-result[data-clear="1"] .screen-head + .flori-cover, #screen-result[data-clear="1"] > .flori-cover { flex: 1 1 0 !important; height: auto !important; min-height: 110px; max-height: none !important; width: auto !important; max-width: 85% !important; align-self: center; object-fit: contain; }
+
+/* クイズの選択肢:ボタンの影をなくして、その分、問題文を大きく。ボタンの横幅は、全部同じ */
+.rpg-choice, .rpg-choice:hover:not(:disabled), .rpg-choice:active, .choice, .choice:hover:not(:disabled), .choice:active:not(:disabled) { box-shadow: none; filter: none; }
+.rpg-choice:active, .choice:active:not(:disabled) { transform: none; }
+.rpg-choices, .choices { justify-items: stretch; }
+.rpg-choice, .choice { width: 100%; box-sizing: border-box; }
+.rpg-text { font-size: calc(17.5px * var(--rpg-scale, 1)); line-height: 1.5; }
+#screen-question .question { font-size: clamp(18px, calc(3 * var(--dvh)), 25px); }
+#screen-question .question.long { font-size: clamp(16px, calc(2.6 * var(--dvh)), 21px); }
