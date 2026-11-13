@@ -133,11 +133,11 @@ const REVIEW = [
 
 // 遊び方ごとの、場面・色・名札
 const KINDS = {
-  daily: { theme: "daily", tag: "📅 毎日1問", scenes: () => DAILY },
-  review: { theme: "review", tag: "📓 復習", scenes: () => REVIEW },
+  daily: { theme: "daily", tag: `${IC("illust/daycal.webp")} 毎日1問`, scenes: () => DAILY },
+  review: { theme: "review", tag: `${IC("illust/notebook.webp")} 復習`, scenes: () => REVIEW },
   normal: { theme: "solo", tag: "🌱 1人で普通", scenes: () => [...COMMON, ...SOLO] },
   hard: { theme: "hard", tag: "🔥 1人で難しい", scenes: () => [...COMMON, SOLO[0], ...HARD] },
-  rpg: { theme: "rpg", tag: "🗡️ RPGクエスト", scenes: () => RPG },
+  rpg: { theme: "rpg", tag: `${IC("movie/dragon_1.webp")} RPGクエスト`, scenes: () => RPG },
 };
 let kind = "normal";
 let SCENES = [];
@@ -153,7 +153,7 @@ function render() {
   const info = KINDS[kind];
   screen.classList.remove("rf-solo", "rf-hard", "rf-rpg", "rf-daily", "rf-review");
   screen.classList.add(`rf-${info.theme}`);
-  $("rf-tag").textContent = info.tag;
+  $("rf-tag").innerHTML = info.tag;
   $("rf-title").textContent = `${CIRCLED[index] ?? ""} ${scene.title.replace(/^[①-⑩]\s*/, "")}`; // 番号は、場面の順につける
   $("rf-caption").textContent = scene.caption;
   $("rf-skip").textContent = `ルールを飛ばして ${lastEndLabel === "クイズのモード選択へ" ? "モード選択へ" : lastEndLabel}`;

@@ -242,3 +242,5 @@
 #screen-rules .rf-caption { height: auto; min-height: 96px; overflow: visible; font-size: clamp(14px, calc(2.1 * var(--dvh)), 17px); }
 #screen-rules .rf-buttons { height: 60px; flex: none; }
 #screen-rules .rf-next, #screen-rules .rf-prev { height: 60px; min-height: 60px; white-space: nowrap; font-size: 17px; padding: 0 6px; }
+.rf-tag { display: inline-flex; align-items: center; gap: 4px; }
+.rf-tag .rf-ico { height: 1.3em; }
