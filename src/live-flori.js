@@ -3,15 +3,16 @@
 //  - かざり(頭・体・顔)は、いままでどおり。絵の見えている場所にそろえて、重ねる(decor-overlay.js)。
 //  - 色(着せ替えの色)は、体・頭・手足の絵を、flori-color.js で色づけしてから、貼る。
 //  - 出さない画面:クイズ(問題・RPG)。表紙は、クリックで ぴょん。着せ替え画面でも、腕を動かす。
-import { draw, loadModel } from "./live2d/live2d.js?v=20261113r";
-import { createMotion } from "./live2d/flori-motion.js?v=20261113r";
-import { playJump } from "./audio.js?v=20261113r";
-import { getFloriColor, recolorCanvas } from "./flori-color.js?v=20261113r";
+import { draw, loadModel } from "./live2d/live2d.js?v=20261113x";
+import { createMotion } from "./live2d/flori-motion.js?v=20261113x";
+import { playJump } from "./audio.js?v=20261113x";
+import { getFloriColor, recolorCanvas } from "./flori-color.js?v=20261113x";
+import { HEADS } from "./badges.js?v=20261113x";
 
 // ポーズつきの絵のうち、動くフロリにかえるもの(かざりの位置が合う絵。decor-overlay.js の POSE と同じ)
 const POSE = /(?:wave_(?:nikkori|smile|wrong|surprised)\.png|body_wave\.webp)$/;
 const MOOD = { wave_wrong: "こまった", wave_surprised: "びっくり" }; // 絵のポーズに合わせた、ずっと同じ表情
-const EXCLUDE = "#screen-question, #screen-gameover, #dlg-unlock, #dlg-giveup, .hint-dialog"; // クイズ画面・ゲームオーバー・新しいかざりをゲットのダイアログ・わからないとヒントのダイアログは、動くフロリを出さない(動かない絵)。RPGのフロリは、動くフロリ
+const EXCLUDE = "#screen-question, #screen-rpg, #screen-gameover, #dlg-unlock, #dlg-giveup, .hint-dialog"; // クイズ画面・ゲームオーバー・新しいかざりをゲットのダイアログ・わからないとヒントのダイアログ・RPGは、動くフロリを出さない(動かない絵)
 const TINT_PARTS = /^(体|顔|右足|左足|右手(コブシ|バンザイ)|左手(コブシ|バンザイ))$/; // 色をつけるパーツ
 const LINE_LUM = 150; // これより暗い所を「線」とみなして、太らせる
 const TINT_SCALE = 0.3; // 色をつけるときの、絵の縮め具合(もようの大きさを、静止画に近づける。大きいと、重い)
@@ -76,10 +77,10 @@ const Y0 = 861;
 const MARGIN = { x: 0.06, y: 0.03 }; // 腕などが はみ出してもよいように、canvas を、絵より少し大きくする(絵に対する割合)
 // 首のかしげ:顔の部品(回転)の角度を、パラメーターの値から求める(かざりを、いっしょに かたむけるため)
 const PIVOT = { x: 1459.5, y: 1696.5 }; // 顔の回転の中心(キャンバス座標)
-function faceAngle() {
-  const d = model.deformers.find((deformer) => deformer.binds.length === 1 && model.params[deformer.binds[0].param].name === "顔");
+function faceAngle(m = model) {
+  const d = m.deformers.find((deformer) => deformer.binds.length === 1 && m.params[deformer.binds[0].param].name === "顔");
   if (!d) return 0;
-  const v = model.values[d.binds[0].param];
+  const v = m.values[d.binds[0].param];
   const k = d.binds[0].keys;
   if (v <= k[0]) return d.forms[0].angle;
   if (v >= k[k.length - 1]) return d.forms[k.length - 1].angle;
@@ -329,4 +330,117 @@ export function startLiveFlori() {
       showStillFlori();
     }
   }, 4000);
+}
+
+// ===== ときどき、パパフロリ・ママフロリが、ホームの横から のぞきに来る(利用者の指示) =====
+// 新しく描いたのではなく、動くフロリに色(パパ=青・ママ=ピンク)と、着せ替えの帽子・リボンをのせたもの(物語ムービーと同じ作り)
+const FAMILY = {
+  papa: { color: { id: "papa-deep", hue: 214, gain: 6, minSat: 1, boost: 1.9, lmul: 0.8 }, hat: "head29" },
+  mama: { color: { id: "mama-deep", hue: 336, gain: 6, minSat: 1, boost: 1.9, lmul: 0.86 }, hat: "head01" },
+};
+const actors = new Map(); // 役 → { m, imgs, hat, hatItem, motion }
+async function actorOf(role) {
+  if (actors.has(role)) return actors.get(role);
+  const spec = FAMILY[role];
+  const m = Object.create(model);
+  m.values = [...model.values];
+  const imgs = new Map(base);
+  for (const mesh of model.meshes) {
+    if (!TINT_PARTS.test(mesh.name) || imgs.get(mesh.img)?.__family === role) continue;
+    await new Promise((resolve) => setTimeout(resolve, 0)); // 重いので、パーツごとに間をあける
+    const small = base.get(mesh.img) ?? model.imgs.get(mesh.img);
+    const shrunk = small !== model.imgs.get(mesh.img);
+    const tinted = recolorCanvas(small, spec.color, shrunk ? 1 : TINT_SCALE, mesh.name === "顔" ? 0.87 : 0);
+    tinted.__family = role;
+    imgs.set(mesh.img, tinted);
+  }
+  const hatItem = HEADS.find((item) => item.id === spec.hat);
+  const hat = hatItem ? await new Promise((resolve) => { const im = new Image(); im.onload = () => resolve(im); im.onerror = () => resolve(null); im.src = new URL(hatItem.img, import.meta.url).href; }) : null;
+  const actor = { m, imgs, hat, hatItem, motion: createMotion(m, { mood: null, noArms: false }) };
+  actors.set(role, actor);
+  return actor;
+}
+
+let visiting = false;
+async function visit(role, side) {
+  const stage = document.querySelector("#screen-cover .home-stage");
+  const fig = stage?.querySelector(".hero-fig");
+  if (!stage || !fig || !model || !base) return;
+  const actor = await actorOf(role);
+  const stageBox = stage.getBoundingClientRect();
+  const figBox = (stage.querySelector(".flori-cover") ?? fig).getBoundingClientRect();
+  if (figBox.width === 0 || stageBox.width === 0) return;
+  const W = Math.round(Math.min(figBox.width * 0.66, stageBox.width * 0.26)); // フロリより、ひとまわり小さく
+  const H = Math.round((W * (1 + 2 * MARGIN.y) * FRAME.h) / ((1 + 2 * MARGIN.x) * FRAME.w));
+  const canvas = document.createElement("canvas");
+  canvas.setAttribute("aria-hidden", "true");
+  const feet = figBox.bottom - stageBox.top; // フロリの足もと
+  const rest = side === "left" ? -W * 0.18 : stageBox.width - W * 0.82; // 画面のはしから、少しだけ はみ出して立つ
+  const away = side === "left" ? -W * 1.3 : stageBox.width + W * 0.3; // 画面の外
+  canvas.style.cssText = `position:absolute;left:${rest}px;top:${feet - H * 0.97}px;width:${W}px;height:${H}px;pointer-events:none;z-index:2;transform:translateX(${away - rest}px);transition:transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);`;
+  stage.style.position ||= "relative";
+  stage.append(canvas);
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  canvas.width = Math.round(Math.min(W * dpr, 480));
+  canvas.height = Math.round((canvas.width * H) / W);
+  const bg = model.meshes.findIndex((mesh) => mesh.name === "BG");
+  let alive = true;
+  const render = (now) => {
+    if (!alive) return;
+    const mv = actor.motion.update(now);
+    draw(actor.m, canvas.getContext("2d"), view(mv.bounce), { hide: new Set([bg]), squash: { sx: mv.sx, sy: mv.sy, ...FOOT }, imgs: actor.imgs, before: (ctx) => shadow(ctx, mv.bounce) });
+    if (actor.hat && actor.hatItem) {
+      const ctx = canvas.getContext("2d");
+      const p = actor.hatItem.pos;
+      const cx = X0 + ((p.x / 100) * FRAME.w) / S, cy = Y0 + ((p.y / 100) * FRAME.h) / S;
+      const hw = (((p.w / 100) * FRAME.w) / S) * (p.sx ?? 1);
+      const hh = (((p.w / 100) * FRAME.w) / S) * (actor.hat.naturalHeight / actor.hat.naturalWidth) * (p.sy ?? 1);
+      ctx.save();
+      ctx.translate(PIVOT.x, PIVOT.y);
+      ctx.rotate((faceAngle(actor.m) * Math.PI) / 180);
+      ctx.translate(-PIVOT.x, -PIVOT.y);
+      ctx.drawImage(actor.hat, cx - hw / 2, cy - hh / 2, hw, hh);
+      ctx.restore();
+    }
+    requestAnimationFrame(render);
+  };
+  requestAnimationFrame(render);
+  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  await wait(60);
+  canvas.style.transform = "translateX(0)"; // 横から、すーっと登場
+  await wait(1300);
+  actor.motion.hop(performance.now()); // 着いたら、ぴょん
+  await wait(4200 + Math.random() * 2000);
+  canvas.style.transform = `translateX(${away - rest}px)`;
+  await wait(1300);
+  alive = false;
+  canvas.remove();
+}
+
+// 表紙を見ている間に、30〜60秒に1回くらい、パパかママが(ときどき ふたりで)横から のぞきに来る
+export function startFamilyVisits() {
+  if (reduced) return;
+  let next = performance.now() + 15000 + Math.random() * 10000;
+  setInterval(async () => {
+    if (visiting || document.hidden || !model || !base || performance.now() < next) return;
+    const cover = document.getElementById("screen-cover");
+    if (!cover || cover.hidden || cover.getClientRects().length === 0) return;
+    if (document.querySelector(".overlay:not([hidden]), dialog[open]")) return; // なにか開いているときは、出ない
+    visiting = true;
+    try {
+      const left = Math.random() < 0.5 ? "left" : "right";
+      const first = Math.random() < 0.5 ? "papa" : "mama";
+      const jobs = [visit(first, left)];
+      if (Math.random() < 0.25) jobs.push(visit(first === "papa" ? "mama" : "papa", left === "left" ? "right" : "left")); // ときどき、ふたりで
+      await Promise.all(jobs);
+    } catch (error) {
+      window.__floriLog?.("[family] " + error);
+    }
+    visiting = false;
+    next = performance.now() + 30000 + Math.random() * 30000;
+  }, 2000);
+}
+// 確かめ用:すぐに、パパ・ママを出す(role: "papa" | "mama"、side: "left" | "right")
+export function visitNow(role = "papa", side = "left") {
+  return visit(role, side);
 }

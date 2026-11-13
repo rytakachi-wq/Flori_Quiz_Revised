@@ -213,7 +213,7 @@ export const TRACKS = {
   },
   // RPGクエストの、ボス戦:速くて、せまってくる曲(ぶるぶるした音と、おし寄せるベース)
   questboss: {
-    bpm: 148,
+    bpm: 128,
     trim: 1.3,
     voice: "buzz",
     bass: "drive",
@@ -305,7 +305,7 @@ export const TRACKS = {
   // ゲームオーバー:ゆっくり、しんみりする曲(短調。やわらかい音。ゆったり のばす)
   gameover: {
     bpm: 66,
-    trim: 1.1,
+    trim: 1.7,
     voice: "soft",
     bass: "sustain",
     pad: 0.04,

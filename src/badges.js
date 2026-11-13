@@ -1,7 +1,7 @@
 // きせかえ(フロリの色・頭・体・顔・背景)と、そのもらい方(解放の条件)。成績(storage.js)から、条件を数える。
 // 名前や個人情報は入れない。きせかえの選びかただけ、端末内に保存する。
 
-import { OLD_UNLOCKS, RARITY, UNLOCKS } from "./dress-unlocks.js?v=20261113r";
+import { OLD_UNLOCKS, RARITY, UNLOCKS } from "./dress-unlocks.js?v=20261113x";
 
 const DRESS_KEY = "floriQuiz.dress";
 
