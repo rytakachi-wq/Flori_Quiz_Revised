@@ -40,7 +40,7 @@ const EMPTY = {
   hardCounter: 0, // 難しいモードの「つづきから」:難しさのカウンター
   qpts: {}, // 問題ごとの、これまでの最高の点(ヒントなしで正解=2、ヒントを見て正解=1)。総合得点に使う
   courses: {}, // 「つづきから」:分類(理系・文系・ひらめき)×むずかしさごとの、難しさのカウンターと、もう出した問題 { "理系-normal": { counter, used } }
-  fieldLog: {}, // 分野ごとの、さいきんの正誤(新しい順に最大20個。"1"=正解 "0"=まちがい)。苦手な分野をさがすのに使う { "算数・数学": "1101" }
+  fieldLog: {}, // 分野ごとの、正解した数(r)と答えた数(n)。全部の答えを数える。苦手な分野をさがすのに使う { "算数・数学": { r: 7, n: 10 } }
   scoreVer: 2, // 点数のつけかた(2=1問2点。ないものは、1問5点だったころの記録)
 };
 
@@ -73,12 +73,13 @@ function cleanCourses(raw) {
   return out;
 }
 
-const FIELD_LOG_MAX = 20; // 分野ごとに、さいきんの何問を見るか
+// 分野ごとの正解数・答えた数。古い形式("1101…" の文字)は、数えなおして引きつぐ
 function cleanFieldLog(raw) {
   const out = {};
   if (raw && typeof raw === "object") {
     for (const [field, log] of Object.entries(raw)) {
-      if (typeof log === "string" && /^[01]+$/.test(log)) out[field] = log.slice(0, FIELD_LOG_MAX);
+      if (typeof log === "string" && /^[01]+$/.test(log)) out[field] = { r: [...log].filter((c) => c === "1").length, n: log.length };
+      else if (log && typeof log === "object" && number(log.n) > 0) out[field] = { r: Math.min(number(log.r), number(log.n)), n: number(log.n) };
     }
   }
   return out;
@@ -150,7 +151,7 @@ export function reconcile(stats) {
 }
 
 export function loadStats() {
-  if (cache) return { ...cache, fieldLog: { ...cache.fieldLog }, qpts: { ...cache.qpts }, courses: JSON.parse(JSON.stringify(cache.courses)), seen: [...cache.seen], right: [...cache.right], oniRight: [...cache.oniRight], wrong: [...cache.wrong], dex: [...cache.dex], badges: [...cache.badges], courseUsed: [...cache.courseUsed], hardUsed: [...cache.hardUsed] };
+  if (cache) return { ...cache, fieldLog: JSON.parse(JSON.stringify(cache.fieldLog)), qpts: { ...cache.qpts }, courses: JSON.parse(JSON.stringify(cache.courses)), seen: [...cache.seen], right: [...cache.right], oniRight: [...cache.oniRight], wrong: [...cache.wrong], dex: [...cache.dex], badges: [...cache.badges], courseUsed: [...cache.courseUsed], hardUsed: [...cache.hardUsed] };
   let stats = clean(EMPTY);
   try {
     const saved = localStorage.getItem(KEY);
@@ -271,14 +272,15 @@ export function recordDex(answers = []) {
   if (stats.dex.length !== before) save(stats);
 }
 
-// 分野ごとの、さいきんの正誤を記録する(苦手な分野をさがすため)。entries: [{ field, correct }]
-// 新しい答えを先頭に入れて、最大20個まで。ヒントを見て正解した問題も、正解と数える。
+// 分野ごとの正解数・答えた数を記録する(苦手な分野をさがすため)。entries: [{ field, correct }]
+// ヒントを見て正解した問題も、正解と数える。
 export function recordFieldResults(entries = []) {
   const list = entries.filter((entry) => typeof entry?.field === "string");
   if (list.length === 0) return;
   const stats = loadStats();
   for (const { field, correct } of list) {
-    stats.fieldLog[field] = ((correct ? "1" : "0") + (stats.fieldLog[field] ?? "")).slice(0, FIELD_LOG_MAX);
+    const row = stats.fieldLog[field] ?? { r: 0, n: 0 };
+    stats.fieldLog[field] = { r: row.r + (correct ? 1 : 0), n: row.n + 1 };
   }
   save(stats);
 }
