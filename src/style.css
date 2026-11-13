@@ -3770,4 +3770,7 @@ html[data-pattern] :is(#screen-menu, #screen-note, #screen-credits, #screen-dex,
 #screen-question.is-tight3 .choice-text { font-size: 13px; line-height: 1.55; }
 #screen-question.is-tight3 .choice { min-height: 30px; gap: 8px; }
 #screen-question.is-tight3 .choice-no { width: 24px; height: 24px; font-size: 13px; }
+
+/* RPGの読み上げボタン:🔊だけの小さい丸(ヒントのボタンと同じ高さ) */
+.rpg-toprow .rpg-read-btn { padding: 1px 10px; min-width: 42px; }
 #screen-question.is-tight3 .question { font-size: 15px; }

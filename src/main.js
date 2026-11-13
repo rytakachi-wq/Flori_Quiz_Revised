@@ -650,10 +650,27 @@ function playSentence(index, token) {
   voice.lang = "ja-JP";
   if (japaneseVoice) voice.voice = japaneseVoice;
   voice.rate = readRate();
-  voice.onend = () => token === speechToken && playSentence(index + 1, token);
-  voice.onerror = () => token === speechToken && setSpeaking(false);
+  // 次の文へは、1回だけ進む(onend が来ないブラウザ(スマホなど)のために、見はり番(下)も同じ入口を使う)
+  let advanced = false;
+  const advance = () => {
+    if (advanced || token !== speechToken) return;
+    advanced = true;
+    clearInterval(watch);
+    playSentence(index + 1, token);
+  };
+  voice.onend = advance;
+  voice.onerror = () => {
+    if (token !== speechToken) return;
+    clearInterval(watch);
+    setSpeaking(false);
+  };
   speechSynthesis.resume();
   speechSynthesis.speak(voice);
+  const startedAt = Date.now();
+  const watch = setInterval(() => {
+    if (advanced || token !== speechToken) return clearInterval(watch);
+    if (Date.now() - startedAt > 1200 && !speechSynthesis.speaking && !speechSynthesis.pending) advance();
+  }, 300);
 }
 function startSpeech(index) {
   clearTimeout(speakTimer);
@@ -677,6 +694,10 @@ function respeakNow() {
 }
 function readableText(text) {
   return typeof text === "string" && text.trim() !== "";
+}
+// RPGの問題は、type を持たない(4択だけ)ので、選択肢をいつも読む
+function readableRpg(question) {
+  return `${question.text}。${question.choices.map((text, i) => `${i + 1}番、${text}`).join("。")}`;
 }
 function readableQuestion(question) {
   const choices = question.type === "choice" ? question.choices.map((text, i) => `${i + 1}番、${text}`).join("。") : "";
@@ -2534,6 +2555,13 @@ function showRpg() {
   if (timeLimit) startRpgTimer();
   else $("rpg-timer").hidden = true;
 }
+  stopSpeaking();
+  // 自動の読み上げ(設定でチェックを入れたとき。400ミリ秒のあいだに、答えたり、他の画面にいったときは、読まない)
+  if (readAloud() && canSpeak) {
+    setTimeout(() => {
+      if (rpgQuestion === question && !rpgAnswered && !$("screen-rpg").hidden) speak(readableRpg(question));
+    }, 400);
+  }
 
 // RPGの制限時間(1問30秒)。時間切れは、間違いと同じ(ハートが減る)。設定・やめるの確認を開いている間は、とまる
 let rpgTimerId = 0;
@@ -2596,6 +2624,8 @@ function rpgAnswer(index, timedUp = false) {
   $("rpg-explain").textContent = `正解は「${question.choices[question.answer]}」\n${question.explanation}`;
   $("rpg-after").hidden = false;
   $("screen-rpg").classList.add("is-answered"); // 低い画面では、答えたあと、上の絵を小さくして、解説の場所をあける
+  stopSpeaking();
+  if (readAloud()) speak(`${$("rpg-verdict").textContent}。${$("rpg-explain").textContent}`); // 正解と解説も読み上げる
   $("btn-rpg-next").textContent = play.roundFinished ? "結果を見る ▶" : "次へ ▶";
   $("screen-rpg").querySelector(".rpg-window").scrollTop = 0;
   $("btn-rpg-next").focus({ preventScroll: true });
@@ -2616,6 +2646,7 @@ function rpgSounds(event) {
 
 function rpgNext() {
   if (play.roundFinished && !play.cleared) showGameOver(); // ゲームオーバーは、専用の画面
+  stopSpeaking(); // 先へ進んだら、読み上げは止める
   else if (play.roundFinished) announce("クエスト クリア〜!", "result", showResult, "../assets/flori/m/wave_surprised.png");
   else showRpg();
 }
@@ -3022,7 +3053,9 @@ function syncReadSettings() {
   $("set-rate-out").textContent = `${readRate().toFixed(1)}倍`;
   $("set-rate-dlg").value = readRate();
   $("set-rate-dlg-out").textContent = `${readRate().toFixed(1)}倍`;
-  $("btn-read").hidden = !(canSpeak && readAloud()); // 設定でチェックを入れたときだけ、「読み上げ」ボタンを出す
+  // 「読み上げ」ボタンは、読み上げができる端末なら、いつも出す(設定のチェックは、「自動で読む」かどうかだけ)
+  $("btn-read").hidden = !canSpeak;
+  $("btn-rpg-read").hidden = !canSpeak;
 }
 syncReadSettings();
 for (const box of [$("set-read"), $("set-read-dlg")]) {
@@ -3054,6 +3087,11 @@ $("btn-read").addEventListener("click", () => {
   else speak(`${readableQuestion(current)}${hinted ? `。ヒント。${current.hint}` : ""}`);
 });
 
+// RPGの「読み上げ」:問題と選択肢(ヒントを見ていたらヒントも)を読む
+$("btn-rpg-read").addEventListener("click", () => {
+  if (!rpgQuestion || rpgAnswered) return;
+  speak(`${readableRpg(rpgQuestion)}${rpgHinted ? `。ヒント。${rpgQuestion.hint}` : ""}`);
+});
 // ================= 文字の大きさ =================
 const SIZE_KEY = "floriQuiz.textSize";
 const SIZES = { small: 0.9, normal: 1, large: 1.15, xlarge: 1.3 };
