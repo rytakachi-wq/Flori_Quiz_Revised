@@ -257,3 +257,6 @@
 .mode-row .rules-again { flex: 0 0 auto; }
 #screen-setup .mode-list { display: flex !important; flex-direction: column; gap: 10px; grid-template-rows: none !important; }
 .mode-row { flex: 0 0 auto; }
+/* 下の すきまを なくして、そのぶん 各ルールの下に 空白 */
+#screen-setup .mode-list { flex: 1 1 0 !important; min-height: 0; justify-content: space-between; gap: 0 !important; padding-bottom: 6px; }
+#screen-setup .reward-card { flex: none; }
