@@ -274,7 +274,7 @@ function frame(now) {
     const x = lerp(f.from[0], f.to[0], p) + (f.bulge ? f.bulge * Math.sin(Math.PI * p) : 0), y0 = lerp(f.from[1], f.to[1], f.yPow ? Math.pow(p, f.yPow) : p);   // yPow:たて(上下)の動きを、おくらせる(さいしょは よこへ、あとで下へ=弧)
     const sh = f.shake ? Math.sin(now / 38 + n) * 0.7 : 0;
     const hh = lerp(f.h, f.hTo ?? f.h, p), rot = (f.rot || 0) * p + (f.spin || 0) * p;
-    const flip = (f.flip ?? f.to[0] < f.from[0]) ? -1 : 1;   // 絵は 右向き。左へ動くときは、はんてん
+    const flip = ((f.flip ?? f.to[0] < f.from[0]) ? -1 : 1) * (/^(mouse|frog|scorpion|dragon)_/.test(f.art) ? -1 : 1);   // もの(帽子・リボン など)の絵は 右向き。左へ動くときは、はんてん。敵(ネズミ・カエル・サソリ・ドラゴン)の絵は 左向きなので、はんたい(2026-11-16 に左右反転した)
     const lift = f.arc ? Math.abs(Math.sin(pl * Math.PI * f.arc.n)) * f.arc.h : 0;
     let fr = f.art;   // コマの絵(走る・はばたく など)を、きりかえる
     if (f.frames) fr = f.frames[Math.floor(now / 1000 * (f.fps || 6)) % f.frames.length];

@@ -73,3 +73,4 @@
 - 着せ替えの色・背景: お試し(TRIAL)も、正式なご褒美になった(badges.js の TRIAL_SETS で、色と背景のセットごとに条件)。一覧は、ジャンルの見出し付き(SET_ORDER)。着せたとき、名前が枠の上を流れる(main.js の flowName)。
 - 着せ替えの条件・レア度は、`src/dress-unlocks.js`(`UNLOCKS`・`RARITY`・移行用の`OLD_UNLOCKS`)。レア度の名前は badges.js の `RARITY_NAMES`(ノーマル・レア・スーパーレア・レジェンド)。条件を変えたら、`OLD_UNLOCKS` ではなく `UNLOCKS` を直す。RPGの条件は、storage.js の `recordRpg` で数える。
 - ものがたり(ムービー):`src/live2d/story-movie.*`・`storyboard.js`。出る条件・見られる場所は decisions.md その120。ムービーの試作・動作確認用ページは `_proto/`(公開しない。`story-movie2.html`、絵コンテ表は `storyboard-view.html`)。
+- 会社サイト用の紹介ページ:`C:\Users\rytak\Documents\Flori_Intro\index.html`(アプリの外。decisions その137)。claude.ai の限定公開ページに置いた(https://claude.ai/artifact/LiR23mCzv9BdHPC3SFHbkt 、本人だけ見られる状態)。文言は案で、利用者の確認待ち。
