@@ -321,3 +321,41 @@
 #screen-settings { background: linear-gradient(180deg, #fff3cf, #f4d8a0) !important; }
 #screen-settings .volume output { color: var(--sk-brown); }
 #screen-settings .setting-box label:has(input[type="radio"]:checked) { background: #f08a30; }
+
+/* ===== 4回目のまとめ ===== */
+/* ランク:ボタンの動きが おかしい(おすと ずれる)→ transform をつかわず、まんなかにおく */
+#screen-cover .home-rank { left: 0 !important; right: 0 !important; margin-left: auto !important; margin-right: auto !important; width: max-content; transform: none !important; }
+#screen-cover .home-rank:active { transform: translateY(2px) !important; box-shadow: 0 1px 0 var(--sk-brown2); }
+#screen-cover .home-rank:hover { transform: none !important; filter: none; }
+
+/* やった日の 毎日1問:もっと うすく */
+.mode-btn.is-done { filter: saturate(0.25) !important; opacity: 0.55; }
+
+/* 結果発表・クエストクリア:フロリを ちいさく・ゆらさない */
+#screen-result .flori-cover, #screen-result.is-celebrate .flori-cover { animation: none !important; transform: none !important; opacity: 1; }
+#screen-result .screen-head + .flori-cover, #screen-result > .flori-cover { height: clamp(72px, calc(14 * var(--dvh)), 130px) !important; width: auto !important; flex: none !important; }
+#screen-result[data-clear="1"] .screen-head + .flori-cover, #screen-result[data-clear="1"] > .flori-cover { flex: none !important; height: clamp(80px, calc(16 * var(--dvh)), 140px) !important; max-width: 60% !important; }
+
+/* ゲームオーバー:フロリを さらに ちいさく */
+#screen-gameover.gameover-screen { --go-h: clamp(72px, calc(15 * var(--dvh)), 140px); }
+#screen-gameover .go-flori { max-height: 200px; animation: none; }
+#screen-gameover .go-stage { flex: none; height: var(--go-h); }
+#screen-gameover .go-buttons { margin-top: auto; }
+
+/* RPGの敵のハート:残り1個は ピンチ(ドクドク・赤く光る・敵がふるえる)、2個以上は ふつう */
+.rpg-foe-hp[data-left="1"] .rpg-foe-heart:not(.is-off) { animation: sk-beat 0.7s ease-in-out infinite; filter: drop-shadow(0 0 6px #ff3b30) drop-shadow(0 2px 0 rgba(0, 0, 0, 0.35)); }
+.rpg-foe:has(.rpg-foe-hp[data-left="1"]) .foe-img { animation: sk-pinch 0.5s ease-in-out infinite; filter: drop-shadow(0 0 8px rgba(255, 60, 40, 0.9)); }
+@keyframes sk-beat { 50% { transform: scale(1.25); } }
+@keyframes sk-pinch { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-2px); } 75% { transform: translateX(2px); } }
+@media (prefers-reduced-motion: reduce) { .rpg-foe-hp[data-left="1"] .rpg-foe-heart, .rpg-foe:has(.rpg-foe-hp[data-left="1"]) .foe-img { animation: none; } }
+
+/* 設定画面:見やすく(うしろを むじ・文字を くっきり・大きく) */
+#screen-settings { background: #fff3cf !important; }
+#screen-settings .setting-box { background: #ffffff; border-color: var(--sk-brown); }
+#screen-settings .setting-box, #screen-settings .setting-box label { color: #3a2418; font-size: 16px; }
+#screen-settings .setting-box label:has(input[type="radio"]) { background: #fff6d8; }
+#screen-settings .setting-box label:has(input[type="radio"]:checked) { background: #f08a30; color: #fff; }
+#screen-settings .setting-box .volume label { font-weight: bold; }
+#screen-settings .note { color: #3a2418; font-weight: bold; }
+#screen-settings .title { -webkit-text-stroke: 0; color: #5a2a14; text-shadow: none; }
+@media (max-height: 700px) { #screen-settings .setting-box, #screen-settings .setting-box label { font-size: 14px; } }

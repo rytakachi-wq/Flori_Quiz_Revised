@@ -23,7 +23,7 @@ import {
   previousDateKey,
   shuffleChoices,
   totalScore,
-} from "./game.js?v=20261116h";
+} from "./game.js?v=20261116i";
 import {
   addStars,
   loadStats,
@@ -37,21 +37,21 @@ import {
   recordWrong,
   recordRpg,
   recordRound,
-} from "./storage.js?v=20261116h";
-import { illustrationFor } from "./illustrations.js?v=20261116h";
-import { createTalker } from "./talk.js?v=20261116h";
-import { initTutorial, openTutorial } from "./tutorial.js?v=20261116h";
-import { initRules, openRules as resetRules } from "./rules.js?v=20261116h";
-import { openCredits, closeCredits } from "./credits.js?v=20261116h";
-import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js?v=20261116h";
-import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js?v=20261116h";
-import { hopFlori, startFamilyVisits, startLiveFlori } from "./live-flori.js?v=20261116h";
-import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js?v=20261116h";
-import { getVolume, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js?v=20261116h";
-import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=20261116h";
+} from "./storage.js?v=20261116i";
+import { illustrationFor } from "./illustrations.js?v=20261116i";
+import { createTalker } from "./talk.js?v=20261116i";
+import { initTutorial, openTutorial } from "./tutorial.js?v=20261116i";
+import { initRules, openRules as resetRules } from "./rules.js?v=20261116i";
+import { openCredits, closeCredits } from "./credits.js?v=20261116i";
+import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js?v=20261116i";
+import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js?v=20261116i";
+import { hopFlori, startFamilyVisits, startLiveFlori } from "./live-flori.js?v=20261116i";
+import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js?v=20261116i";
+import { getVolume, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js?v=20261116i";
+import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=20261116i";
 
 
-const QUESTIONS_URL = "../data/questions/questions.json?v=20261116h"; // 問題を変えたら、この値と index.html の ?v= を変える
+const QUESTIONS_URL = "../data/questions/questions.json?v=20261116i"; // 問題を変えたら、この値と index.html の ?v= を変える
 const ONI_TAPS = 5; // 表紙のすみのフロリを、この回数押すと、オニ問題が出る
 const IMG = {
   think: "../assets/flori/m/book_pen.png",
@@ -2109,7 +2109,6 @@ async function showUnlock() {
     playWear();
     wear.textContent = "✔ 付けたよ!";
     wear.disabled = true;
-    playSe("correct");
   };
   $("btn-unlock-next").textContent = unlockIndex + 1 < unlockQueue.length ? "次へ" : "閉じる";
 }
@@ -2481,18 +2480,18 @@ function renderRpgHearts() {
 // stage:画面に出す敵のマス(答えた直後は、倒した敵を出したいので、答える前のマスを渡す)
 // 敵の絵:ものがたり(ムービー)の絵にそろえる
 const FOE_ART = {
-  ネズミ: { key: "mouse", src: "../assets/movie/mouse_run1.webp" },
-  カエル: { key: "frog", src: "../assets/movie/frog_crouch.webp" },
+  ネズミ: { key: "mouse", src: "../assets/movie/rule_mouse.webp" },
+  カエル: { key: "frog", src: "../assets/movie/rule_frog.webp" },
   宝箱: { key: "chest", src: "../assets/illust/gift.webp" },
-  サソリ: { key: "scorpion", src: "../assets/movie/scorpion_guard.webp" },
-  ドラゴン: { key: "dragon", src: "../assets/movie/dragon_1.webp" },
+  サソリ: { key: "scorpion", src: "../assets/movie/rule_scorpion.webp" },
+  ドラゴン: { key: "dragon", src: "../assets/movie/rule_dragon.webp" },
   オニ: { key: "dragon", src: "../assets/illust/oni.webp" },
 };
 function foeImage(stage) {
   const img = document.createElement("img");
   img.className = "foe-img";
   img.alt = stage.name;
-  img.src = FOE_ART[stage.name]?.src ?? "../assets/movie/mouse_run1.webp";
+  img.src = FOE_ART[stage.name]?.src ?? "../assets/movie/rule_mouse.webp";
   return img;
 }
 function renderRpgStatus(stage = play.current, foeHp = play.hp) {
@@ -2513,6 +2512,7 @@ function renderRpgStatus(stage = play.current, foeHp = play.hp) {
   { // 敵のハート:イラストの ハート(のこりは、うすい灰色)
     const heart = (off) => `<img class="rpg-foe-heart${off ? " is-off" : ""}" src="../assets/illust/heart.webp" alt="">`;
     const left = Math.max(0, foeHp);
+    $("rpg-foe-hp").dataset.left = String(left); // 残り1個のとき、ピンチの見た目(home-ui.css)
     $("rpg-foe-hp").innerHTML = stage.kind === "chest" ? "" : heart(false).repeat(left) + heart(true).repeat(Math.max(0, stage.hp - left));
   }
 }

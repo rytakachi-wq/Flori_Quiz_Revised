@@ -3,7 +3,7 @@
 //
 // BGMは、このゲームのために作ったオリジナルの曲を、ブラウザの中で演奏する(music.js)。曲のファイルはない。
 
-import { MusicPlayer, jingleSeconds } from "./music.js?v=20261116h";
+import { MusicPlayer, jingleSeconds } from "./music.js?v=20261116i";
 
 const BASE = "../assets/audio/";
 const SETTINGS_KEY = "floriQuiz.settings.v2";
@@ -276,9 +276,9 @@ function blip({ type = "sine", from, to = from, start = 0, length = 0.2, peak = 
 // ジャンプの音:ぴょーん(低い音から、ぐいっと上がって、ふわっと下がる。かるい「ぽよん」の はずみつき)
 export function playJump() {
   if (!ready()) return;
-  blip({ type: "triangle", from: 260, to: 980, length: 0.17, peak: 0.34 });
-  blip({ type: "sine", from: 980, to: 620, start: 0.15, length: 0.16, peak: 0.2 });
-  blip({ type: "sine", from: 1960, to: 2400, start: 0.05, length: 0.08, peak: 0.08 });
+  // 高い音が耳につくので、てっぺんを低めに(980 → 700 Hz)、きらきら(約2000 Hz)の層は なくした
+  blip({ type: "triangle", from: 220, to: 700, length: 0.17, peak: 0.34 });
+  blip({ type: "sine", from: 700, to: 440, start: 0.15, length: 0.16, peak: 0.2 });
 }
 
 // 新しい飾りを付けたときの音:きらっ(高い音が3つ、かけのぼる)

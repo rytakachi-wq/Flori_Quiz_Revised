@@ -38,3 +38,5 @@
 #screen-dress .dress-legend i { width: 14px; height: 14px; }
 /* 着せ替え:フロリが、横にゆれない(ホームのように、20秒たつと、はねてゆれる動きを、しない) */
 #screen-dress.is-lively .dress-hero { animation: none; }
+/* 一番上の★の説明「レジェンド」:光って見えるのをやめて、ほかと同じ ふつうの枠に(色だけ ピンク) */
+#screen-dress .dress-legend span.rare-3 { box-shadow: none; text-shadow: none; border-color: #d9488f; color: #c0397f; }
