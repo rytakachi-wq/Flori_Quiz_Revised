@@ -265,11 +265,24 @@ export function createShooter({ stage, canvas, onChange }) {
     for (const enemy of enemies) {
       const image = enemy.image;
       if (image.complete && image.naturalWidth) {
+        // 朝でも夜でも見えるように、クリーム色のふちどり(光)をつけて、2回かさねて描く
+        ctx.save();
+        ctx.shadowColor = "rgba(255, 246, 215, 0.98)";
+        ctx.shadowBlur = 9;
         ctx.drawImage(image, (enemy.drawX ?? enemy.x) - enemy.size / 2, enemy.y - enemy.size / 2, enemy.size, enemy.size);
+        ctx.shadowBlur = 3;
+        ctx.drawImage(image, (enemy.drawX ?? enemy.x) - enemy.size / 2, enemy.y - enemy.size / 2, enemy.size, enemy.size);
+        ctx.restore();
       }
     }
     for (const bullet of bullets) {
-      if (bulletImage.complete && bulletImage.naturalWidth) ctx.drawImage(bulletImage, bullet.x - 9, bullet.y - 9, 18, 18);
+      if (bulletImage.complete && bulletImage.naturalWidth) {
+        ctx.save();
+        ctx.shadowColor = "rgba(255, 190, 40, 0.95)";
+        ctx.shadowBlur = 8;
+        ctx.drawImage(bulletImage, bullet.x - 10, bullet.y - 10, 20, 20);
+        ctx.restore();
+      }
     }
     for (const spark of sparks) {
       ctx.globalAlpha = Math.max(0, spark.life / 0.45);

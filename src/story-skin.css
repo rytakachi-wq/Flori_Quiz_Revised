@@ -334,7 +334,7 @@ body.has-pager { padding-bottom: 0 !important; }
 #screen-credits .credits-msg { color: #4a3428; background: #fff3cf; border: 3px solid #5a3a2a; text-shadow: none; }
 /* 背景:朝 → 夕やけ → 夜 へ、なめらかに(朝の絵と夜の絵を まぜ、まんなかで 夕やけの色を重ねる) */
 #screen-credits .credits-stage::before { opacity: calc(var(--dusk, 0) * var(--dusk, 0) * (3 - 2 * var(--dusk, 0))); }
-#screen-credits .credits-stage::after { content: ""; position: absolute; inset: 0; z-index: 0; background: linear-gradient(180deg, rgba(255, 150, 80, 0.15) 0%, rgba(255, 110, 80, 0.6) 55%, rgba(150, 60, 120, 0.7) 100%); opacity: calc(var(--mid, 0) * 0.85); pointer-events: none; }
+#screen-credits .credits-stage::after { content: ""; position: absolute; inset: 0; z-index: 0; background: linear-gradient(180deg, rgba(255, 205, 140, 0.1) 0%, rgba(255, 190, 120, 0.4) 55%, rgba(110, 100, 170, 0.5) 100%); opacity: calc(var(--mid, 0) * 0.6); pointer-events: none; }
 /* ゲーム中:ハートを大きく */
 #screen-credits .credits-hud { align-items: flex-start; }
 #screen-credits #credits-hearts { font-size: 34px; line-height: 1; letter-spacing: 2px; filter: drop-shadow(0 2px 0 rgba(58, 36, 24, 0.8)); }
