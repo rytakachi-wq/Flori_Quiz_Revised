@@ -1411,7 +1411,7 @@ $("btn-credits").addEventListener("click", showCredits);
 // プロローグは、はじめて開いたとき、だれにでも見せる。①〜⑤は、総合得点が 20・40・60・80・100点になったあと、つぎにゲームを始める前に、1回だけ見せる。
 // 「その他」の「ものがたり」では、見られるようになったものを、いつでも見られる。
 const MOVIE_SEEN_KEY = "floriQuiz.movieSeen";
-const MOVIE_VER = "20261116a";
+const MOVIE_VER = "20261116h";
 const MOVIE_INFO = [
   { id: "pro", need: 0 },
   { id: "ep1", need: 20 },
