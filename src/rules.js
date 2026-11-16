@@ -69,7 +69,7 @@ const RPG = [
   {
     title: "① ドラゴンのお城へ",
     caption: "ボクはお城のドラゴンに会いに行くヨ! 5つのマスを進んで、ボスを倒そう!",
-    html: SCENE("smile", SEQ([[IC("movie/mouse_run1.webp"), "ネズミ"], [IC("movie/frog_jump_mid.webp"), "カエル"], [IC("illust/gift.webp"), "宝箱"], [IC("movie/scorpion_angry.webp"), "サソリ"], [IC("movie/dragon_1.webp"), "ボス"]], "rf-tight")),
+    html: SCENE("smile", SEQ([[IC("movie/rule_mouse.webp"), "ネズミ"], [IC("movie/rule_frog.webp"), "カエル"], [IC("illust/gift.webp"), "宝箱"], [IC("movie/rule_scorpion.webp"), "サソリ"], [IC("movie/rule_dragon.webp"), "ボス"]], "rf-tight")),
   },
   {
     title: "② ハートは 4つ",
@@ -89,7 +89,7 @@ const RPG = [
   {
     title: "⑤ 宝箱とボス",
     caption: "宝箱は正解でハートが 1つ回復! ボスは 2回正解すると倒せるヨ。",
-    html: SCENE("smile", SEQ([[IC("illust/gift.webp"), "回復"], [IC("movie/dragon_1.webp"), "2回で倒す"]])),
+    html: SCENE("smile", SEQ([[IC("illust/gift.webp"), "回復"], [IC("movie/rule_dragon.webp"), "2回で倒す"]])),
   },
   {
     title: "⑥ 間違いノート",
@@ -99,7 +99,7 @@ const RPG = [
   {
     title: "⑦ クリアを めざせ",
     caption: "ハートがなくなる前にドラゴンを倒せたら、クエストクリアだヨ!",
-    html: SCENE("smile", SEQ([[IC("movie/dragon_1.webp"), "ボス"], [IC("illust/trophy.webp"), "クリア"]])),
+    html: SCENE("smile", SEQ([[IC("movie/rule_dragon.webp"), "ボス"], [IC("illust/trophy.webp"), "クリア"]])),
   },
 ];
 
@@ -137,7 +137,7 @@ const KINDS = {
   review: { theme: "review", tag: `${IC("illust/notebook.webp")} 復習`, scenes: () => REVIEW },
   normal: { theme: "solo", tag: "🌱 1人で普通", scenes: () => [...COMMON, ...SOLO] },
   hard: { theme: "hard", tag: "🔥 1人で難しい", scenes: () => [...COMMON, SOLO[0], ...HARD] },
-  rpg: { theme: "rpg", tag: `${IC("movie/dragon_1.webp")} RPGクエスト`, scenes: () => RPG },
+  rpg: { theme: "rpg", tag: `${IC("movie/rule_dragon.webp")} RPGクエスト`, scenes: () => RPG },
 };
 let kind = "normal";
 let SCENES = [];

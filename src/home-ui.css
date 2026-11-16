@@ -297,3 +297,27 @@
   #screen-settings .setting-box legend::before { width: 16px; height: 16px; }
   #screen-settings .setting-box label:has(input[type="radio"]) { padding: 0 8px; margin: 1px 3px 1px 0; }
 }
+
+/* ルール説明の 敵:はみ出さない(よこ一列・はばに あわせる) */
+.rf-scene .rf-seq.rf-tight { flex-wrap: nowrap; width: 100%; align-items: flex-end; gap: 2px; }
+.rf-scene .rf-seq.rf-tight .rf-seq-item { flex: 1 1 0; min-width: 0; }
+.rf-scene .rf-seq.rf-tight .rf-seq-item b { width: 100%; font-size: inherit; }
+.rf-scene .rf-seq.rf-tight .rf-ico { width: 100%; height: auto; max-height: 56px; object-fit: contain; }
+.rf-scene .rf-seq.rf-tight small { font-size: 10px; }
+.rf-scene:has(.rf-tight) .rf-fl { width: 24%; }
+.rf-scene:has(.rf-tight) .rf-fl { width: 20%; }
+.rf-scene .rf-seq.rf-tight .rf-ico { max-height: 64px; }
+
+/* 設定ボタン(ホーム):オレンジ */
+#screen-cover .home-top .cover-gear { background: linear-gradient(180deg, #ffd25a, #f08a30); border: 3px solid var(--sk-brown); box-shadow: 0 3px 0 var(--sk-brown2); color: #fff; text-shadow: 0 1px 0 #8a4a10; }
+
+/* ゲームオーバー:フロリを ちょっと 小さく */
+#screen-gameover.gameover-screen { --go-h: clamp(96px, calc(21 * var(--dvh)), 200px); }
+#screen-gameover .go-flori { max-height: 300px; }
+
+/* 設定画面:色を へらす(茶色と クリーム色・オレンジの3色に) */
+#screen-settings .setting-box { background: #fff6d8; }
+#screen-settings .setting-box legend { background: var(--sk-brown); }
+#screen-settings { background: linear-gradient(180deg, #fff3cf, #f4d8a0) !important; }
+#screen-settings .volume output { color: var(--sk-brown); }
+#screen-settings .setting-box label:has(input[type="radio"]:checked) { background: #f08a30; }
