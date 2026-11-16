@@ -3,14 +3,14 @@
 // ・見切れない:大きさは、画面の たて・よこの小さいほうに合わせる(--u)。カメラ(ズーム・パン)で、寄り・引きをつくる。
 // ・動きは場面に合わせる:かなしい場面は腕を動かさない(noArms)。ぴょん・ぶるぶるは、ここぞというときだけ。歩くときは、上下にゆれる。
 // ・単調にならない:広い絵・寄りの絵・切りかえ(暗転)・走る/追う/はねる 動き・ふきだしの順番。
-import { loadModel, draw } from './live2d.js?v=20261116n';
-import { createMotion } from './flori-motion.js?v=20261116n';
-import { recolorCanvas } from '../flori-color.js?v=20261116n';
-import { HEADS } from '../badges.js?v=20261116n';
-import { startFurigana } from '../furigana.js?v=20261116n';
-import { MOVIES } from './storyboard.js?v=20261116n';
-import { playStoryBgm } from './story-bgm.js?v=20261116n';
-import { sfx, preloadSfx, SCENE_SFX, MARK_SFX } from './story-sfx.js?v=20261116n';
+import { loadModel, draw } from './live2d.js?v=20261116o';
+import { createMotion } from './flori-motion.js?v=20261116o';
+import { recolorCanvas } from '../flori-color.js?v=20261116o';
+import { HEADS } from '../badges.js?v=20261116o';
+import { startFurigana } from '../furigana.js?v=20261116o';
+import { MOVIES } from './storyboard.js?v=20261116o';
+import { playStoryBgm } from './story-bgm.js?v=20261116o';
+import { sfx, preloadSfx, SCENE_SFX, MARK_SFX } from './story-sfx.js?v=20261116o';
 
 startFurigana();
 

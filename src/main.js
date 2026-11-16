@@ -23,7 +23,7 @@ import {
   previousDateKey,
   shuffleChoices,
   totalScore,
-} from "./game.js?v=20261116n";
+} from "./game.js?v=20261116o";
 import {
   addStars,
   loadStats,
@@ -37,21 +37,21 @@ import {
   recordWrong,
   recordRpg,
   recordRound,
-} from "./storage.js?v=20261116n";
-import { illustrationFor } from "./illustrations.js?v=20261116n";
-import { createTalker } from "./talk.js?v=20261116n";
-import { initTutorial, openTutorial } from "./tutorial.js?v=20261116n";
-import { initRules, openRules as resetRules } from "./rules.js?v=20261116n";
-import { openCredits, closeCredits } from "./credits.js?v=20261116n";
-import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js?v=20261116n";
-import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js?v=20261116n";
-import { hopFlori, startFamilyVisits, startLiveFlori } from "./live-flori.js?v=20261116n";
-import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js?v=20261116n";
-import { getVolume, holdBgm, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js?v=20261116n";
-import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=20261116n";
+} from "./storage.js?v=20261116o";
+import { illustrationFor } from "./illustrations.js?v=20261116o";
+import { createTalker } from "./talk.js?v=20261116o";
+import { initTutorial, openTutorial } from "./tutorial.js?v=20261116o";
+import { initRules, openRules as resetRules } from "./rules.js?v=20261116o";
+import { openCredits, closeCredits } from "./credits.js?v=20261116o";
+import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js?v=20261116o";
+import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js?v=20261116o";
+import { hopFlori, startFamilyVisits, startLiveFlori } from "./live-flori.js?v=20261116o";
+import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js?v=20261116o";
+import { getVolume, holdBgm, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js?v=20261116o";
+import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=20261116o";
 
 
-const QUESTIONS_URL = "../data/questions/questions.json?v=20261116n"; // 問題を変えたら、この値と index.html の ?v= を変える
+const QUESTIONS_URL = "../data/questions/questions.json?v=20261116o"; // 問題を変えたら、この値と index.html の ?v= を変える
 const ONI_TAPS = 5; // 表紙のすみのフロリを、この回数押すと、オニ問題が出る
 const IMG = {
   think: "../assets/flori/m/book_pen.png",
@@ -99,11 +99,20 @@ let hinted = false; // 今の問題で、ヒントを見たか
 
 // 画面ごとのBGMの場面(audio.js の BGM と対応)
 // RPGの曲:ボス戦・宝箱は、それぞれ専用の曲
-// stage = { kind, name }。ネズミ・カエル・サソリは、それぞれ専用の曲。ほかは、ふつうのRPGの曲
-const RPG_FOE_SCENE = { ネズミ: "rpgmouse", カエル: "rpgfrog", サソリ: "rpgscorpion" };
+// stage = { kind, name }。ボス戦・宝箱は専用の曲。ふつうの敵のときは、RPGを始めるたびに、4曲(quest・questforest・questswamp・questdesert)から、ランダムに1曲えらぶ(その回は、ずっと同じ曲)
+const RPG_NORMAL_SCENES = ["rpg", "rpgmouse", "rpgfrog", "rpgscorpion"];
+let rpgPickFor = null;
+let rpgPick = "rpg";
+function rpgNormalScene() {
+  if (rpgPickFor !== play) {
+    rpgPickFor = play; // あたらしい回(play が新しくなった)
+    rpgPick = RPG_NORMAL_SCENES[Math.floor(Math.random() * RPG_NORMAL_SCENES.length)];
+  }
+  return rpgPick;
+}
 function rpgScene(stage) {
   const kind = stage?.kind;
-  return kind === "boss" ? "rpgboss" : kind === "chest" ? "rpgchest" : (RPG_FOE_SCENE[stage?.name] ?? "rpg");
+  return kind === "boss" ? "rpgboss" : kind === "chest" ? "rpgchest" : rpgNormalScene();
 }
 function sceneOf(name) {
   if (!$("opening").hidden) return "opening"; // オープニングの間は、オープニングの曲
@@ -1415,7 +1424,7 @@ $("btn-credits").addEventListener("click", showCredits);
 // プロローグは、はじめて開いたとき、だれにでも見せる。①〜⑤は、総合得点が 20・40・60・80・100点になったあと、つぎにゲームを始める前に、1回だけ見せる。
 // 「その他」の「ものがたり」では、見られるようになったものを、いつでも見られる。
 const MOVIE_SEEN_KEY = "floriQuiz.movieSeen";
-const MOVIE_VER = "20261116n";
+const MOVIE_VER = "20261116o";
 const MOVIE_INFO = [
   { id: "pro", need: 0 },
   { id: "ep1", need: 20 },
