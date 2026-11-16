@@ -111,6 +111,7 @@ let loading = null;
 let base = null; // 大きい絵を、段階的に半分ずつ縮めた絵(Map)。一気に縮めると、細い線が欠けて、輪郭が細く見えるため
 let tint = null; // 色をつけた絵 { id, imgs: Map(ファイル → canvas) }
 let tintJob = 0;
+const tintCache = new Map(); // 色の id → 色をつけた絵(さいきん使った4色)
 
 const originalSrc = (img) => img.dataset.orig ?? img.getAttribute("src") ?? "";
 const eligible = (img) => POSE.test(originalSrc(img)) && !img.closest(EXCLUDE);
@@ -147,19 +148,28 @@ async function retint() {
     tint = null;
     return;
   }
+  const cached = tintCache.get(color.id);
+  if (cached) { // いちど つくった色は、おぼえておく(もういちど選んだら、すぐ)
+    tintCache.delete(color.id);
+    tintCache.set(color.id, cached);
+    tint = cached;
+    return;
+  }
   const imgs = new Map();
   for (const mesh of model.meshes) {
     if (!TINT_PARTS.test(mesh.name) || imgs.has(mesh.img)) continue;
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    if (job !== tintJob) return;
     const small = base?.get(mesh.img) ?? model.imgs.get(mesh.img);
     const shrunk = small !== model.imgs.get(mesh.img); // 縮めてある絵は、そのまま(もう TINT_SCALE ぶん縮んでいる)
     imgs.set(mesh.img, recolorCanvas(small, color, shrunk ? 1 : TINT_SCALE, mesh.name === "顔" ? 0.87 : 0)); // 頭は、バイザーの下の影・ふちの混ざった色(明るさ 0.87 より暗い部分)に、色をつけない
   }
-  if (job === tintJob) tint = { id: color.id, imgs };
+  if (job === tintJob) {
+    tint = { id: color.id, imgs };
+    tintCache.set(color.id, tint);
+    if (tintCache.size > 4) tintCache.delete(tintCache.keys().next().value); // おぼえるのは、4色まで(メモリのため)
+  }
 }
 document.addEventListener("flori-color", () => {
-  tint = null;
+  // 色が変わったら、すぐ(同じ処理のなかで)新しい色をつける。できあがるまで、前の色のまま(もとの色が、一瞬 見えないように)
   retint();
 });
 
@@ -235,10 +245,11 @@ function configure(img, item) {
   const src = originalSrc(img);
   const mood = MOOD[(/(wave_\w+)\.png$/.exec(src) ?? [])[1]] ?? null;
   const noArms = false; // 着せ替え画面でも、腕を動かす(利用者の指示)
-  const key = `${mood}|${noArms}`;
+  const noTilt = Boolean(img.closest("#screen-dress")); // 着せ替え画面は、首をかしげない(横にゆれて見えるため。利用者の指示)
+  const key = `${mood}|${noArms}|${noTilt}`;
   if (item.key === key) return;
   item.key = key;
-  item.motion = createMotion(model, { mood, noArms, onEvent: (kind) => moveSound(item, kind) });
+  item.motion = createMotion(model, { mood, noArms, noTilt, onEvent: (kind) => moveSound(item, kind) });
 }
 
 let last = 0;

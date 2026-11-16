@@ -192,7 +192,10 @@ function paintBody(ctx, width, height, color, keepBelow = 0) {
   const mask = new Uint8Array(total);
   for (let i = 0; i < total; i += 1) {
     if (px[i * 4 + 3] < 128) continue;
-    const [h, s, l] = rgbToHsl(px[i * 4] / 255, px[i * 4 + 1] / 255, px[i * 4 + 2] / 255);
+    // 先に、かんたんな見分け(体の色は、青がいちばん強く、明るい)で、ちがう画素を すぐ とばす(速くするため。結果は同じ)
+    const pr = px[i * 4], pg = px[i * 4 + 1], pb = px[i * 4 + 2];
+    if (pb < pr || pb < pg || Math.max(pr, pg, pb) + Math.min(pr, pg, pb) < 280) continue;
+    const [h, s, l] = rgbToHsl(pr / 255, pg / 255, pb / 255);
     if (isBody(h, s, l)) mask[i] = 1;
   }
   const label = new Int32Array(total);
@@ -212,12 +215,11 @@ function paintBody(ctx, width, height, color, keepBelow = 0) {
       const x = i % width;
       part.minX = Math.min(part.minX, x);
       part.minY = Math.min(part.minY, Math.floor(i / width));
-      for (const j of [x > 0 ? i - 1 : -1, x < width - 1 ? i + 1 : -1, i - width, i + width]) {
-        if (j >= 0 && j < total && mask[j] && !label[j]) {
-          label[j] = id;
-          stack[top++] = j;
-        }
-      }
+      // (となり4つ。配列を作らずに、順に見る。速くするため)
+      if (x > 0 && mask[i - 1] && !label[i - 1]) { label[i - 1] = id; stack[top++] = i - 1; }
+      if (x < width - 1 && mask[i + 1] && !label[i + 1]) { label[i + 1] = id; stack[top++] = i + 1; }
+      if (i >= width && mask[i - width] && !label[i - width]) { label[i - width] = id; stack[top++] = i - width; }
+      if (i + width < total && mask[i + width] && !label[i + width]) { label[i + width] = id; stack[top++] = i + width; }
     }
     parts.push(part);
   }
@@ -339,6 +341,7 @@ function paint(img, original) {
 // 色をかえる(null でもとの色)
 export function setFloriColor(color) {
   current = color && !color.original ? color : null;
+  later.length = 0;
   for (const img of document.querySelectorAll(SELECTOR)) {
     const original = img.dataset.orig ?? img.getAttribute("src");
     if (!original || isData(original)) continue;
@@ -347,10 +350,22 @@ export function setFloriColor(color) {
         img.src = img.dataset.orig;
         delete img.dataset.orig;
       }
-    } else paint(img, original);
+    } else if (img.offsetParent !== null && img.style.visibility !== "hidden") paint(img, original); // いま見えている絵は、すぐ
+    else later.push([img, original]); // 見えていない絵(ほかの画面・動くフロリの下)は、あとで ひとつずつ(いっぺんにやると、画面が固まって、色が変わるのが おそくなる)
   }
-  warm();
-  document.dispatchEvent(new CustomEvent("flori-color", { detail: current })); // 動くフロリ(live-flori.js)に知らせる
+  document.dispatchEvent(new CustomEvent("flori-color", { detail: current })); // 動くフロリ(live-flori.js)に、先に知らせる
+  clearTimeout(laterTimer);
+  laterTimer = setTimeout(drainLater, 120);
+}
+const later = [];
+let laterTimer = 0;
+function drainLater() {
+  const item = later.shift();
+  if (item) {
+    const [img, original] = item;
+    if (img.isConnected && current && (img.dataset.orig ?? img.getAttribute("src")) === original) paint(img, original);
+    laterTimer = setTimeout(drainLater, 60);
+  } else warm();
 }
 
 export const getFloriColor = () => current;

@@ -3101,8 +3101,11 @@ function renderDress() {
         }
         dress = { ...dress, [kind]: choice.id };
         saveDress(dress);
-        applyDress();
-        renderDress();
+        renderDress(); // 選んだしるしは、すぐ出す
+        if (kind === "color") {
+          // 色づけは、重いので、しるしを画面に出してから(次のコマで)かける
+          requestAnimationFrame(() => setTimeout(() => { if (dress.color === choice.id) applyDress(); }, 0));
+        } else applyDress();
         if ((kind === "head" || kind === "body" || kind === "face") && choice.id !== "none") playWear(); // 飾りを付けたときの音
         else playSe("button");
         if (choice.unlock !== undefined && choice.id !== "none") flowName(choice.name, choice.tint);
