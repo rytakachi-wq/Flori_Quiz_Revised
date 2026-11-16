@@ -328,6 +328,8 @@ function fieldReport(stats) {
   return { rows, weak: weakRows[0] ?? null };
 }
 const genreShort = (name) => name.replace(/（.*?）/, ""); // 「算数（ふつう）」→「算数」
+const cardName = (q) => genreShort(genreOf(q)); // 図鑑の札の名前(算数・数学・理科・科学…)
+const cardIcon = (q) => GENRE_ICON[genreOf(q)] ?? "❓";
 let play; // いま遊んでいるもの(session・hardSession・オニ問題など)
 let current = null; // 今出している問題
 let answered = false;
@@ -1409,7 +1411,7 @@ $("btn-credits").addEventListener("click", showCredits);
 // プロローグは、はじめて開いたとき、だれにでも見せる。①〜⑤は、総合得点が 20・40・60・80・100点になったあと、つぎにゲームを始める前に、1回だけ見せる。
 // 「その他」の「ものがたり」では、見られるようになったものを、いつでも見られる。
 const MOVIE_SEEN_KEY = "floriQuiz.movieSeen";
-const MOVIE_VER = "20261114d";
+const MOVIE_VER = "20261114e";
 const MOVIE_INFO = [
   { id: "pro", need: 0 },
   { id: "ep1", need: 20 },
@@ -2143,7 +2145,7 @@ function openDexCard(question, label, owned) {
   big.className = `dex-big lv${question.level}${fieldClass(question)}`;
   const head = document.createElement("div");
   head.className = "dex-big-head";
-  head.textContent = `${CATEGORY_ICON[question.category] ?? "❓"} ${label}  ${question.category}  ${RARITY[question.level] ?? ""}`;
+  head.textContent = `${cardIcon(question)} ${label}  ${cardName(question)}  ${RARITY[question.level] ?? ""}`;
   const text = document.createElement("p");
   text.className = "dex-q";
   const body = question.text.replace(/。(?=[^\n」)])/g, "。\n"); // 文の終わりで改行(文の途中で切れて読みにくくならないように)
@@ -2203,10 +2205,10 @@ function showDex() {
     rarity.textContent = owned ? RARITY[question.level] : "";
     const icon = document.createElement("span");
     icon.className = "dex-icon";
-    icon.textContent = owned ? (CATEGORY_ICON[question.category] ?? "❓") : "？";
+    icon.textContent = owned ? cardIcon(question) : "？";
     const cat = document.createElement("span");
     cat.className = "dex-cat";
-    cat.textContent = owned ? question.category : "???";
+    cat.textContent = owned ? cardName(question) : "???";
     button.append(no, rarity, icon, cat);
     if (owned && !viewed.has(uid)) {
       const fresh = document.createElement("span");
@@ -2307,7 +2309,7 @@ function openNoteCard(question) {
   big.className = `dex-big lv${question.level}${fieldClass(question)}`;
   const head = document.createElement("div");
   head.className = "dex-big-head";
-  head.textContent = `${CATEGORY_ICON[question.category] ?? "❓"} ${question.category}  ${RARITY[question.level] ?? ""}`;
+  head.textContent = `${cardIcon(question)} ${cardName(question)}  ${RARITY[question.level] ?? ""}`;
   const text = document.createElement("p");
   text.className = "dex-q";
   text.textContent = question.text.replace(/。(?=[^\n」)])/g, "。\n");
@@ -2357,10 +2359,10 @@ function showNote() {
       rarity.textContent = RARITY[question.level];
       const icon = document.createElement("span");
       icon.className = "dex-icon";
-      icon.textContent = CATEGORY_ICON[question.category] ?? "❓";
+      icon.textContent = cardIcon(question);
       const cat = document.createElement("span");
       cat.className = "dex-cat";
-      cat.textContent = question.category;
+      cat.textContent = cardName(question);
       button.append(no, rarity, icon, cat);
       button.addEventListener("click", () => {
         // カードを めくる動き(めくってから、問題を開く)

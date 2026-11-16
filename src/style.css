@@ -3800,3 +3800,15 @@ html[data-pattern] :is(#screen-menu, #screen-note, #screen-credits, #screen-dex,
 #screen-dex .dex-rarity, #screen-note .dex-rarity { top: 9px; right: 6px; font-size: 10.5px; letter-spacing: -0.12em; }
 /* RPGの問題の枠:広い画面で、中身の幅にちぢまないように(選択肢が細くなる) */
 .rpg-screen > .rpg-window { width: 100%; }
+/* 図鑑の星の絵の枠を、ほんの少し太く */
+.dex-rarity .emi { filter: drop-shadow(0 0 0.5px #8a5a00) drop-shadow(0 0 0.5px #8a5a00); }
+/* ランクの一覧の画面を、大きく */
+.ranks-dialog { width: min(560px, calc(96 * var(--vw))); padding: 18px 16px; }
+.ranks-title { font-size: 26px; }
+.ranks-howto { font-size: 16px; line-height: 1.6; }
+.ranks-list { gap: 6px 8px; }
+.ranks-list li { padding: 4px 10px; font-size: 16px; line-height: 1.35; }
+.ranks-list .rk-icon { font-size: 28px; }
+.ranks-list .rk-name { font-size: 16px; letter-spacing: 0; }
+.ranks-list .rk-min { font-size: 14px; }
+@media (max-height: 700px) { .ranks-dialog { padding: 10px 12px; } .ranks-title { font-size: 20px; } .ranks-howto { font-size: 13px; line-height: 1.4; } .ranks-list { gap: 3px 6px; } .ranks-list li { padding: 2px 8px; font-size: 14px; line-height: 1.2; } .ranks-list .rk-icon { font-size: 22px; } .ranks-list .rk-name { font-size: 14px; } .ranks-list .rk-min { font-size: 12.5px; } }
