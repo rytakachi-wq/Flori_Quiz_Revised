@@ -288,7 +288,7 @@
 #screen-settings .volume output { color: #c04a1c; font-weight: bold; }
 /* フロリ:ぴょこぴょこ */
 #screen-settings .settings-flori { animation: sk-bob 2.4s ease-in-out infinite; transform-origin: 50% 100%; filter: drop-shadow(0 4px 0 rgba(90, 42, 16, 0.25)); }
-@keyframes sk-bob { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-8px) rotate(2deg); } }
+@keyframes sk-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 @media (prefers-reduced-motion: reduce) { #screen-settings .settings-flori { animation: none; } }
 #screen-settings .setting-box .size-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
 #screen-settings .size-row label:has(input[type="radio"]) { margin: 0; padding: 2px 2px; font-size: 13px; text-align: center; white-space: nowrap; }
