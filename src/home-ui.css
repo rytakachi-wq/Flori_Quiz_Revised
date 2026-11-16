@@ -367,9 +367,16 @@
 .rf-scene .rf-seq-item b { height: 52px; }
 .rf-scene .rf-seq-item small { margin-top: 2px; }
 /* ルール説明の絵:全場面 おなじ大きさ(--ri)。5体の場面に合わせて 44px、せまい画面は 34px */
-.rf-scene { --ri: 44px; }
-@media (max-width: 360px) { .rf-scene { --ri: 34px; } }
+.rf-scene { --ri: 40px; }
+@media (max-width: 360px) { .rf-scene { --ri: 30px; } }
 .rf-scene .rf-seq .rf-ico, .rf-scene .rf-seq.rf-tight .rf-ico { width: var(--ri) !important; height: var(--ri) !important; max-width: none !important; aspect-ratio: auto; object-fit: contain; }
 .rf-scene .rf-seq-item b { height: var(--ri); }
 .rf-scene .rf-seq.rf-tight .rf-seq-item { flex: 0 0 auto; }
 .rf-scene .rf-seq.rf-tight { justify-content: center; gap: 4px; }
+.rf-scene:has(.rf-tight) .rf-fl { width: 18%; }
+.rf-scene .rf-seq.rf-tight { gap: 2px; }
+.rf-scene .rf-seq.rf-tight { flex-wrap: wrap !important; row-gap: 4px; column-gap: 6px; align-content: center; }
+.rf-scene .rf-seq.rf-tight .rf-seq-item { width: 58px; flex: 0 0 58px; }
+.rf-scene:has(.rf-tight) .rf-fl { width: 26%; }
+.rf-scene .rf-side { overflow: visible; }
+@media (max-height: 620px) { .rf-scene .rf-seq.rf-tight { zoom: 0.8; } }
