@@ -278,9 +278,13 @@ export function createShooter({ stage, canvas, onChange }) {
     for (const bullet of bullets) {
       if (bulletImage.complete && bulletImage.naturalWidth) {
         ctx.save();
-        ctx.shadowColor = "rgba(255, 190, 40, 0.95)";
-        ctx.shadowBlur = 8;
-        ctx.drawImage(bulletImage, bullet.x - 10, bullet.y - 10, 20, 20);
+        // 朝の明るい空でも、夜の暗い空でも見えるように、こい茶色のふちどり+金色の光で、大きめに描く
+        ctx.shadowColor = "rgba(110, 55, 10, 0.95)";
+        ctx.shadowBlur = 4;
+        for (let i = 0; i < 3; i++) ctx.drawImage(bulletImage, bullet.x - 15, bullet.y - 15, 30, 30);   // 3回かさねて、ふちどりを こく
+        ctx.shadowColor = "rgba(255, 200, 60, 0.9)";
+        ctx.shadowBlur = 10;
+        ctx.drawImage(bulletImage, bullet.x - 15, bullet.y - 15, 30, 30);
         ctx.restore();
       }
     }
