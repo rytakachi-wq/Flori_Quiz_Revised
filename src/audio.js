@@ -3,7 +3,7 @@
 //
 // BGMは、このゲームのために作ったオリジナルの曲を、ブラウザの中で演奏する(music.js)。曲のファイルはない。
 
-import { MusicPlayer, jingleSeconds } from "./music.js?v=20261116i";
+import { MusicPlayer, jingleSeconds } from "./music.js?v=20261116j";
 
 const BASE = "../assets/audio/";
 const SETTINGS_KEY = "floriQuiz.settings.v2";
@@ -20,7 +20,8 @@ const BGM = {
   rpg: "quest",
   rpgboss: "questboss", // RPGの、ボス戦
   rpgchest: "chest", // RPGの、宝箱
-  daily: "daily", // 毎日1問
+  daily: "daily2", // 毎日1問(新しい曲。前の曲 daily は残してある)
+  dress: "dressup", // 着せ替え
   opening: "openwait", // オープニング(画面をさわる前。ブラウザの決まりで、1回さわるまで、音は出ない)
   gameover: "gameover", // ゲームオーバー
   result: "result",
@@ -109,6 +110,18 @@ function applyBgm() {
   if (!music) return;
   music.setVolume(curve(volumes.bgm)); // 0のときも止めずに、音量だけを0にする
   music.play(holding ? null : (BGM[scene] ?? null));
+}
+
+// BGMを、ms ミリ秒だけ止める(ゲームオーバーの効果音が鳴りおわってから、BGMを流すため)。そのあいだに場面が変わっても、あとで、いまの場面の曲になる
+let holdTimer = 0;
+export function holdBgm(ms) {
+  holding = true;
+  applyBgm();
+  clearTimeout(holdTimer);
+  holdTimer = setTimeout(() => {
+    holding = false;
+    applyBgm();
+  }, ms);
 }
 
 // 短い曲(オープニング、スタート、結果発表の前)を鳴らす。鳴り終わるまで、BGMは止める。長さ(ミリ秒)を返す。

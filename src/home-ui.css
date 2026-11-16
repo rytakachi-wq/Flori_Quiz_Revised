@@ -359,3 +359,17 @@
 #screen-settings .note { color: #3a2418; font-weight: bold; }
 #screen-settings .title { -webkit-text-stroke: 0; color: #5a2a14; text-shadow: none; }
 @media (max-height: 700px) { #screen-settings .setting-box, #screen-settings .setting-box label { font-size: 14px; } }
+
+/* ルール説明の絵:どれも おなじ大きさ(正方形)・はみ出さない */
+.rf-scene .rf-seq .rf-ico, .rf-scene .rf-seq.rf-tight .rf-ico { width: 52px; height: 52px; max-height: none; max-width: 100%; object-fit: contain; }
+.rf-scene .rf-seq.rf-tight .rf-seq-item b { width: 100%; display: grid; justify-items: center; }
+.rf-scene .rf-seq.rf-tight .rf-ico { width: 100%; max-width: 52px; height: auto; aspect-ratio: 1 / 1; }
+.rf-scene .rf-seq-item b { height: 52px; }
+.rf-scene .rf-seq-item small { margin-top: 2px; }
+/* ルール説明の絵:全場面 おなじ大きさ(--ri)。5体の場面に合わせて 44px、せまい画面は 34px */
+.rf-scene { --ri: 44px; }
+@media (max-width: 360px) { .rf-scene { --ri: 34px; } }
+.rf-scene .rf-seq .rf-ico, .rf-scene .rf-seq.rf-tight .rf-ico { width: var(--ri) !important; height: var(--ri) !important; max-width: none !important; aspect-ratio: auto; object-fit: contain; }
+.rf-scene .rf-seq-item b { height: var(--ri); }
+.rf-scene .rf-seq.rf-tight .rf-seq-item { flex: 0 0 auto; }
+.rf-scene .rf-seq.rf-tight { justify-content: center; gap: 4px; }

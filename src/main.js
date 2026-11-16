@@ -23,7 +23,7 @@ import {
   previousDateKey,
   shuffleChoices,
   totalScore,
-} from "./game.js?v=20261116i";
+} from "./game.js?v=20261116j";
 import {
   addStars,
   loadStats,
@@ -37,21 +37,21 @@ import {
   recordWrong,
   recordRpg,
   recordRound,
-} from "./storage.js?v=20261116i";
-import { illustrationFor } from "./illustrations.js?v=20261116i";
-import { createTalker } from "./talk.js?v=20261116i";
-import { initTutorial, openTutorial } from "./tutorial.js?v=20261116i";
-import { initRules, openRules as resetRules } from "./rules.js?v=20261116i";
-import { openCredits, closeCredits } from "./credits.js?v=20261116i";
-import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js?v=20261116i";
-import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js?v=20261116i";
-import { hopFlori, startFamilyVisits, startLiveFlori } from "./live-flori.js?v=20261116i";
-import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js?v=20261116i";
-import { getVolume, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js?v=20261116i";
-import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=20261116i";
+} from "./storage.js?v=20261116j";
+import { illustrationFor } from "./illustrations.js?v=20261116j";
+import { createTalker } from "./talk.js?v=20261116j";
+import { initTutorial, openTutorial } from "./tutorial.js?v=20261116j";
+import { initRules, openRules as resetRules } from "./rules.js?v=20261116j";
+import { openCredits, closeCredits } from "./credits.js?v=20261116j";
+import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js?v=20261116j";
+import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js?v=20261116j";
+import { hopFlori, startFamilyVisits, startLiveFlori } from "./live-flori.js?v=20261116j";
+import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js?v=20261116j";
+import { getVolume, holdBgm, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js?v=20261116j";
+import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=20261116j";
 
 
-const QUESTIONS_URL = "../data/questions/questions.json?v=20261116i"; // 問題を変えたら、この値と index.html の ?v= を変える
+const QUESTIONS_URL = "../data/questions/questions.json?v=20261116j"; // 問題を変えたら、この値と index.html の ?v= を変える
 const ONI_TAPS = 5; // 表紙のすみのフロリを、この回数押すと、オニ問題が出る
 const IMG = {
   think: "../assets/flori/m/book_pen.png",
@@ -106,6 +106,7 @@ function sceneOf(name) {
   if (!$("opening").hidden) return "opening"; // オープニングの間は、オープニングの曲
   if (name === "rpg") return rpgScene(mode === "rpg" ? play?.current?.kind : null); // 画面を出すたびに曲が切りかわって、初めから鳴りなおすのを防ぐ
   if (name === "gameover") return "gameover"; // ゲームオーバーの曲
+  if (name === "dress") return "dress"; // 着せ替えの曲
   if (name === "question") {
     return { oni: "oni", hard: "hard", daily: "daily" }[mode] ?? "question";
   }
@@ -1411,7 +1412,7 @@ $("btn-credits").addEventListener("click", showCredits);
 // プロローグは、はじめて開いたとき、だれにでも見せる。①〜⑤は、総合得点が 20・40・60・80・100点になったあと、つぎにゲームを始める前に、1回だけ見せる。
 // 「その他」の「ものがたり」では、見られるようになったものを、いつでも見られる。
 const MOVIE_SEEN_KEY = "floriQuiz.movieSeen";
-const MOVIE_VER = "20261116h";
+const MOVIE_VER = "20261116j";
 const MOVIE_INFO = [
   { id: "pro", need: 0 },
   { id: "ep1", need: 20 },
@@ -2774,6 +2775,7 @@ function showGameOver() {
   $("go-note").textContent = wrongCount > 0 ? `間違えた${wrongCount}問は、間違いノートに入ったヨ。` : "";
   $("go-note").hidden = wrongCount === 0;
   awardBadges();
+  holdBgm(2700); // ゲームオーバーの効果音(2.6秒)が鳴りおわってから、BGMを流す
   show("gameover");
   playSe("rpgSad", 2600); // zannense:約7秒の音を、2.6秒で切る
   resultTimers.push(setTimeout(celebrateUnlocks, 3200)); // 着せ替えが ふえていたら、お祝いの画面

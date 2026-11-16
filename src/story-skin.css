@@ -324,7 +324,7 @@ body.has-pager { padding-bottom: 0 !important; }
 #screen-credits .credits-roll * { color: inherit; }
 /* 見やすさ:ロールの文字は、朝も夜も クリーム色+こい茶色のふちどり */
 #screen-credits .credits-roll { color: #fff3cf; text-shadow: 0 2px 4px rgba(40, 20, 8, 0.7); }
-#screen-credits .credits-roll :is(.cr-title-sub, .cr-title-main, .cr-section, .cr-role, .cr-name, .cr-note, .cr-end) { color: #fff3cf; -webkit-text-stroke: 4px #3a2418; paint-order: stroke fill; text-shadow: 0 2px 5px rgba(40, 20, 8, 0.6); }
+#screen-credits .credits-roll :is(.cr-title-sub, .cr-title-main, .cr-section, .cr-role, .cr-name, .cr-note, .cr-end) { color: #fff3cf; -webkit-text-stroke: 2.4px #3a2418; paint-order: stroke fill; text-shadow: 0 2px 5px rgba(40, 20, 8, 0.6); }
 #screen-credits .credits-roll .cr-role { color: #ffd98a; }
 #screen-credits .credits-roll .cr-note { color: #ffe9c0; }
 #screen-credits .credits-roll .cr-section { border-top-color: #ffd98a; }
