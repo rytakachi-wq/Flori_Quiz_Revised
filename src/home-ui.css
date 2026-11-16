@@ -402,14 +402,10 @@
 .mode-btn.is-done::after { content: ""; position: absolute; right: 10px; top: 50%; width: 44px; height: 44px; margin-top: -22px; background: url("../assets/illust/check.webp") center / contain no-repeat; filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.25)); pointer-events: none; }
 .mode-btn.is-done .tile-sub { color: #2a6a36; font-weight: bold; }
 
-/* ゲームオーバー:ボタンの上の空白をなくして、その分、フロリを大きく(舞台が、あいた高さをうめる) */
+/* ゲームオーバー:フロリの大きさは、そのまま。ボタンの上の空白をなくして、フロリ(と下の文・ボタン)を、下にそろえる(あまる高さは、フロリの上にあく) */
 @media (min-height: 601px) {
-  #screen-gameover .go-stage { flex: 1 1 0; height: auto; min-height: var(--go-h); }
-  #screen-gameover .go-flori { height: 100%; max-height: none; width: auto; object-fit: contain; }
+  #screen-gameover .go-stage { flex: none; height: var(--go-h); margin-top: auto; display: flex; align-items: flex-end; justify-content: center; }
+  #screen-gameover .go-flori { height: 100%; max-height: none; width: auto; max-width: 100%; object-fit: contain; }
   #screen-gameover .go-buttons { margin-top: 0; }
 }
-/* ゲームオーバー:フロリは、舞台の下(下の文のすぐ上)にそろえる。あまった高さは、上にあく */
-@media (min-height: 601px) {
-  #screen-gameover .go-stage { display: flex; align-items: flex-end; justify-content: center; }
-  #screen-gameover .go-flori { height: auto; max-height: 100%; max-width: 100%; }
-}
+
