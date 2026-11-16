@@ -23,7 +23,7 @@ import {
   previousDateKey,
   shuffleChoices,
   totalScore,
-} from "./game.js?v=20261116m";
+} from "./game.js?v=20261116n";
 import {
   addStars,
   loadStats,
@@ -37,21 +37,21 @@ import {
   recordWrong,
   recordRpg,
   recordRound,
-} from "./storage.js?v=20261116m";
-import { illustrationFor } from "./illustrations.js?v=20261116m";
-import { createTalker } from "./talk.js?v=20261116m";
-import { initTutorial, openTutorial } from "./tutorial.js?v=20261116m";
-import { initRules, openRules as resetRules } from "./rules.js?v=20261116m";
-import { openCredits, closeCredits } from "./credits.js?v=20261116m";
-import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js?v=20261116m";
-import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js?v=20261116m";
-import { hopFlori, startFamilyVisits, startLiveFlori } from "./live-flori.js?v=20261116m";
-import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js?v=20261116m";
-import { getVolume, holdBgm, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js?v=20261116m";
-import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=20261116m";
+} from "./storage.js?v=20261116n";
+import { illustrationFor } from "./illustrations.js?v=20261116n";
+import { createTalker } from "./talk.js?v=20261116n";
+import { initTutorial, openTutorial } from "./tutorial.js?v=20261116n";
+import { initRules, openRules as resetRules } from "./rules.js?v=20261116n";
+import { openCredits, closeCredits } from "./credits.js?v=20261116n";
+import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js?v=20261116n";
+import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js?v=20261116n";
+import { hopFlori, startFamilyVisits, startLiveFlori } from "./live-flori.js?v=20261116n";
+import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js?v=20261116n";
+import { getVolume, holdBgm, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js?v=20261116n";
+import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=20261116n";
 
 
-const QUESTIONS_URL = "../data/questions/questions.json?v=20261116m"; // 問題を変えたら、この値と index.html の ?v= を変える
+const QUESTIONS_URL = "../data/questions/questions.json?v=20261116n"; // 問題を変えたら、この値と index.html の ?v= を変える
 const ONI_TAPS = 5; // 表紙のすみのフロリを、この回数押すと、オニ問題が出る
 const IMG = {
   think: "../assets/flori/m/book_pen.png",
@@ -99,12 +99,15 @@ let hinted = false; // 今の問題で、ヒントを見たか
 
 // 画面ごとのBGMの場面(audio.js の BGM と対応)
 // RPGの曲:ボス戦・宝箱は、それぞれ専用の曲
-function rpgScene(kind) {
-  return kind === "boss" ? "rpgboss" : kind === "chest" ? "rpgchest" : "rpg";
+// stage = { kind, name }。ネズミ・カエル・サソリは、それぞれ専用の曲。ほかは、ふつうのRPGの曲
+const RPG_FOE_SCENE = { ネズミ: "rpgmouse", カエル: "rpgfrog", サソリ: "rpgscorpion" };
+function rpgScene(stage) {
+  const kind = stage?.kind;
+  return kind === "boss" ? "rpgboss" : kind === "chest" ? "rpgchest" : (RPG_FOE_SCENE[stage?.name] ?? "rpg");
 }
 function sceneOf(name) {
   if (!$("opening").hidden) return "opening"; // オープニングの間は、オープニングの曲
-  if (name === "rpg") return rpgScene(mode === "rpg" ? play?.current?.kind : null); // 画面を出すたびに曲が切りかわって、初めから鳴りなおすのを防ぐ
+  if (name === "rpg") return rpgScene(mode === "rpg" ? play?.current : null); // 画面を出すたびに曲が切りかわって、初めから鳴りなおすのを防ぐ
   if (name === "gameover") return "gameover"; // ゲームオーバーの曲
   if (name === "dress") return "dress"; // 着せ替えの曲
   if (name === "question") {
@@ -1412,7 +1415,7 @@ $("btn-credits").addEventListener("click", showCredits);
 // プロローグは、はじめて開いたとき、だれにでも見せる。①〜⑤は、総合得点が 20・40・60・80・100点になったあと、つぎにゲームを始める前に、1回だけ見せる。
 // 「その他」の「ものがたり」では、見られるようになったものを、いつでも見られる。
 const MOVIE_SEEN_KEY = "floriQuiz.movieSeen";
-const MOVIE_VER = "20261116m";
+const MOVIE_VER = "20261116n";
 const MOVIE_INFO = [
   { id: "pro", need: 0 },
   { id: "ep1", need: 20 },
@@ -1449,9 +1452,23 @@ function dueMovie() {
   return MOVIE_INFO.find((m) => open.has(m.id) && !seen.has(m.id)) ?? null;
 }
 let movieDone = null;
+let movieSlowTimer = 0;
+let movieGiveUpTimer = 0;
+const MOVIE_SLOW_MS = 4000; // 読みこみが これより長いときは、「時間がかかっています」と出す
+const MOVIE_GIVE_UP_MS = 12000; // これより長いときは、ムービーを あきらめて、ゲームへ進む
 function openMovie(query) {
   return new Promise((resolve) => {
     movieDone = resolve;
+    clearTimeout(movieSlowTimer);
+    clearTimeout(movieGiveUpTimer);
+    const loadingText = document.querySelector("#story-movie-loading .smv-text");
+    if (loadingText) loadingText.textContent = "読み込み中…";
+    movieSlowTimer = setTimeout(() => {
+      if (loadingText && !$("story-movie-loading").hidden) loadingText.textContent = "読み込みに時間がかかっています…";
+    }, MOVIE_SLOW_MS);
+    movieGiveUpTimer = setTimeout(() => {
+      if (!$("story-movie-loading").hidden) closeMovie(); // 12秒たっても始まらないとき:閉じて、ゲームへ進む
+    }, MOVIE_GIVE_UP_MS);
     $("story-movie-loading").hidden = false; // 読みこみ中は、フロリの絵と「読み込み中」を見せる(黒い画面にしない)
     $("story-movie-skip").hidden = false;
     $("story-movie-frame").src = `./live2d/story-movie.html?v=${MOVIE_VER}&${query}`;
@@ -1505,6 +1522,8 @@ $("btn-movie-pick-back").addEventListener("click", () => {
 });
 // ムービーの外側の「飛ばす」:読みこみ中でも押せる(ムービーの JS に頼らない)
 function closeMovie() {
+  clearTimeout(movieSlowTimer);
+  clearTimeout(movieGiveUpTimer);
   $("story-movie").hidden = true;
   $("story-movie-frame").src = "about:blank"; // 止める
   setScene(sceneOf(currentScreen)); // ゲームのBGMにもどる
@@ -1516,10 +1535,29 @@ $("story-movie-skip").addEventListener("click", closeMovie);
 window.addEventListener("message", (event) => {
   if (event.data === "close-story-movie") closeMovie();
   else if (event.data === "story-movie-ready") {
+    clearTimeout(movieSlowTimer);
+    clearTimeout(movieGiveUpTimer);
     $("story-movie-loading").hidden = true; // ムービーが動きだした。読みこみ中の表示と、親の「飛ばす」は、もう要らない(ムービーの中に、同じボタンがある)
     $("story-movie-skip").hidden = true;
   }
 });
+// ムービーに要る絵(動くフロリの部品・最初の背景・表情の絵)を、先に読んでおく(ブラウザの入れものに ためる)。はじめて開いたとき、ムービーが すぐ始まるように
+async function warmUpMovie() {
+  try {
+    if (navigator.connection?.saveData) return;
+    const model = await (await fetch("./live2d/model.json")).json();
+    const files = [...new Set(model.meshes.map((m) => m.img))];
+    const urls = [
+      "../assets/movie/bg_home_hd.webp",
+      ...["surprised", "wrong", "nikkori", "smile"].map((k) => `../assets/flori/m/wave_${k}.png`),
+      ...files.map((f) => `./live2d/tex/${f}`),
+    ];
+    for (const url of urls) await fetch(url).catch(() => {});
+  } catch {
+    // 先読みに失敗しても、ふつうに読みこむだけ
+  }
+}
+setTimeout(warmUpMovie, 1500);
 $("btn-credits-back").addEventListener("click", () => show("cover", -1));
 const PAGE_OPEN = {
   cover: () => show("cover"),
@@ -2072,6 +2110,7 @@ function celebrateUnlocks() {
   unlockIndex = 0;
   showUnlock();
   $("dlg-unlock").showModal();
+  setScene("unlock"); // お祝いの画面のあいだは、いまの画面の曲(ゲームオーバーなど)を止める
   playSe("levelup");
 }
 const KIND_WORD = { color: "フロリの色", bg: "背景", head: "頭の飾り", body: "体の飾り", face: "顔の飾り" };
@@ -2119,6 +2158,7 @@ $("btn-unlock-next").addEventListener("click", () => {
     showUnlock();
   } else {
     $("dlg-unlock").close();
+    setScene(sceneOf(currentScreen)); // お祝いが おわったら、いまの画面の曲にもどす
     if (!$("screen-dress").hidden) renderDress(); // 着せ替えの画面にいたら、見た目を更新
     refreshCover();
   }
@@ -2637,7 +2677,7 @@ function showRpg() {
   warn.textContent = stage.kind === "boss" ? "警告! ボス戦だ!" : "警告! 次はボスがまっているぞ!";
   $("screen-rpg").querySelector(".rpg-window").scrollTop = 0;
   show("rpg");
-  setScene(rpgScene(stage.kind)); // ボス戦・宝箱は、BGMが変わる
+  setScene(rpgScene(mode === "rpg" ? stage : { kind: stage.kind })); // ボス戦・宝箱・敵ごとに、BGMが変わる
   fitRpgWindow();
   setTimeout(fitRpgWindow, 150); // ふりがなが付いたあとに、もう1度
   if (timeLimit) startRpgTimer();

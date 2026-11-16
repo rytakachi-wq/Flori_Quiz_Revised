@@ -3,7 +3,7 @@
 //
 // BGMは、このゲームのために作ったオリジナルの曲を、ブラウザの中で演奏する(music.js)。曲のファイルはない。
 
-import { MusicPlayer, jingleSeconds } from "./music.js?v=20261116m";
+import { MusicPlayer, jingleSeconds } from "./music.js?v=20261116n";
 
 const BASE = "../assets/audio/";
 const SETTINGS_KEY = "floriQuiz.settings.v2";
@@ -18,6 +18,9 @@ const BGM = {
   timed: "deep",
   oni: "oni",
   rpg: "quest",
+  rpgmouse: "questforest", // RPG:ネズミ(森)
+  rpgfrog: "questswamp", // RPG:カエル(沼)
+  rpgscorpion: "questdesert", // RPG:サソリ(お城の門)
   rpgboss: "questboss", // RPGの、ボス戦
   rpgchest: "chest", // RPGの、宝箱
   daily: "daily2", // 毎日1問(新しい曲。前の曲 daily は残してある)

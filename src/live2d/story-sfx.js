@@ -1,8 +1,8 @@
 // ものがたり(ムービー)の効果音。ゲームに入っている音のファイル(assets/audio/)と、ここで作る音(WebAudio。ファイルなし)。
 // 音の大きさは、設定の「効果音」のつまみ(se)に合わせる。リストは docs/movie-sfx-list.md。
 // 使いかた:sfx('名前', 音量の倍率) / 場面ごとの音は SCENE_SFX、場面のしかけ(札・印・ひかり・ゆれ・ぴょん・歩く・ハート・セリフ)は、story-movie.js が自動で鳴らす。
-import { curve, getVolume } from '../audio.js?v=20261116m';
-import { audioCtx } from './story-bgm.js?v=20261116m';
+import { curve, getVolume } from '../audio.js?v=20261116n';
+import { audioCtx } from './story-bgm.js?v=20261116n';
 
 // ---- ゲームの音のファイル ----
 const FILES = {
@@ -17,6 +17,25 @@ function loadBuffer(ctx, name) {
   loading[name] = true;
   fetch(new URL(`../../assets/audio/${FILES[name]}`, import.meta.url))
     .then(r => r.arrayBuffer()).then(d => ctx.decodeAudioData(d)).then(b => { buffers[name] = b; }).catch(() => {});
+}
+
+// ---- 効果音ラボ(https://soundeffect-lab.info/)の音(assets/audio/story/ に置いたもの) ----
+// 商用利用OK・クレジット不要の素材。ファイルが まだ ないときは、下の「ここで作る音」(または 上の音)で、かわりに鳴らす。
+// 名前 → ファイル名(拡張子なし)。入れるファイルの一覧と もとのURLは docs/movie-sfx-download.md。
+const EXT = {
+  roar: 'dragon-cry1', flap: 'dragon-wing1', thunder: 'thunder1', fire: 'magic-flame2', boom: 'don-1', exclaim: 'surprise1',
+  bulb: 'flash2', dizzy: 'dizzy1', boing: 'boyon1', fanfare: 'trumpet1', harp: 'shine6', sparkle: 'shine4', card: 'logo-animation2',
+  resolve: 'shakin1', fall: 'hyun1', siren: 'emergency-alert1', gate: 'gate-open1', cage: 'jail-door-close1', key: 'key-in1',
+  birds: 'passer-montanus-cry1', ribbit: 'toad1', title: 'title1', end: 'chan-chan1', sad2: 'cute-sad1', itemget: 'item-get1', door: 'iron-door-open1',
+};
+const ALIAS = { resolve: 'bulb', title: 'fanfare', end: 'fanfare', sad2: 'sad', itemget: 'key', door: 'gate' };   // ファイルも 作る音も ないときの、かわり
+const ext = {};   // 名前 → AudioBuffer / 'loading' / 'missing'
+function loadExt(ctx, name) {
+  if (ext[name]) return;
+  ext[name] = 'loading';
+  fetch(new URL(`../../assets/audio/story/${EXT[name]}.mp3`, import.meta.url))
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
+    .then(d => ctx.decodeAudioData(d)).then(b => { ext[name] = b; }).catch(() => { ext[name] = 'missing'; });
 }
 
 // ---- ここで作る音 ----
@@ -97,6 +116,17 @@ export function sfx(name, vol = 1) {
   const out = ctx.createGain();
   out.gain.value = level;
   out.connect(ctx.destination);
+  if (EXT[name]) {   // 効果音ラボの音があれば、それを鳴らす(なければ、かわりの音)
+    const b = ext[name];
+    if (b && b !== 'loading' && b !== 'missing') {
+      const s = ctx.createBufferSource();
+      s.buffer = b; out.gain.value = Math.min(1, level * 1.4);
+      s.connect(out); s.start();
+      return;
+    }
+    loadExt(ctx, name);
+  }
+  if (!FILES[name] && !SYNTH[name] && ALIAS[name]) name = ALIAS[name];
   if (FILES[name]) {
     const b = buffers[name];
     if (!b) { loadBuffer(ctx, name); return; }
@@ -110,17 +140,17 @@ export function sfx(name, vol = 1) {
 // 先に読んでおく(はじめて鳴らすときに、音がおくれないように)
 export function preloadSfx() {
   const ctx = audioCtx();
-  if (ctx) for (const n of Object.keys(FILES)) loadBuffer(ctx, n);
+  if (ctx) { for (const n of Object.keys(FILES)) loadBuffer(ctx, n); for (const n of Object.keys(EXT)) loadExt(ctx, n); }
 }
 
 // ---- 場面ごとの音(お話の id:場面の番号 → [いつ(秒), 音]) ----
 export const SCENE_SFX = {
   'pro:0': [[0.2, 'birds']],
   'pro:1': [[0.8, 'flap'], [3.4, 'thunder'], [3.8, 'roar']],
-  'pro:2': [[0.3, 'flap'], [1.3, 'flap']],
+  'pro:2': [[0.3, 'flap'], [1.3, 'flap'], [3.6, 'sad2']],
   'pro:3': [[0.2, 'cage']],
-  'pro:4': [[0.5, 'bulb']],
-  'pro:6': [[0.6, 'fanfare']],
+  'pro:4': [[0.5, 'resolve']],
+  'pro:6': [[0.6, 'title']],
   'ep1:0': [[0.3, 'birds']],
   'ep1:1': [[0.5, 'scurry'], [0.7, 'squeak']],
   'ep1:2': [[0.3, 'scurry'], [1.5, 'squeak'], [3.0, 'scurry']],
@@ -132,17 +162,17 @@ export const SCENE_SFX = {
   'ep3:0': [[0.4, 'gate'], [3.2, 'clack']],
   'ep3:1': [[0.3, 'clack']],
   'ep3:2': [[0.2, 'fanfare']],
-  'ep3:3': [[0.4, 'gate']],
+  'ep3:3': [[0.4, 'door']],
   'ep3:4': [[0.2, 'siren'], [1.2, 'roar']],
   'ep3:5': [[0.5, 'roar']],
   'ep4:0': [[3.4, 'roar'], [6.6, 'fire'], [9.4, 'fire']],
   'ep4:3': [[0.2, 'fall'], [2.0, 'key']],
-  'ep4:4': [[0.2, 'key'], [3.0, 'fanfare']],
+  'ep4:4': [[0.2, 'itemget'], [3.0, 'fanfare']],
   'epi:0': [[0.5, 'cage']],
-  'epi:1': [[0.4, 'key'], [4.3, 'gate']],
+  'epi:1': [[0.4, 'key'], [4.3, 'door']],
   'epi:2': [[0.3, 'harp']],
   'epi:3': [[0.2, 'birds']],
-  'epi:5': [[0.4, 'fanfare']],
+  'epi:5': [[0.4, 'end']],
 };
 // 印の絵 → 音
 export const MARK_SFX = { fx_exclaim: 'exclaim', fx_anger: 'anger', bulb: 'bulb', fx_impact: 'impact' };
