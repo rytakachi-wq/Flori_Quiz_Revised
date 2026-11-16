@@ -1641,3 +1641,7 @@ scheme.md の「未定の事項」を決めたらここに追記する。
 - RPGの曲を、敵ごとにふやした(新しい曲3つ):ネズミ=`questforest`(ト長調・マリンバ・はずむ森)、カエル=`questswamp`(イ短調・やわらかい音とベル・ゆらゆら沼)、サソリ=`questdesert`(ニ短調・するどい音・緊張)。ボス戦=`questboss`、宝箱=`chest` は、そのまま。ふつうのRPGの曲 `quest` は、名前がわからない敵のとき用に残した。`main.js` の `RPG_FOE_SCENE`・`rpgScene(stage)`、`audio.js` の BGM に `rpgmouse`/`rpgfrog`/`rpgscorpion`。
 - 「ゲームオーバーのBGMが、次の画面に移っても鳴っている」:ゲームオーバーのあとに出る「新しい飾りをGET」のお祝いの画面で、ゲームオーバーの曲が鳴りつづけていたと考えて、お祝いのあいだは曲を止め(`setScene("unlock")`)、閉じたら、いまの画面の曲にもどすようにした。**別の画面(ノートなど)のことなら、教えてほしい**(画面を移るときは、もともと、その画面の曲に切りかわる作り)。
 - 数値の確認(`?sound`):各場面の曲名が、rpg=quest・rpgmouse=questforest・rpgfrog=questswamp・rpgscorpion=questdesert・rpgboss=questboss・rpgchest=chest・unlock=無音・gameover=gameover と切りかわる。耳では確かめていない。版番号 20261116n。
+
+## その137(2026-11-16、公開していない)ものがたりの読みこみ時間・効果音ラボの音(B story-movie)
+- **読みこみが長いとき**:(1) ムービーに要る絵(動くフロリの部品・最初の背景・表情の絵)を、アプリを開いて1.5秒後から、先に読んでおく(`main.js` の `warmUpMovie`)。(2) 4秒たっても始まらないときは、「読み込みに時間がかかっています…」と出す。(3) 12秒たっても始まらないときは、自動で閉じて、ゲームへ進む。
+- **効果音ラボ(https://soundeffect-lab.info/)の音**:利用者の指示で、ここの音を使うことにした(商用利用OK・クレジット不要)。ただし、AIからのダウンロードは、サイトが断る(403)ので、取りこめていない。入れる26ファイルの一覧は `docs/movie-sfx-download.md`。ブラウザで保存して `assets/audio/story/` に置けば、自動で、その音が鳴る(置くまでは、いまの音)。コードの側(`story-sfx.js` の `EXT`・`ALIAS`)は、できている。
