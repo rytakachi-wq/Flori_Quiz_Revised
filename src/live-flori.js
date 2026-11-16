@@ -3,11 +3,11 @@
 //  - かざり(頭・体・顔)は、いままでどおり。絵の見えている場所にそろえて、重ねる(decor-overlay.js)。
 //  - 色(着せ替えの色)は、体・頭・手足の絵を、flori-color.js で色づけしてから、貼る。
 //  - 出さない画面:クイズ(問題・RPG)。表紙は、クリックで ぴょん。着せ替え画面でも、腕を動かす。
-import { draw, loadModel } from "./live2d/live2d.js?v=20261116a";
-import { createMotion } from "./live2d/flori-motion.js?v=20261116a";
-import { playJump } from "./audio.js?v=20261116a";
-import { getFloriColor, recolorCanvas } from "./flori-color.js?v=20261116a";
-import { HEADS } from "./badges.js?v=20261116a";
+import { draw, loadModel } from "./live2d/live2d.js?v=20261116h";
+import { createMotion } from "./live2d/flori-motion.js?v=20261116h";
+import { playJump } from "./audio.js?v=20261116h";
+import { getFloriColor, recolorCanvas } from "./flori-color.js?v=20261116h";
+import { HEADS } from "./badges.js?v=20261116h";
 
 // ポーズつきの絵のうち、動くフロリにかえるもの(かざりの位置が合う絵。decor-overlay.js の POSE と同じ)
 const POSE = /(?:wave_(?:nikkori|smile|wrong|surprised)\.png|body_wave\.webp)$/;
@@ -399,7 +399,7 @@ async function visit(role, side) {
   const figBox = (stage.querySelector(".flori-cover") ?? fig).getBoundingClientRect();
   if (figBox.width === 0 || stageBox.width === 0) return;
   const TOP = 0.2; // 帽子・リボン・ジャンプが、上で見切れないように、上に余白(絵の高さに対する割合)
-  const W = Math.round(Math.min(figBox.width * 0.85, stageBox.width * 0.33)); // フロリより、ひとまわり小さく
+  const W = Math.round(Math.min(figBox.width * 1.0, stageBox.width * 0.38)); // フロリより、ひとまわり小さく
   const H = Math.round((W * (1 + TOP + MARGIN.y) * FRAME.h) / ((1 + 2 * MARGIN.x) * FRAME.w));
   const canvas = document.createElement("canvas");
   canvas.setAttribute("aria-hidden", "true");
