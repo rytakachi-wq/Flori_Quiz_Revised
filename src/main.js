@@ -48,7 +48,7 @@ import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js?v=20261
 import { hopFlori, startFamilyVisits, startLiveFlori } from "./live-flori.js?v=20261116j";
 import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js?v=20261116j";
 import { getVolume, holdBgm, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js?v=20261116j";
-import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=20261116j";
+import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=20261116k";
 
 
 const QUESTIONS_URL = "../data/questions/questions.json?v=20261116j"; // 問題を変えたら、この値と index.html の ?v= を変える

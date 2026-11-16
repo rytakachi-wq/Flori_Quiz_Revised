@@ -380,3 +380,6 @@
 .rf-scene:has(.rf-tight) .rf-fl { width: 26%; }
 .rf-scene .rf-side { overflow: visible; }
 @media (max-height: 620px) { .rf-scene .rf-seq.rf-tight { zoom: 0.8; } }
+
+/* ルール説明の見出し:ふりがなの分の高さをとる(下の文字が、見切れていた) */
+#screen-rules .rf-title { height: auto; min-height: 1.9em; line-height: 1.7; overflow: visible; padding-top: 0.2em; }
