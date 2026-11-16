@@ -22,8 +22,10 @@
   --sk-gold: #ffd25a;
   --sk-night: #3a2a58;
 }
+/* 背景を、全体的に、うすく(白いベールを、絵の上にかさねる。0 でもとの濃さ。決め:decisions その135) */
+:root { --veil: rgba(255, 255, 255, 0.4); }
 body {
-  background: #2a2550 url("../assets/movie/bg_night_hd.webp") center bottom / cover fixed;
+  background: linear-gradient(var(--veil), var(--veil)), url("../assets/movie/bg_night_hd.webp") center bottom / cover fixed, #2a2550;
   color: var(--text);
 }
 /* どの画面も、羊皮紙の巻物 */
@@ -67,7 +69,7 @@ body {
 
 /* ===== ホーム ===== */
 .cover-home {
-  background: linear-gradient(180deg, rgba(40, 30, 80, 0.15), rgba(251, 231, 185, 0.0) 40%), url("../assets/movie/bg_sunrise_hd.webp") center bottom / cover;
+  background: linear-gradient(var(--veil), var(--veil)), linear-gradient(180deg, rgba(40, 30, 80, 0.15), rgba(251, 231, 185, 0.0) 40%), url("../assets/movie/bg_sunrise_hd.webp") center bottom / cover;
   border: 5px solid var(--sk-brown);
   gap: 10px;
 }
@@ -151,7 +153,7 @@ body {
 
 /* ホームを、ぎゅっと(フロリが かくれないように) */
 .cover-home::before {
-  background: linear-gradient(rgba(40, 30, 80, 0.2), rgba(255, 255, 255, 0) 45%), url("../assets/movie/bg_sunrise_hd.webp") center bottom / cover !important;
+  background: linear-gradient(var(--veil), var(--veil)), linear-gradient(rgba(40, 30, 80, 0.2), rgba(255, 255, 255, 0) 45%), url("../assets/movie/bg_sunrise_hd.webp") center bottom / cover !important;
   opacity: 1 !important;
 }
 .quest-panel { padding: 5px 12px 7px; }
@@ -210,7 +212,7 @@ body {
 
 /* ===== はじめの画面・メッセージ ===== */
 .opening {
-  background: linear-gradient(rgba(40, 30, 80, 0.25), rgba(255, 255, 255, 0) 55%), url("../assets/movie/bg_sunrise_hd.webp") center bottom / cover;
+  background: linear-gradient(var(--veil), var(--veil)), linear-gradient(rgba(40, 30, 80, 0.25), rgba(255, 255, 255, 0) 55%), url("../assets/movie/bg_sunrise_hd.webp") center bottom / cover;
 }
 .announce { background: radial-gradient(circle at 50% 40%, #5a4a8a, #2a2550 75%); }
 .announce-text { color: var(--sk-gold); text-shadow: 0 4px 0 var(--sk-brown), 3px 0 0 var(--sk-brown), -3px 0 0 var(--sk-brown), 0 -3px 0 var(--sk-brown); }
@@ -249,11 +251,11 @@ body.has-pager { padding-bottom: 0 !important; }
 .rpg-foe-icon .foe-img { height: clamp(64px, 14vh, 110px); }
 .rpg-path li .foe-img { height: 26px; }
 .rpg-field { background-size: cover !important; background-position: center bottom !important; }
-.rpg-field[data-foe="mouse"] { background-image: url("../assets/movie/bg_forest.webp") !important; }
-.rpg-field[data-foe="frog"] { background-image: url("../assets/movie/bg_swamp.webp") !important; }
-.rpg-field[data-foe="chest"] { background-image: url("../assets/movie/bg_home_hd.webp") !important; }
-.rpg-field[data-foe="scorpion"] { background-image: url("../assets/movie/bg_gate.webp") !important; }
-.rpg-field[data-foe="dragon"] { background-image: url("../assets/movie/bg_castle_hd.webp") !important; }
+.rpg-field[data-foe="mouse"] { background-image: linear-gradient(var(--veil), var(--veil)), url("../assets/movie/bg_forest.webp") !important; }
+.rpg-field[data-foe="frog"] { background-image: linear-gradient(var(--veil), var(--veil)), url("../assets/movie/bg_swamp.webp") !important; }
+.rpg-field[data-foe="chest"] { background-image: linear-gradient(var(--veil), var(--veil)), url("../assets/movie/bg_home_hd.webp") !important; }
+.rpg-field[data-foe="scorpion"] { background-image: linear-gradient(var(--veil), var(--veil)), url("../assets/movie/bg_gate.webp") !important; }
+.rpg-field[data-foe="dragon"] { background-image: linear-gradient(var(--veil), var(--veil)), url("../assets/movie/bg_castle_hd.webp") !important; }
 .play-btn .gi-img { width: 46px; height: 46px; object-fit: contain; filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.3)); }
 
 /* ホームを、さらに ぎゅっと(フロリの場所を ひろく) */
@@ -316,8 +318,8 @@ body.has-pager { padding-bottom: 0 !important; }
 .quest-bar u { display: none; }
 /* 着せ替え:下から上へ あがってくる */
 /* スタッフクレジット:背景が 朝から夜へ */
-#screen-credits .credits-stage { background: url("../assets/movie/bg_sunrise_hd.webp") center bottom / cover !important; }
-#screen-credits .credits-stage::before { content: ""; position: absolute; inset: 0; z-index: 0; background: url("../assets/movie/bg_night_hd.webp") center bottom / cover; opacity: var(--dusk, 0); pointer-events: none; }
+#screen-credits .credits-stage { background: linear-gradient(var(--veil), var(--veil)), url("../assets/movie/bg_sunrise_hd.webp") center bottom / cover !important; }
+#screen-credits .credits-stage::before { content: ""; position: absolute; inset: 0; z-index: 0; background: linear-gradient(var(--veil), var(--veil)), url("../assets/movie/bg_night_hd.webp") center bottom / cover; opacity: var(--dusk, 0); pointer-events: none; }
 #screen-credits .credits-roll { z-index: 1; color: color-mix(in srgb, #fff3cf calc(var(--dusk, 0) * 100%), #4a3428); text-shadow: 0 1px 0 rgba(0, 0, 0, calc(var(--dusk, 0) * 0.5)); }
 #screen-credits .credits-roll * { color: inherit; }
 /* 見やすさ:ロールの文字は、朝も夜も クリーム色+こい茶色のふちどり */
