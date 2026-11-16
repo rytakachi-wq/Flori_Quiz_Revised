@@ -10,6 +10,7 @@ import { HEADS } from '../badges.js?v=20261116j';
 import { startFurigana } from '../furigana.js?v=20261116j';
 import { MOVIES } from './storyboard.js?v=20261116j';
 import { playStoryBgm } from './story-bgm.js?v=20261116j';
+import { sfx, preloadSfx, SCENE_SFX, MARK_SFX } from './story-sfx.js?v=20261116j';
 
 startFurigana();
 
@@ -175,12 +176,33 @@ function play(mv) {
   for (const b of bar.querySelectorAll('button[data-id]')) b.classList.toggle('on', b.dataset.id === mv.id);
 }
 // 画面をさわっても、つぎには進まない。「次へ」のボタンで進む
+// ---- 効果音:場面のしかけ(札・印・ひかり・ゆれ・ぴょん・歩く・ハート・セリフ)から、鳴らす時刻を自動でつくる ----
+let sceneSfx = [];
+function buildSfx(sc, key, i) {
+  const ev = [];
+  if (i > 0) ev.push([0, 'whoosh', 0.6]);
+  if (sc.card) ev.push([0.15, 'card', 1]);
+  for (const m of sc.marks || []) if (MARK_SFX[m.art]) ev.push([m.at, MARK_SFX[m.art], 1]);
+  if (sc.flash !== undefined) ev.push([sc.flash, 'boom', 0.7]);
+  if (sc.shake && !(sc.flash !== undefined && Math.abs(sc.flash - sc.shake[0]) < 0.3)) ev.push([sc.shake[0], 'rumble', 0.8]);
+  for (const h of sc.hops || []) ev.push([h.at, 'hop', 0.7]);
+  if (sc.fx) for (let t = 0.3; t < sc.dur; t += 2.6) ev.push([t, 'sparkle', 0.8]);
+  for (const d of Object.values(sc.actors || {})) {
+    if (!d.walk) continue;
+    const dl = d.delay || 0, len = d.len ?? (sc.dur - dl);
+    for (let t = dl + 0.2; t < dl + len; t += 0.42) ev.push([t, 'step', 0.5]);
+  }
+  for (const l of sc.lines || []) ev.push([l.at + 0.05, 'pop', 0.7]);
+  for (const [at, name] of SCENE_SFX[key] || []) ev.push([at, name, 1]);
+  return ev;
+}
 const nextBtn = document.getElementById('next');
-nextBtn.onclick = () => goScene(want + 1);
+nextBtn.onclick = () => { sfx('button'); goScene(want + 1); };
 
 function setScene(i) {
   sceneIdx = i; lastLine = -1;
   const sc = movie.scenes[i];
+  sceneSfx = buildSfx(sc, `${movie.id}:${i}`, i);
   playStoryBgm(sc.bgm ?? movie.id);   // 場面ごとの専用BGM(曲がかわる場面だけ、きりかわる)
   for (const d of bgsEl.children) { if (d.dataset.bg === sc.bg) ensureBg(d); d.style.opacity = d.dataset.bg === sc.bg ? 1 : 0; }
   // 場面が かわるときの 暗転は、やめた(利用者の指示)   // 場面が かわるとき、暗転ぎみに つなぐ
@@ -218,6 +240,7 @@ function frame(now) {
   if (k === movie.scenes.length - 1 && lt >= sc.dur + 6 && !STORY_CLOSING) { play(movie); requestAnimationFrame(frame); return; }   // 何も押さないと、はじめにもどって くりかえす
   const nextText = k === movie.scenes.length - 1 ? (STORY ? '閉じる' : '最初から') : '次へ ▶';
   if (nextBtn.dataset.t !== nextText) { nextBtn.dataset.t = nextText; nextBtn.textContent = nextText; }
+  sceneSfx.forEach(([at, name, vol], n) => { const key = `${k}:sfx:${n}`; if (lt >= at && !fired.has(key)) { fired.add(key); if (lt - at < 1.0) sfx(name, vol); } });   // (まとめて とばしたとき[試験用]の古い音は、鳴らさない)
   prog.style.width = `${(k + 1) / movie.scenes.length * 100}%`;
   if (auto && lt >= sc.dur + 1.2 && autoKey !== `${movie.id}:${k}`) { autoKey = `${movie.id}:${k}`; goScene(k + 1); }   // じどうで すすむ:読みおわったら、つぎのコマ・つぎのムービーへ
   if (sc.flash !== undefined && lt >= sc.flash && !fired.has(`${k}:flash`)) { fired.add(`${k}:flash`); flashEl.classList.remove('on'); void flashEl.offsetWidth; flashEl.classList.add('on'); }
@@ -315,6 +338,7 @@ const startMovie = MOVIES.find(m => m.id === params.get('play')) || MOVIES.find(
 const firstBg = BGFILE[startMovie.scenes[0].bg];
 if (firstBg) await Promise.race([loadImg(artUrl(firstBg)), new Promise(ok => setTimeout(ok, 4000))]);
 play(startMovie);
+setTimeout(preloadSfx, 600); addEventListener('pointerdown', () => setTimeout(preloadSfx, 100), { once: true });   // 音のファイルを先に読む
 requestAnimationFrame(frame);
 let readySent = false; const sendReady = () => { if (!readySent) { readySent = true; parent.postMessage('story-movie-ready', '*'); } };
 requestAnimationFrame(sendReady); setTimeout(sendReady, 400);   // (画面が見えていなくて、rAF が止まっているときも、400ミリ秒で送る)   // 動きだした:親の「読み込み中」を消す

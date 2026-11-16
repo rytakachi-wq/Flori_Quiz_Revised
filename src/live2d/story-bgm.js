@@ -188,6 +188,7 @@ addEventListener('keydown', start);
 addEventListener('pagehide', () => { try { players?.forEach(p => p.stop()); players?.[0].ctx.close(); } catch { /* なにもしない */ } });
 start();   // ゲームの中から開いたときは、もう さわったあとなので、すぐ鳴る
 
+export const audioCtx = () => players?.[0].ctx ?? null;   // 効果音(story-sfx.js)も、同じ音の入れものを使う
 export function playStoryBgm(movieId) {
   want = TRACK_OF[movieId] ?? null;
   apply();
