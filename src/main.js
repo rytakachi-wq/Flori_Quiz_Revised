@@ -1112,10 +1112,10 @@ function heartsText(n) {
 
 // RPGの記録(着せ替えの解放に使う):クリア・ノーダメージ・ボス戦まで進んだ・宝箱
 function recordRpgResult(result) {
-  recordRpg({ cleared: result.cleared, noDamage: result.lives === RPG_LIVES, boss: result.stage >= RPG_STAGES.length - 1, chests: result.chests ?? 0 });
+  recordRpg({ cleared: result.cleared, noDamage: result.lives === play.maxLives, boss: result.stage >= RPG_STAGES.length - 1, chests: result.chests ?? 0 });
 }
 function adventureComment(result) {
-  if (result.cleared) return result.lives === RPG_LIVES ? "ノーダメージ クリア! すごいヨ!" : "ドラゴンを倒した! おめでとう!";
+  if (result.cleared) return result.lives === play.maxLives ? "ノーダメージ クリア! すごいヨ!" : "ドラゴンを倒した! おめでとう!";
   return result.stage >= 3 ? "惜しい! ボスのすぐ近くまで来たヨ!" : "ナイスチャレンジ! また冒険に出よう!";
 }
 
@@ -2453,7 +2453,7 @@ function renderRpgHearts() {
   const box = $("rpg-hearts");
   const before = rpgHeartsOwner === play ? rpgHeartsShown : null;
   rpgHeartsOwner = play;
-  rpgHeartsShown = Array.from({ length: RPG_LIVES }, (_, i) => Math.max(0, Math.min(1, play.lives - i)));
+  rpgHeartsShown = Array.from({ length: play.maxLives }, (_, i) => Math.max(0, Math.min(1, play.lives - i)));
   box.replaceChildren(
     ...rpgHeartsShown.map((value, i) => {
       const heart = document.createElement("span");
@@ -2578,6 +2578,7 @@ function rpgIntro(stage, retries) {
   const name = stage.kind === "boss" ? `ボス ${stage.name}` : stage.name;
   if (stage.kind === "chest") return "宝箱だ! 何が入っているカナ?";
   if (retries === 0) return `${stage.icon} ${name}が現れた!`;
+  if (rpgOni) return `${name}は同じ問題で待ちかまえている! もう1度!`;
   const lines = [
     `${name}がにやりと笑った! つぎの問題だ!`,
     `${name}はまだ立ちはだかっている!`,
@@ -2707,7 +2708,7 @@ function rpgAnswer(index, timedUp = false) {
   $("rpg-choices").hidden = true; // 答えたあとは、答えと解説だけ(問題文と選択肢は、かくす。1画面に収めるため)
   $("rpg-text").hidden = true;
   $("rpg-verdict").textContent = `${correct ? "正解!" : timedUp ? "時間切れ…" : "残念…"} ${message}${correct && rpgHinted ? "(ヒントを使ったヨ)" : ""}`;
-  $("rpg-explain").textContent = `正解は「${question.choices[question.answer]}」\n${question.explanation}`;
+  $("rpg-explain").textContent = rpgOni && !correct ? "答えは ヒミツ! もう1度 同じ問題に挑戦だ!" : `正解は「${question.choices[question.answer]}」\n${question.explanation}`;
   $("rpg-after").hidden = false;
   stopSpeaking();
   if (readAloud()) speak(`${$("rpg-verdict").textContent}。${$("rpg-explain").textContent}`); // 正解と解説も読み上げる

@@ -276,6 +276,7 @@ export class PracticeRound {
 // 敵のマスは、正解で たおして、次のマスへ。間違えると、ハートが1つ減って、同じ敵に、もう1問。
 // 宝箱のマスは、正解で ハートが1つ回復(間違えても、ハートはへらない。回復なしで、次へ進む)。ボスは、2回 正解で たおせる。
 export const RPG_LIVES = 4;
+export const ONI_LIVES = 5; // オニ戦のハート
 export const RPG_HINT_COST = 0.5; // ヒントを見ると、ハートが半分へる
 export const RPG_STAGES = [
   { kind: "enemy", icon: "🐭", name: "ネズミ", level: 1, hp: 1 },
@@ -305,6 +306,8 @@ function pickByLevel(questions, used, target, rng, avoid = new Set()) {
 export class RpgRound {
   constructor(questions, rng = Math.random, avoid = new Set(), stages = RPG_STAGES) {
     this.stages = stages;
+    this.oni = stages === ONI_STAGES; // オニ戦:ハート5つ・間違えても答えは見せず、同じ問題がもう1度出る
+    this.maxLives = this.oni ? ONI_LIVES : RPG_LIVES;
     this.questions = questions;
     this.rng = rng;
     this.avoid = avoid; // 前に正解した問題(uid)。なるべく出さない
@@ -317,7 +320,7 @@ export class RpgRound {
     this.correct = 0;
     this.roundAnswers = [];
     this.points = 0;
-    this.lives = RPG_LIVES;
+    this.lives = this.maxLives;
     this.stage = 0; // いまいるマス(this.stages.length で、クリア)
     this.hp = this.stages[0].hp; // いまの敵の、のこりHP
     this.event = null; // 直前の答えで、何が起きたか
@@ -359,7 +362,7 @@ export class RpgRound {
     if (chest) {
       this.event = correct ? "heal" : "miss";
       if (correct) {
-        this.lives = Math.min(RPG_LIVES, this.lives + 1);
+        this.lives = Math.min(this.maxLives, this.lives + 1);
         this.chests += 1;
       }
       this.pending = null;
@@ -376,7 +379,7 @@ export class RpgRound {
     } else {
       this.event = "damage";
       this.lives -= 1;
-      this.pending = null; // 間違えても、同じ問題は出さない(つぎは、ちがう問題)
+      this.pending = this.oni ? question : null; // 通常は、つぎはちがう問題。オニ戦は、同じ問題がもう1度出る
       this.retries += 1;
     }
     return correct;
