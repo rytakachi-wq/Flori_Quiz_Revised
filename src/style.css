@@ -3697,7 +3697,7 @@ html[data-pattern] :is(#screen-menu, #screen-note, #screen-credits, #screen-dex,
 .movie-pick-item { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 0; width: 100%; padding: 0 14px; font: inherit; text-align: left; cursor: pointer; background: #fff; border: 3px solid #4a7fb3; border-radius: 16px; box-shadow: 0 3px 0 rgba(53, 95, 140, 0.4); touch-action: manipulation; overflow: hidden; }
 .movie-pick-item:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(53, 95, 140, 0.4); }
 .movie-pick-item b { font-size: 17px; color: #1f3f66; }
-.movie-pick-item span { font-size: 11px; color: #5a6a7a; }
+.movie-pick-item > span { font-size: 11px; color: #5a6a7a; }
 
 /* RPG:敵はフロリと同じ地面に立つ(名前とハートは、敵の上に重ねる)。敵のハートは大きく・見やすく */
 .rpg-field .rpg-foe { align-content: end; justify-items: center; }
