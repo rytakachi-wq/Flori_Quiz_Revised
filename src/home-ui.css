@@ -419,3 +419,8 @@
 .mode-btn.is-done::after { filter: sepia(1) saturate(2.2) hue-rotate(-10deg) brightness(1.35) drop-shadow(1px 0 0 #7a4010) drop-shadow(-1px 0 0 #7a4010) drop-shadow(0 1px 0 #7a4010) drop-shadow(0 -1px 0 #7a4010) drop-shadow(0 0 6px rgba(255, 220, 130, 0.9)); }
 /* チェックの印:光らせない(ふちどりだけ) */
 .mode-btn.is-done::after { filter: sepia(1) saturate(2.2) hue-rotate(-10deg) brightness(1.35) drop-shadow(1px 0 0 #7a4010) drop-shadow(-1px 0 0 #7a4010) drop-shadow(0 1px 0 #7a4010) drop-shadow(0 -1px 0 #7a4010); }
+
+/* 結果発表:フロリの大きさは、そのまま。下の空白をなくして、フロリ(と下の内容)を、下にそろえる(あまる高さは、フロリの上にあく) */
+@media (min-height: 601px) {
+  #screen-result .screen-head + .flori-cover, #screen-result > .flori-cover { margin-top: auto !important; }
+}
