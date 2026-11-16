@@ -1,9 +1,9 @@
 /* 着せ替えの「背景」(ものがたりの絵)。選んだ絵(--flori-bg。main.js の setStageBg)を、ホームと、着せ替えのフロリの後ろに出す */
 :root { --flori-bg: url("../assets/movie/bg_sunrise_hd.webp"); }
-.cover-home { background: linear-gradient(180deg, rgba(40, 30, 80, 0.15), rgba(251, 231, 185, 0) 40%), var(--flori-bg) center bottom / cover; }
-.cover-home::before { background: linear-gradient(rgba(40, 30, 80, 0.2), rgba(255, 255, 255, 0) 45%), var(--flori-bg) center bottom / cover !important; }
+.cover-home { background: linear-gradient(var(--veil), var(--veil)), linear-gradient(180deg, rgba(40, 30, 80, 0.15), rgba(251, 231, 185, 0) 40%), var(--flori-bg) center bottom / cover; }
+.cover-home::before { background: linear-gradient(var(--veil), var(--veil)), linear-gradient(rgba(40, 30, 80, 0.2), rgba(255, 255, 255, 0) 45%), var(--flori-bg) center bottom / cover !important; }
 /* 着せ替え:フロリのいる枠 */
-#screen-dress .dress-stage { background: var(--flori-bg) center bottom / cover; transition: none; }
+#screen-dress .dress-stage { background: linear-gradient(var(--veil), var(--veil)), var(--flori-bg) center bottom / cover; transition: none; }
 #screen-dress .dress-stage::before { display: none; }
 /* 一覧の、背景の見本 */
 #screen-dress .dress-art.is-bg { width: 100%; height: 100%; min-height: 46px; border: 3px solid var(--line); border-radius: 10px; box-sizing: border-box; }
@@ -26,3 +26,16 @@
 #screen-cover .home-speech.talk-change { animation: speechBob 3.6s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { #screen-cover .home-speech, #screen-cover .home-speech.talk-change { animation: none; } }
 
+
+/* 着せ替え:★の置き方。★は、絵の下の専用の場所に出す(絵と かさならない)。絵は、少し上げて、少し小さく */
+#screen-dress .dress-item:has(.dress-rare) .dress-art:not(.is-bg) { translate: 0 -17%; scale: 0.84; }
+#screen-dress .dress-item:has(.dress-rare) .dress-art.is-bg { height: calc(100% - 19px); align-self: start; }
+#screen-dress .dress-rare { left: 50%; bottom: 2px; translate: -50% 0; }
+/* 一番上の★の説明(ノーマル・レア・スーパーレア・レジェンド):1行に、ならべる */
+#screen-dress .dress-legend { flex-wrap: wrap; justify-content: center; gap: 3px 4px; margin: 0 0 6px; font-size: 9px; }
+#screen-dress .dress-legend span { padding: 1px 4px; gap: 0; white-space: nowrap; border-width: 1.5px; }
+#screen-dress .dress-legend i { width: 9px; height: 9px; }
+/* ★の入れものは、小さめに(★3つ・4つでも、はみ出さない)。かぎ(🔒)は、右上に動かして、★と かさならないように */
+#screen-dress .dress-item .dress-rare { padding: 1px 4px 1px 3px; max-width: calc(100% - 4px); box-sizing: border-box; }
+#screen-dress .dress-item .dress-rare i { width: 11px; height: 11px; }
+#screen-dress .dress-item .dress-lock { top: 1px; right: 1px; bottom: auto; font-size: 15px; }
