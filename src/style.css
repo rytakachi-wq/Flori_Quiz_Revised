@@ -3711,12 +3711,12 @@ html[data-pattern] :is(#screen-menu, #screen-note, #screen-credits, #screen-dex,
 
 /* 成績:ランクを大きく(アイコンも名前も) */
 #screen-records .rec-top .rank-line { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 2px 6px; font-size: 15px; line-height: 1.15; white-space: normal; }
-#screen-records .rec-top .rank-line #s-rank-icon { font-size: 34px; line-height: 1; }
+#screen-records .rec-top .rank-line #s-rank-icon { font-size: 44px; line-height: 1; }
 #screen-records .rec-top .rank-line #s-rank-icon .emi { height: 1em; width: auto; }
 #screen-records .rec-top .rank-line b { font-size: 28px; line-height: 1.1; }
 @media (max-height: 640px) {
   #screen-records .rec-top .rank-line { gap: 0 4px; }
-  #screen-records .rec-top .rank-line #s-rank-icon { font-size: 22px; }
+  #screen-records .rec-top .rank-line #s-rank-icon { font-size: 28px; }
   #screen-records .rec-top .rank-line b { font-size: 19px; line-height: 1; }
 }
 
@@ -3821,7 +3821,5 @@ html[data-pattern] :is(#screen-menu, #screen-note, #screen-credits, #screen-dex,
 #screen-dex .dex-icon, #screen-note .dex-icon { font-size: 30px; }
 #screen-dex .dex-cat, #screen-note .dex-cat { line-height: 1.75; white-space: nowrap; }
 
-/* RPG:敵は、左右に動かさない(ゆれ・つっこみ・右からの登場)。ダメージで、場面を赤くしない(利用者の指示) */
-.rpg-field.is-strike .rpg-foe-icon { animation: none; }
-.rpg-field.is-hurt .rpg-foe, .rpg-field.is-enter-foe .rpg-foe { animation: none; }
+/* RPG:ダメージで、場面を赤くしない(利用者の指示。敵の動きは、もとのまま) */
 .rpg-field.is-hurt { box-shadow: none; }
