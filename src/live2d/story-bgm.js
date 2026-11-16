@@ -1,8 +1,8 @@
 // ものがたり(ムービー)の、お話ごとの専用BGM。ゲームの BGM(music.js)と同じしくみで、ここで曲を足して、ここで鳴らす。
 // (music.js の TRACKS に、このページの中だけ曲を足す。ゲーム本体の BGM は ふやさない)
 // メロディの書きかた:"E5/4 G5/4 -/2 C6/2" = 音/長さ(ステップ。16で1小節)を、順に。"-" は休み。
-import { MusicPlayer, TRACKS } from '../music.js?v=20261116i';
-import { curve, getVolume } from '../audio.js?v=20261116i';
+import { MusicPlayer, TRACKS } from '../music.js?v=20261116j';
+import { curve, getVolume } from '../audio.js?v=20261116j';
 
 const bars = (...list) => list.map((text) => {
   let step = 0;
@@ -140,19 +140,44 @@ const TRACK_OF = {
   pro: 'story_pro', ep1: 'story_ep1', ep2: 'story_ep2', ep3: 'story_ep3', ep4: 'story_ep4', epi: 'story_epi',
 };
 
-let player = null;
-let want = null;   // ならしたい曲(音が出せるようになる前に呼ばれても、あとで鳴らす)
+// 曲のつなぎ目:2つの再生係(A・B)を、かわりばんこに使う。曲がかわるときは、前の曲を ゆっくり小さく(XFADE 秒)しながら、
+// 新しい曲を ゆっくり大きく して、重ねてつなぐ(ぶつっと切れない)。
+const XFADE = 1.8;
+let players = null;   // [A, B]
+let cur = 0;          // いま鳴らしているほう
+let curName = null;
+let want = null;      // ならしたい曲(音が出せるようになる前に呼ばれても、あとで鳴らす)
+const level = () => curve(getVolume('bgm'));
+function ramp(pl, to, sec) {
+  const g = pl.volume.gain, now = pl.ctx.currentTime;
+  g.cancelScheduledValues(now);
+  g.setValueAtTime(g.value, now);
+  g.linearRampToValueAtTime(to, now + sec);
+}
 function apply() {
-  if (!player) return;
-  player.setVolume(curve(getVolume('bgm')));
-  player.play(want);
+  if (!players) return;
+  if (want === curName) { ramp(players[cur], level(), 0.1); return; }   // 同じ曲:音の大きさだけ
+  const old = players[cur];
+  const hadOld = Boolean(curName);
+  cur ^= 1;
+  curName = want;
+  const next = players[cur];
+  if (hadOld) { ramp(old, 0, XFADE); const o = old; setTimeout(() => { if (players && o !== players[cur]) o.stop(); }, XFADE * 1000 + 200); }
+  next.volume.gain.cancelScheduledValues(next.ctx.currentTime);
+  if (want) {
+    next.volume.gain.setValueAtTime(0, next.ctx.currentTime);
+    next.play(want);
+    ramp(next, level(), hadOld ? XFADE : 0.6);
+  } else {
+    next.stop();
+  }
 }
 function start() {
-  if (player) { if (player.ctx.state !== 'running') player.ctx.resume().catch(() => {}); return; }
+  if (players) { if (players[0].ctx.state !== 'running') players[0].ctx.resume().catch(() => {}); return; }
   if (!window.AudioContext) return;
   try {
     const ctx = new AudioContext();
-    player = new MusicPlayer(ctx);
+    players = [new MusicPlayer(ctx), new MusicPlayer(ctx)];
     apply();
     if (ctx.state !== 'running') ctx.resume().catch(() => {});
   } catch { /* 音が出せなくても、ムービーは見られる */ }
@@ -160,11 +185,11 @@ function start() {
 // 画面を さわったら(ブラウザの決まり)、音を出せるようにする
 addEventListener('pointerdown', start);
 addEventListener('keydown', start);
-addEventListener('pagehide', () => { try { player?.stop(); player?.ctx.close(); } catch { /* なにもしない */ } });
+addEventListener('pagehide', () => { try { players?.forEach(p => p.stop()); players?.[0].ctx.close(); } catch { /* なにもしない */ } });
 start();   // ゲームの中から開いたときは、もう さわったあとなので、すぐ鳴る
 
 export function playStoryBgm(movieId) {
   want = TRACK_OF[movieId] ?? null;
   apply();
 }
-window.__bgm = () => ({ track: player?.name ?? null, state: player?.ctx.state ?? null, volume: getVolume('bgm') });   // 試験用
+window.__bgm = () => ({ track: curName && players ? players[cur].name : null, state: players?.[0].ctx.state ?? null, volume: getVolume('bgm') });   // 試験用
