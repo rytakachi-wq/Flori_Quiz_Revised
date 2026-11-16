@@ -408,3 +408,8 @@
   #screen-gameover .go-flori { height: 100%; max-height: none; width: auto; object-fit: contain; }
   #screen-gameover .go-buttons { margin-top: 0; }
 }
+/* ゲームオーバー:フロリは、舞台の下(下の文のすぐ上)にそろえる。あまった高さは、上にあく */
+@media (min-height: 601px) {
+  #screen-gameover .go-stage { display: flex; align-items: flex-end; justify-content: center; }
+  #screen-gameover .go-flori { height: auto; max-height: 100%; max-width: 100%; }
+}
