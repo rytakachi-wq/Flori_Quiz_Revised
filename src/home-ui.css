@@ -401,3 +401,10 @@
 .mode-btn.m-daily.is-done { border-left-color: #3d8a4a !important; }
 .mode-btn.is-done::after { content: ""; position: absolute; right: 10px; top: 50%; width: 44px; height: 44px; margin-top: -22px; background: url("../assets/illust/check.webp") center / contain no-repeat; filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.25)); pointer-events: none; }
 .mode-btn.is-done .tile-sub { color: #2a6a36; font-weight: bold; }
+
+/* ゲームオーバー:ボタンの上の空白をなくして、その分、フロリを大きく(舞台が、あいた高さをうめる) */
+@media (min-height: 601px) {
+  #screen-gameover .go-stage { flex: 1 1 0; height: auto; min-height: var(--go-h); }
+  #screen-gameover .go-flori { height: 100%; max-height: none; width: auto; object-fit: contain; }
+  #screen-gameover .go-buttons { margin-top: 0; }
+}
