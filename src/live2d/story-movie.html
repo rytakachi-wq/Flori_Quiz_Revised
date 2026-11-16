@@ -49,7 +49,7 @@ body{font:16px system-ui,"Hiragino Sans","Yu Gothic",sans-serif;user-select:none
 @keyframes cardIn{0%{opacity:0;transform:translate(-50%,calc(var(--u)*-3))}12%{opacity:1;transform:translate(-50%,0)}80%{opacity:1}100%{opacity:0}}
 .foe{z-index:10;position:absolute;height:auto;width:auto;filter:drop-shadow(0 calc(var(--u)*.7) calc(var(--u)*.7) rgba(0,0,0,.35))}
 .part{position:absolute;width:calc(var(--u)*5);height:auto;pointer-events:none}
-#bgs::after{content:"";position:absolute;inset:0;background:rgba(255,255,255,.4);pointer-events:none}   /* 背景を、うすく(story-skin.css の --veil と同じ濃さ) */
+#bgs::after{content:"";position:absolute;inset:0;background:rgba(255,255,255,.25);pointer-events:none}   /* 背景を、うすく(story-skin.css の --veil と同じ濃さ) */
 #flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
 #flash.on{animation:flash .5s ease-out}
 #fade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none}

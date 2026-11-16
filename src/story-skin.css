@@ -23,7 +23,7 @@
   --sk-night: #3a2a58;
 }
 /* 背景を、全体的に、うすく(白いベールを、絵の上にかさねる。0 でもとの濃さ。決め:decisions その135) */
-:root { --veil: rgba(255, 255, 255, 0.4); }
+:root { --veil: rgba(255, 255, 255, 0.25); }
 body {
   background: linear-gradient(var(--veil), var(--veil)), url("../assets/movie/bg_night_hd.webp") center bottom / cover fixed, #2a2550;
   color: var(--text);
