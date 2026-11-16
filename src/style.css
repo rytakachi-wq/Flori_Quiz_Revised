@@ -3812,3 +3812,7 @@ html[data-pattern] :is(#screen-menu, #screen-note, #screen-credits, #screen-dex,
 .ranks-list .rk-name { font-size: 16px; letter-spacing: 0; }
 .ranks-list .rk-min { font-size: 14px; }
 @media (max-height: 700px) { .ranks-dialog { padding: 10px 12px; } .ranks-title { font-size: 20px; } .ranks-howto { font-size: 13px; line-height: 1.4; } .ranks-list { gap: 3px 6px; } .ranks-list li { padding: 2px 8px; font-size: 14px; line-height: 1.2; } .ranks-list .rk-icon { font-size: 22px; } .ranks-list .rk-name { font-size: 14px; } .ranks-list .rk-min { font-size: 12.5px; } }
+
+/* ホーム・メニュー・クイズえらびのフロリは、上下にゆらさない(利用者の指示。動くフロリの口・目・体の動きは、そのまま) */
+#screen-cover .home-hero .hero-fig, #screen-cover.is-lively .home-hero .hero-fig, #screen-cover.is-lively .hero-fig,
+:is(#screen-cover, #screen-menu, #screen-flow) .hero-fig.has-live { animation: none !important; }
