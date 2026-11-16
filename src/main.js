@@ -916,7 +916,8 @@ function showResult() {
   }
   $("r-comment").textContent =
     mode === "oni" ? oniComment(result.correct, result.total) : adventure ? adventureComment(result) : comment(result.correct, result.total);
-  celebrateResult(result);
+  $("screen-result").dataset.clear = "1"; // ゲームオーバー以外は、クエストクリアと同じ金の見た目(home-ui.css)。RPGで失敗したときだけ、下で外す
+  celebrateResult(result); // (電球・星を出すか決めるので、上の clear の印を先につける)
 
   const setNote = $("r-set");
   const before = currentTotal();
@@ -925,7 +926,6 @@ function showResult() {
     const gained = currentTotal() - before;
     return gained > 0 ? `総合得点が${gained}点増えたヨ!` : "総合得点は新しく正解したりヒントなしで正解し直した時だけ増えるヨ。";
   };
-  $("screen-result").dataset.clear = "1"; // ゲームオーバー以外は、クエストクリアと同じ金の見た目(home-ui.css)。RPGで失敗したときだけ、下で外す
   if (mode === "review") {
     // 復習:間違えた問題の一覧だけが変わる。成績の回数や、総合得点には入れない。
     const leftAll = recordReview(result.answers);
