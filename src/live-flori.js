@@ -371,6 +371,13 @@ async function actorOf(role) {
   return actor;
 }
 
+// 上に余白をふやした見え方(パパ・ママの帽子・リボンが、上で見切れないように)
+function visitView(bounce, top) {
+  const mx = MARGIN.x * FRAME.w;
+  const my = MARGIN.y * FRAME.h;
+  const mt = top * FRAME.h;
+  return { x: X0 - mx / S, y: Y0 - mt / S + bounce, w: (FRAME.w + 2 * mx) / S, h: (FRAME.h + mt + my) / S };
+}
 let visiting = false;
 async function visit(role, side) {
   const stage = document.querySelector("#screen-cover .home-stage");
@@ -380,14 +387,15 @@ async function visit(role, side) {
   const stageBox = stage.getBoundingClientRect();
   const figBox = (stage.querySelector(".flori-cover") ?? fig).getBoundingClientRect();
   if (figBox.width === 0 || stageBox.width === 0) return;
-  const W = Math.round(Math.min(figBox.width * 0.66, stageBox.width * 0.26)); // フロリより、ひとまわり小さく
-  const H = Math.round((W * (1 + 2 * MARGIN.y) * FRAME.h) / ((1 + 2 * MARGIN.x) * FRAME.w));
+  const TOP = 0.2; // 帽子・リボン・ジャンプが、上で見切れないように、上に余白(絵の高さに対する割合)
+  const W = Math.round(Math.min(figBox.width * 0.85, stageBox.width * 0.33)); // フロリより、ひとまわり小さく
+  const H = Math.round((W * (1 + TOP + MARGIN.y) * FRAME.h) / ((1 + 2 * MARGIN.x) * FRAME.w));
   const canvas = document.createElement("canvas");
   canvas.setAttribute("aria-hidden", "true");
   const feet = figBox.bottom - stageBox.top; // フロリの足もと
   const rest = side === "left" ? -W * 0.18 : stageBox.width - W * 0.82; // 画面のはしから、少しだけ はみ出して立つ
   const away = side === "left" ? -W * 1.3 : stageBox.width + W * 0.3; // 画面の外
-  canvas.style.cssText = `position:absolute;left:${rest}px;top:${feet - H * 0.97}px;width:${W}px;height:${H}px;pointer-events:none;z-index:2;transform:translateX(${away - rest}px);transition:transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);`;
+  canvas.style.cssText = `position:absolute;left:${rest}px;top:${feet - H + (MARGIN.y * H) / (1 + TOP + MARGIN.y)}px;width:${W}px;height:${H}px;pointer-events:none;z-index:2;transform:translateX(${away - rest}px);transition:transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);`;
   stage.style.position ||= "relative";
   stage.append(canvas);
   const dpr = Math.min(devicePixelRatio || 1, 2);
@@ -398,7 +406,7 @@ async function visit(role, side) {
   const render = (now) => {
     if (!alive) return;
     const mv = actor.motion.update(now);
-    draw(actor.m, canvas.getContext("2d"), view(mv.bounce), { hide: new Set([bg]), squash: { sx: mv.sx, sy: mv.sy, ...FOOT }, imgs: actor.imgs, before: (ctx) => shadow(ctx, mv.bounce) });
+    draw(actor.m, canvas.getContext("2d"), visitView(mv.bounce, TOP), { hide: new Set([bg]), squash: { sx: mv.sx, sy: mv.sy, ...FOOT }, imgs: actor.imgs, before: (ctx) => shadow(ctx, mv.bounce) });
     if (actor.hat && actor.hatItem) {
       const ctx = canvas.getContext("2d");
       const p = actor.hatItem.pos;
