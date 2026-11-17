@@ -30,7 +30,7 @@
 .mode-btn.m-rpg .tile-icon { width: 64px; height: 64px; }
 .mode-btn.m-rpg .mode-ico { width: 60px; height: 60px; }
 .mode-btn { transition: transform 0.12s; }
-#screen-setup { background-image: linear-gradient(180deg, rgba(216, 236, 246, 0.15), rgba(169, 213, 235, 0.35)), url("../assets/movie/bg_castle_hd.webp") !important; background-size: cover !important; background-position: center bottom !important; }
+#screen-setup { background-image: linear-gradient(180deg, #d8ecf6 0%, #c3e2f1 38%, #a9d5eb 100%) !important; }
 .mode-btn.m-rpg { animation: sk-pulse 2.2s ease-in-out infinite; }
 @keyframes sk-pulse { 50% { transform: scale(1.025); } }
 @media (prefers-reduced-motion: reduce) { .mode-btn.m-rpg { animation: none; } }
