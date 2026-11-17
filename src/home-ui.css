@@ -481,3 +481,11 @@
 /* 問題図鑑:「NEW!」の札を小さく(カテゴリの文字にかぶっていた)・せまい画面で、分類のボタンの文字を折り返す */
 .dex-new { font-size: 10px; padding: 0 6px; }
 @media (max-width: 360px) { .dt-name { white-space: normal; line-height: 1.1; } }
+
+/* 旗が「あと◯点」の文字に触れないよう、棒の上の余白を少し広げる */
+.cover-home .quest-bar { margin-top: 18px; }
+
+/* 問題図鑑:カードは、4つずつ横にならべる(利用者の指示) */
+#screen-dex .dex-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+#screen-dex .dex-card { min-width: 0; padding-left: 4px; padding-right: 4px; }
+#screen-dex .dex-card .dex-no, #screen-dex .dex-card .dex-cat { font-size: 12px; }
