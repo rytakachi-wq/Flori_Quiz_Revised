@@ -453,3 +453,18 @@
 .rf-scene .rf-seq.rf-tight .rf-ico[src*="rule_dragon"] { width: 68px !important; height: 44px !important; }
 .rf-scene .rf-seq.rf-tight .rf-seq-item:has(.rf-ico[src*="rule_dragon"]) b { height: 44px; }
 .rf-scene .rf-seq.rf-tight .rf-seq-item:last-child { width: 70px; flex-basis: 70px; }
+
+/* せまい画面(幅360px以下):枠から文字がはみ出さないように(ランク・下の3つのボタン・成績の分野名) */
+@media (max-width: 360px) {
+  #screen-cover .home-rank { min-width: 0; max-width: 118px; padding: 0 6px; font-size: 13px; height: 34px; white-space: nowrap; }
+  .home-help { font-size: 11px; letter-spacing: -0.04em; }
+  .home-help > span:not(.rc-ico) { white-space: normal; overflow-wrap: anywhere; line-height: 1.15; text-align: center; }
+  .group-box li, .weak-list li { grid-template-columns: minmax(0, 1fr) auto; }
+  .gb-name { white-space: normal; min-width: 0; line-height: 1.2; }
+  .gb-num { white-space: nowrap; }
+}
+@media (max-width: 360px) {
+  .weak-list .gb-num { white-space: normal; text-align: right; min-width: 0; }
+  #screen-cover .home-rank { left: 42%; max-width: 100px; font-size: 12px; }
+  .home-help { padding-left: 1px; padding-right: 1px; font-size: 10.5px; }
+}
