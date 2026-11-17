@@ -1,6 +1,6 @@
 // 遊び方の、チュートリアルムービー。クイズのルール(rules.js)と同じ場面(フロリ+イラスト+物語調の文)を、そのまま見せる。
 // 場面は、「次へ」ボタンを押したときだけ進む(自動では進まない)。「戻る」「閉じる」も、ボタンで。
-import { getScenes } from "./rules.js?v=20261117i";
+import { getScenes } from "./rules.js?v=20261117k";
 
 let SCENES = [];
 
