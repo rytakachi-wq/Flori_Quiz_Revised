@@ -489,3 +489,10 @@
 #screen-dex .dex-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
 #screen-dex .dex-card { min-width: 0; padding-left: 4px; padding-right: 4px; }
 #screen-dex .dex-card .dex-no, #screen-dex .dex-card .dex-cat { font-size: 12px; }
+
+/* 問題図鑑のカードを、正方形に近く(利用者の指示。高さを、幅に合わせて決める) */
+#screen-dex .dex-card { height: clamp(76px, 21.5vw, 100px); min-height: 0; padding-top: 3px; padding-bottom: 3px; justify-content: space-evenly; }
+#screen-dex .dex-card .dex-icon { font-size: 28px; line-height: 1; }
+#screen-dex .dex-card:has(.dex-new) .dex-cat { margin-bottom: 15px; }
+#screen-dex .dex-card:has(.dex-new) .dex-icon { font-size: 24px; margin-top: -2px; }
+#screen-dex .dex-new { font-size: 9px; padding: 0 4px; border-radius: 0 8px 0 0; line-height: 1.35; }
