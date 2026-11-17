@@ -447,3 +447,9 @@
 .rf-scene .rf-ico[src*="rule_dragon"] { width: calc(var(--ri) * 1.7) !important; }
 .rf-scene .rf-seq.rf-tight .rf-ico[src*="rule_dragon"] { width: calc(var(--ri) * 1.35) !important; }
 .rf-scene .rf-seq.rf-tight .rf-seq-item:last-child { width: 70px; flex-basis: 70px; }
+/* ドラゴン:もっと大きく */
+.rf-scene .rf-seq .rf-ico[src*="rule_dragon"] { width: calc(var(--ri) * 2.9) !important; height: calc(var(--ri) * 1.8) !important; }
+.rf-scene .rf-seq .rf-seq-item:has(.rf-ico[src*="rule_dragon"]) b { height: calc(var(--ri) * 1.8); }
+.rf-scene .rf-seq.rf-tight .rf-ico[src*="rule_dragon"] { width: 68px !important; height: 44px !important; }
+.rf-scene .rf-seq.rf-tight .rf-seq-item:has(.rf-ico[src*="rule_dragon"]) b { height: 44px; }
+.rf-scene .rf-seq.rf-tight .rf-seq-item:last-child { width: 70px; flex-basis: 70px; }
