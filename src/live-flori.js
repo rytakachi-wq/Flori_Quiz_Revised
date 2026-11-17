@@ -3,11 +3,11 @@
 //  - かざり(頭・体・顔)は、いままでどおり。絵の見えている場所にそろえて、重ねる(decor-overlay.js)。
 //  - 色(着せ替えの色)は、体・頭・手足の絵を、flori-color.js で色づけしてから、貼る。
 //  - 出さない画面:クイズ(問題・RPG)。表紙は、クリックで ぴょん。着せ替え画面でも、腕を動かす。
-import { draw, loadModel } from "./live2d/live2d.js?v=20261117e";
-import { createMotion } from "./live2d/flori-motion.js?v=20261117e";
-import { playJump } from "./audio.js?v=20261117e";
-import { getFloriColor, recolorCanvas } from "./flori-color.js?v=20261117e";
-import { HEADS } from "./badges.js?v=20261117e";
+import { draw, loadModel } from "./live2d/live2d.js?v=20261117f";
+import { createMotion } from "./live2d/flori-motion.js?v=20261117f";
+import { playJump } from "./audio.js?v=20261117f";
+import { getFloriColor, recolorCanvas } from "./flori-color.js?v=20261117f";
+import { HEADS } from "./badges.js?v=20261117f";
 
 // ポーズつきの絵のうち、動くフロリにかえるもの(かざりの位置が合う絵。decor-overlay.js の POSE と同じ)
 const POSE = /(?:wave_(?:nikkori|smile|wrong|surprised)\.png|body_wave\.webp)$/;
@@ -181,9 +181,9 @@ function drawImgs() {
 }
 
 // ===== 目・口・つま先だけを、暖色に(ホームだけ。アドレスに ?tint=1 を付けたときだけ。利用者に見てもらうための見本) =====
-// 目(上まぶた=青・下まぶた=黄緑)・口(下くちびる=ピンク・上くちびる=クリーム)・つま先(足の青灰色の影)の絵だけ、色あいを夕やけに合う暖色へ。ふち(暗い線)・白目・体は、そのまま。
+// (目は、利用者の指示で、暖色にしない)口(下くちびる=ピンク・上くちびる=クリーム)・つま先(足の青灰色の影)の絵だけ、色あいを夕やけに合う暖色へ。ふち(暗い線)・白目・体は、そのまま。
 const WARM_ON = new URLSearchParams(location.search).get("tint") === "1";
-const WARM_KIND = (name) => (/上まぶた/.test(name) ? "eyeTop" : /下まぶた/.test(name) ? "eyeBottom" : /下唇/.test(name) ? "lipLow" : /上唇/.test(name) ? "lipUp" : /足/.test(name) ? "foot" : /^(体|顔|右手|左手)/.test(name) ? "body" : null);
+const WARM_KIND = (name) => (/下唇/.test(name) ? "lipLow" : /上唇/.test(name) ? "lipUp" : /足/.test(name) ? "foot" : /^(体|顔|右手|左手)/.test(name) ? "body" : null);
 function warmPixels(canvas, kind, bodyAll) {
   const w = canvas.naturalWidth ?? canvas.width, h = canvas.naturalHeight ?? canvas.height;
   const out = document.createElement("canvas");
