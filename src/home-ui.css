@@ -468,3 +468,16 @@
   #screen-cover .home-rank { max-width: 100px; font-size: 12px; }
   .home-help { padding-left: 1px; padding-right: 1px; font-size: 10.5px; }
 }
+
+/* ホーム上の「次の物語まで」の欄を、小さく(利用者の指示)。フロリの顔は、棒の上にかさねる */
+.cover-home .quest-panel { padding: 2px 10px 2px; }
+.cover-home .quest-ttl { font-size: 12px; }
+.cover-home .quest-score { font-size: 14px; }
+.cover-home .quest-bar { height: 10px; margin-top: 15px; margin-bottom: 3px !important; }
+.cover-home .quest-bar u { height: 18px; top: -4px; }
+.cover-home .quest-flag { width: 16px; height: 16px; margin-left: -8px; }
+.cover-home .quest-flori { top: 50% !important; bottom: auto !important; margin-top: -12px !important; margin-left: -12px !important; width: 24px !important; height: 24px !important; }
+
+/* 問題図鑑:「NEW!」の札を小さく(カテゴリの文字にかぶっていた)・せまい画面で、分類のボタンの文字を折り返す */
+.dex-new { font-size: 10px; padding: 0 6px; }
+@media (max-width: 360px) { .dt-name { white-space: normal; line-height: 1.1; } }
