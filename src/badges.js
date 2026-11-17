@@ -1,7 +1,7 @@
 // きせかえ(フロリの色・頭・体・顔・背景)と、そのもらい方(解放の条件)。成績(storage.js)から、条件を数える。
 // 名前や個人情報は入れない。きせかえの選びかただけ、端末内に保存する。
 
-import { OLD_UNLOCKS, RARITY, UNLOCKS } from "./dress-unlocks.js?v=20261117h";
+import { OLD_UNLOCKS, RARITY, UNLOCKS } from "./dress-unlocks.js?v=20261117i";
 
 const DRESS_KEY = "floriQuiz.dress";
 
@@ -467,10 +467,10 @@ export const THEMES = [
     return { id: p.id, name: p.name, tint: p.tint, preview: p.stage, stage: p.stage, bg, blue, dark, cover: plain ? p.stage : `linear-gradient(160deg, ${bg}, ${blue})`, pattern: plain ? undefined : p.stage, unlock: null, trial: true }; // pattern:柄物の背景は、ホーム・図鑑・その他・設定の背景にも、その柄を使う
   }),
 ];
-// 背景(ものがたりの絵。ホーム・着せ替えのフロリの後ろに出る)。朝 → 昼 → 夕方 → 夜 の順に並べる。条件なし=はじめから全部えらべる(条件を付けるなら、unlock を足す)
+// 背景(ものがたりの絵。ホーム・着せ替えのフロリの後ろに出る)。はじめの選択(家の前)を先頭に、夜明け → 昼 → 夕方 → 夜 の順に並べる。条件なし=はじめから全部えらべる(条件を付けるなら、unlock を足す)
 export const BGS = [
-  { id: "sunrise", name: "夜明けの野原", file: "bg_sunrise_hd", tint: "#f4a35a", unlock: null },
   { id: "home", name: "家の前", file: "bg_home_hd", tint: "#7fcf7a", unlock: null },
+  { id: "sunrise", name: "夜明けの野原", file: "bg_sunrise_hd", tint: "#f4a35a", unlock: null },
   { id: "gate", name: "お城の門", file: "bg_gate", tint: "#9a8a70", unlock: null },
   { id: "forest", name: "森", file: "bg_forest", tint: "#4caf6a", unlock: null },
   { id: "swamp", name: "沼", file: "bg_swamp", tint: "#6a9a5a", unlock: null },
