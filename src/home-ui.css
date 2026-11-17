@@ -465,6 +465,6 @@
 }
 @media (max-width: 360px) {
   .weak-list .gb-num { white-space: normal; text-align: right; min-width: 0; }
-  #screen-cover .home-rank { left: 42%; max-width: 100px; font-size: 12px; }
+  #screen-cover .home-rank { max-width: 100px; font-size: 12px; }
   .home-help { padding-left: 1px; padding-right: 1px; font-size: 10.5px; }
 }
