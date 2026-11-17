@@ -428,3 +428,6 @@
 /* 見本(?tint=1 のときだけ・ホームだけ):フロリに、アプリの色味(あたたかい夕やけ+ちゃいろ)をかさねる */
 .tint-preview #screen-cover .home-hero .flori-cover,
 .tint-preview #screen-cover .home-hero canvas.live-flori { filter: sepia(0.28) saturate(1.2) hue-rotate(-8deg) brightness(1.03) contrast(1.02) drop-shadow(0 2px 0 rgba(122, 72, 32, 0.35)); }
+/* 見本:目・つま先・口も もう少し 暖色に(青みの強い部分は、色相をすこし ずらして オレンジ寄りに) */
+.tint-preview #screen-cover .home-hero .flori-cover,
+.tint-preview #screen-cover .home-hero canvas.live-flori { filter: sepia(0.5) saturate(1.45) hue-rotate(-16deg) brightness(1.04) contrast(1.02) drop-shadow(0 2px 0 rgba(122, 72, 32, 0.35)); }
