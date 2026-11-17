@@ -5,10 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Flori_Quiz</title>
   <script>
-    // 見た目の見本:アドレスに ?tint=1 を付けたときだけ、ホームのフロリに、アプリの色味(夕やけ)をかさねる(ほかの画面・ふだんは、変えない)
-    if (/[?&]tint=1/.test(location.search)) document.documentElement.classList.add("tint-preview");
-  </script>
-  <script>
     // 起動の見はり番(古いキャッシュ・保存データなどで、main.js が止まったとき、気づけるように)。
     // ・main.js が、起動したら、window.__floriBoot = true にする。5秒たっても、ならなければ、「読みこみなおす」を出す。
     // ・アドレスに ?debug=1 を付けたときだけ、エラーの内容を、画面の下に出す(スマホで、原因を見るため)。
@@ -59,7 +55,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
   <link rel="stylesheet" href="style.css?v=20261116t">
   <link rel="stylesheet" href="story-skin.css?v=38">
-  <link rel="stylesheet" href="home-ui.css?v=20261117b">
+  <link rel="stylesheet" href="home-ui.css?v=20261117c">
   <link rel="stylesheet" href="dress-bg.css?v=11">
 </head>
 <body>
