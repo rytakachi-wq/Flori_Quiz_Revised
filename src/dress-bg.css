@@ -1,5 +1,5 @@
 /* 着せ替えの「背景」(ものがたりの絵)。選んだ絵(--flori-bg。main.js の setStageBg)を、ホームと、着せ替えのフロリの後ろに出す */
-:root { --flori-bg: url("../assets/movie/bg_sunrise_hd.webp"); }
+:root { --flori-bg: url("../assets/movie/bg_home_hd.webp"); }
 .cover-home { background: linear-gradient(var(--veil), var(--veil)), linear-gradient(180deg, rgba(40, 30, 80, 0.15), rgba(251, 231, 185, 0) 40%), var(--flori-bg) center bottom / cover; }
 .cover-home::before { background: linear-gradient(var(--veil), var(--veil)), linear-gradient(rgba(40, 30, 80, 0.2), rgba(255, 255, 255, 0) 45%), var(--flori-bg) center bottom / cover !important; }
 /* 着せ替え:フロリのいる枠 */

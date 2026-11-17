@@ -201,3 +201,9 @@ export function initRules(done) {
   });
   $("rf-skip").addEventListener("click", () => onDone?.());
 }
+
+// 遊び方のムービー(tutorial.js)でも、同じ場面を使う(クイズのルールと おなじ見た目・テンションにそろえる)
+export function getScenes(kind) {
+  const info = KINDS[kind] ?? KINDS.rpg;
+  return { scenes: info.scenes(), tag: info.tag, theme: info.theme };
+}

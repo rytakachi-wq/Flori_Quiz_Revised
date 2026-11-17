@@ -436,3 +436,14 @@
 .setup-say { margin: 0 0 14px; padding: 8px 16px; font-size: 18px; font-weight: bold; color: #fff; background: linear-gradient(180deg, #4aa8e8, #2b78c0); border: 3px solid var(--sk-brown); border-radius: 18px; box-shadow: 0 3px 0 var(--sk-brown2); }
 @media (max-height: 700px) { .setup-flori { height: 72px; } .setup-say { font-size: 15px; margin-bottom: 6px; padding: 4px 12px; } .mode-btn.m-rpg, .mode-btn.m-daily, .mode-btn.m-review { min-height: 54px; } }
 .play-btn .pb-arrow { border-left-color: #1c4a78 !important; filter: drop-shadow(0 2px 0 #e8f4ff) !important; }
+
+/* ===== 遊び方のムービー:クイズのルールと おなじ見た目 ===== */
+#tutorial .tut-flori-row .tut-side-flori { display: none; }
+#tutorial .tut-flori-row { display: block; }
+#tutorial .tut-caption { color: #fff; background: rgba(31, 74, 120, 0.92); border: 3px solid #7fc8f0; text-align: center; min-height: 96px; display: flex; align-items: center; justify-content: center; }
+#tutorial .tut-stage { height: clamp(170px, calc(30 * var(--dvh)), 280px); flex: none; }
+#tutorial .tut-title { color: #fff; }
+/* ルールの ドラゴン:大きく(よこ長の絵なので、よこ幅を ひろげる) */
+.rf-scene .rf-ico[src*="rule_dragon"] { width: calc(var(--ri) * 1.7) !important; }
+.rf-scene .rf-seq.rf-tight .rf-ico[src*="rule_dragon"] { width: calc(var(--ri) * 1.35) !important; }
+.rf-scene .rf-seq.rf-tight .rf-seq-item:last-child { width: 70px; flex-basis: 70px; }

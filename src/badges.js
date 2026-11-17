@@ -1,7 +1,7 @@
 // きせかえ(フロリの色・頭・体・顔・背景)と、そのもらい方(解放の条件)。成績(storage.js)から、条件を数える。
 // 名前や個人情報は入れない。きせかえの選びかただけ、端末内に保存する。
 
-import { OLD_UNLOCKS, RARITY, UNLOCKS } from "./dress-unlocks.js?v=20261117g";
+import { OLD_UNLOCKS, RARITY, UNLOCKS } from "./dress-unlocks.js?v=20261117h";
 
 const DRESS_KEY = "floriQuiz.dress";
 
@@ -636,7 +636,7 @@ export function rankOf(total) {
 }
 
 // ---------------- 選びかたの保存 ----------------
-const DEFAULT_DRESS = { head: "none", body: "none", face: "none", theme: "sky", color: "original", bg: "sunrise" };
+const DEFAULT_DRESS = { head: "none", body: "none", face: "none", theme: "sky", color: "original", bg: "home" };
 const LISTS = { head: HEADS, body: BODIES, face: FACES, theme: THEMES, color: COLORS, bg: BGS };
 
 export function loadDress() {
