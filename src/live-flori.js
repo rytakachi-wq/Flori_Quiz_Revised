@@ -3,11 +3,11 @@
 //  - かざり(頭・体・顔)は、いままでどおり。絵の見えている場所にそろえて、重ねる(decor-overlay.js)。
 //  - 色(着せ替えの色)は、体・頭・手足の絵を、flori-color.js で色づけしてから、貼る。
 //  - 出さない画面:クイズ(問題・RPG)。表紙は、クリックで ぴょん。着せ替え画面でも、腕を動かす。
-import { draw, loadModel } from "./live2d/live2d.js?v=20261117f";
-import { createMotion } from "./live2d/flori-motion.js?v=20261117f";
-import { playJump } from "./audio.js?v=20261117f";
-import { getFloriColor, recolorCanvas } from "./flori-color.js?v=20261117f";
-import { HEADS } from "./badges.js?v=20261117f";
+import { draw, loadModel } from "./live2d/live2d.js?v=20261117g";
+import { createMotion } from "./live2d/flori-motion.js?v=20261117g";
+import { playJump } from "./audio.js?v=20261117g";
+import { getFloriColor, recolorCanvas } from "./flori-color.js?v=20261117g";
+import { HEADS } from "./badges.js?v=20261117g";
 
 // ポーズつきの絵のうち、動くフロリにかえるもの(かざりの位置が合う絵。decor-overlay.js の POSE と同じ)
 const POSE = /(?:wave_(?:nikkori|smile|wrong|surprised)\.png|body_wave\.webp)$/;
@@ -180,64 +180,6 @@ function drawImgs() {
   return merged;
 }
 
-// ===== 目・口・つま先だけを、暖色に(ホームだけ。アドレスに ?tint=1 を付けたときだけ。利用者に見てもらうための見本) =====
-// (目は、利用者の指示で、暖色にしない)口(下くちびる=ピンク・上くちびる=クリーム)・つま先(足の青灰色の影)の絵だけ、色あいを夕やけに合う暖色へ。ふち(暗い線)・白目・体は、そのまま。
-const WARM_ON = new URLSearchParams(location.search).get("tint") === "1";
-const WARM_KIND = (name) => (/下唇/.test(name) ? "lipLow" : /上唇/.test(name) ? "lipUp" : /足/.test(name) ? "foot" : /^(体|顔|右手|左手)/.test(name) ? "body" : null);
-function warmPixels(canvas, kind, bodyAll) {
-  const w = canvas.naturalWidth ?? canvas.width, h = canvas.naturalHeight ?? canvas.height;
-  const out = document.createElement("canvas");
-  out.width = w;
-  out.height = h;
-  const ctx = out.getContext("2d", { willReadFrequently: true });
-  ctx.drawImage(canvas, 0, 0);
-  const img = ctx.getImageData(0, 0, w, h);
-  const d = img.data;
-  for (let i = 0; i < d.length; i += 4) {
-    if (d[i + 3] < 8) continue;
-    const r = d[i] / 255, g = d[i + 1] / 255, b = d[i + 2] / 255;
-    const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
-    const l = (mx + mn) / 2;
-    if (l < 0.45) continue; // 暗い線(ふち)は、そのまま
-    const dd = mx - mn;
-    const s = dd === 0 ? 0 : l > 0.5 ? dd / (2 - mx - mn) : dd / (mx + mn);
-    let hue = 0;
-    if (dd !== 0) hue = (mx === r ? ((g - b) / dd + (g < b ? 6 : 0)) : mx === g ? ((b - r) / dd + 2) : ((r - g) / dd + 4)) * 60;
-    let nh = null, ns = s;
-    if (kind === "eyeTop" && s > 0.2 && hue > 170 && hue < 250) { nh = 26; ns = Math.min(0.75, s * 1.05); } // 青 → 暖かいオレンジ
-    else if (kind === "eyeBottom" && s > 0.2 && hue > 45 && hue < 100) { nh = 40; ns = Math.min(0.75, s * 1.1); } // 黄緑 → 金色
-    else if (kind === "lipLow" && l > 0.5) { nh = 12; ns = Math.min(0.6, Math.max(s * 1.9, 0.3)); } // くすんだピンク → サーモン
-    else if (kind === "lipUp" && s > 0.1) { nh = 36; ns = Math.min(0.7, s * 1.3); } // クリーム → 暖かいクリーム
-    else if (kind === "foot" && s < 0.4 && hue > 170 && hue < 250 && l < 0.84) { nh = 24; ns = 0.2; } // 青灰色の影 → 暖かい灰色(ベージュ寄り)
-    else if (bodyAll && (kind === "body" || kind === "foot") && s < 0.5 && hue > 160 && hue < 262 && l >= 0.62) { nh = 34; ns = Math.max(0.16, Math.min(0.45, s * 1.15)); } // 体・手・頭の水色がかった白 → 暖かいクリーム(体の色を変えているときは、しない)
-    if (nh === null) continue;
-    const q = l < 0.5 ? l * (1 + ns) : l + ns - l * ns, p = 2 * l - q;
-    const ch = (t) => { let x = t; if (x < 0) x += 1; if (x > 1) x -= 1; return x < 1 / 6 ? p + (q - p) * 6 * x : x < 1 / 2 ? q : x < 2 / 3 ? p + (q - p) * (2 / 3 - x) * 6 : p; };
-    const hh = nh / 360;
-    d[i] = Math.round(ch(hh + 1 / 3) * 255);
-    d[i + 1] = Math.round(ch(hh) * 255);
-    d[i + 2] = Math.round(ch(hh - 1 / 3) * 255);
-  }
-  ctx.putImageData(img, 0, 0);
-  return out;
-}
-const warmCache = new WeakMap(); // もとの絵(canvas) → 暖色にした絵
-let warmedFor = null, warmedMap = null;
-function warmImgs(map) {
-  if (warmedFor === map) return warmedMap;
-  const out = new Map(map);
-  for (const mesh of model.meshes) {
-    const kind = WARM_KIND(mesh.name);
-    const src = out.get(mesh.img) ?? model.imgs.get(mesh.img);
-    if (!kind || !src) continue;
-    if (!warmCache.has(src)) warmCache.set(src, warmPixels(src, kind, !tint));
-    out.set(mesh.img, warmCache.get(src));
-  }
-  warmedFor = map;
-  warmedMap = out;
-  return out;
-}
-
 function view(bounce) {
   const mx = MARGIN.x * FRAME.w;
   const my = MARGIN.y * FRAME.h;
@@ -364,7 +306,7 @@ function frame(now) {
     }
     const m = reduced ? { bounce: 0, sx: 1, sy: 1 } : item.motion.update(now);
     const bg = model.meshes.findIndex((mesh) => mesh.name === "BG");
-    draw(model, canvas.getContext("2d"), view(m.bounce), { hide: new Set([bg]), squash: { sx: m.sx, sy: m.sy, ...FOOT }, imgs: WARM_ON && item.box.closest("#screen-cover") ? warmImgs(drawImgs()) : drawImgs(), before: (ctx) => shadow(ctx, m.bounce) });
+    draw(model, canvas.getContext("2d"), view(m.bounce), { hide: new Set([bg]), squash: { sx: m.sx, sy: m.sy, ...FOOT }, imgs: drawImgs(), before: (ctx) => shadow(ctx, m.bounce) });
     tiltDecor(img, reduced ? 0 : faceAngle(), m);
     if (!item.ready) {
       item.ready = true;
