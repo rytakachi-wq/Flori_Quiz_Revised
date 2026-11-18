@@ -230,9 +230,11 @@ function escapeHtml(text) {
 // 読みを答える問題の、答えにあたる語。ふりがなを付けない(付けると答えが見える)。読み上げにも、読みは使わない。
 // 問題データ q14「「海豚」は何と読む?」・q36「「百足」は何と読む?」(利用者の指示)
 const NO_FURIGANA = ["海豚", "百足"];
+// 答えを見せたあとの「解説」の中では、この2語にも ふりがなを付ける(利用者の指示)
+const ANSWER_HOSTS = "#q-explanation, #rpg-explain, .note-why, [data-kana-answer]";
 
 // 文字を、[{ text, reading }] に分ける(読みは、ルビをつける部分だけ)。確認用にも使う。
-export function segments(text, digitMode = false) {
+export function segments(text, digitMode = false, allowAnswer = false) {
   const out = [];
   const push = (t, reading) => {
     const last = out[out.length - 1];
@@ -241,7 +243,7 @@ export function segments(text, digitMode = false) {
   };
   let i = 0;
   while (i < text.length) {
-    const skip = NO_FURIGANA.find((word) => text.startsWith(word, i));
+    const skip = !allowAnswer && NO_FURIGANA.find((word) => text.startsWith(word, i));
     if (skip) {
       push(skip, null); // ふりがなを付けない語
       i += skip.length;
@@ -346,9 +348,9 @@ function withKatakanaRuby(plain) {
   return html + escapeHtml(plain.slice(last));
 }
 
-export function rubyHtml(text, mode, kana = false) {
+export function rubyHtml(text, mode, kana = false, allowAnswer = false) {
   if (mode === "none") return escapeHtml(text);
-  return segments(text, kana && mode === "all")
+  return segments(text, kana && mode === "all", allowAnswer)
     .map(({ text: t, reading }) => {
       const show = reading && (mode === "all" || hasUpperKanji(t, FROM_GRADE[mode]));
       if (show) return `<ruby>${escapeHtml(t)}<rp>(</rp><rt>${reading}</rt><rp>)</rp></ruby>`;
@@ -421,7 +423,7 @@ function overhang(host) {
 }
 
 function render(host) {
-  host.innerHTML = rubyHtml(host.dataset.plain, mode, host.dataset.kana === "1");
+  host.innerHTML = rubyHtml(host.dataset.plain, mode, host.dataset.kana === "1", host.dataset.answer === "1");
   if (host.isConnected) overhang(host);
 }
 
@@ -435,6 +437,7 @@ function hostify(node) {
   host.className = HOST_CLASS;
   host.dataset.plain = node.nodeValue;
   if (kana) host.dataset.kana = "1";
+  if (parent.closest(ANSWER_HOSTS)) host.dataset.answer = "1"; // 解説の中(海豚・百足にも ふりがなを付ける)。つくる時に、印をつけておく
   render(host);
   node.replaceWith(host);
   overhang(host);
