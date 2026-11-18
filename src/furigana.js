@@ -292,7 +292,9 @@ function numberKana(n) {
 }
 
 export function speechOf(text) {
-  let out = text.replace(/(?<![0-9.])([0-9]{1,2})番/g, (all, n) => (Number(n) > 0 ? `${numberKana(Number(n))}ばん` : all));
+  // 読みを答える問題の答え(海豚・百足)は、声に出さない(答えが分かるため)。「なにか」と読んで、文をつなぐ
+  const hidden = NO_FURIGANA.reduce((t, word) => t.split(word).join("なにか"), text);
+  let out = hidden.replace(/(?<![0-9.])([0-9]{1,2})番/g, (all, n) => (Number(n) > 0 ? `${numberKana(Number(n))}ばん` : all));
   out = out.replace(COUNTER_RE, (all, n, counter, offset, whole) => {
     if (counter === "分" && isFraction(whole.slice(offset + all.length, offset + all.length + 9))) return all; // 3分の2(分数)は、そのまま
     return COUNTER_KANA[counter][Number(n)] ?? all;
