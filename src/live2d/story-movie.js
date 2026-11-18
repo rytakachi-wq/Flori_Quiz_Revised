@@ -218,7 +218,7 @@ function setScene(i) {
   prevBg = sc.bg;
   props.innerHTML = (sc.props || []).map(([art, x, y, h, o]) => `<img class="prop" alt="" src="${artUrl(art)}" style="left:${x}%;${o?.ground !== undefined ? `bottom:calc(var(--u)*${GROUND + o.ground})` : `top:calc(var(--u)*${y})`};height:calc(var(--u)*${h});${o?.w ? `width:calc(var(--u)*${o.w})` : ''}">`).join('');
   koma.textContent = `${movie.code}${i + 1}`;
-  title.innerHTML = sc.titleCard ? `<div class="tcard"><img alt="" src="${artUrl(sc.titleCard)}"><div class="tcard-text">${(sc.titleText || []).map((t, i, a) => `<span class="tt${a.length === 1 ? 'x' : i}">${t}</span>`).join('')}</div></div>` : sc.titleArt ? `<img alt="" src="${artUrl(sc.titleArt)}">` : (sc.title || '');
+  title.innerHTML = sc.titleCard ? `<div class="tcard"><img alt="" src="${artUrl(sc.titleCard)}"><div class="tcard-text" style="${Object.entries(sc.titleBox || {}).map(([k, v]) => `${k}:${v}`).join(';')}">${(sc.titleText || []).map((t, i, a) => `<span class="tt${a.length === 1 ? 'x' : i}">${t}</span>`).join('')}</div></div>` : sc.titleArt ? `<img alt="" src="${artUrl(sc.titleArt)}">` : (sc.title || '');
   title.classList.toggle('on', Boolean(sc.title || sc.titleArt || sc.titleCard));
   cardEl.style.display = sc.card ? 'block' : 'none';
   if (sc.card) { cardBg.src = artUrl(sc.card); const t = CARD_TEXT[sc.card] || ['', '']; cardNo.textContent = t[0]; cardName.textContent = t[1]; Object.assign(cardText.style, CARD_BOX[sc.card] || {}); cardEl.style.opacity = 0; }
