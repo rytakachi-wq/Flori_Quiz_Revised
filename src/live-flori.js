@@ -3,11 +3,11 @@
 //  - かざり(頭・体・顔)は、いままでどおり。絵の見えている場所にそろえて、重ねる(decor-overlay.js)。
 //  - 色(着せ替えの色)は、体・頭・手足の絵を、flori-color.js で色づけしてから、貼る。
 //  - 出さない画面:クイズ(問題・RPG)。表紙は、クリックで ぴょん。着せ替え画面でも、腕を動かす。
-import { draw, loadModel } from "./live2d/live2d.js?v=20261118z";
-import { createMotion } from "./live2d/flori-motion.js?v=20261118z";
-import { playJump } from "./audio.js?v=20261118z";
-import { getFloriColor, recolorCanvas } from "./flori-color.js?v=20261118z";
-import { HEADS } from "./badges.js?v=20261118z";
+import { draw, loadModel } from "./live2d/live2d.js?v=20261118zb";
+import { createMotion } from "./live2d/flori-motion.js?v=20261118zb";
+import { playJump } from "./audio.js?v=20261118zb";
+import { getFloriColor, recolorCanvas } from "./flori-color.js?v=20261118zb";
+import { HEADS } from "./badges.js?v=20261118zb";
 
 // ポーズつきの絵のうち、動くフロリにかえるもの(かざりの位置が合う絵。decor-overlay.js の POSE と同じ)
 const POSE = /(?:wave_(?:nikkori|smile|wrong|surprised)\.png|body_wave\.webp)$/;
@@ -217,10 +217,32 @@ function mount(img) {
   const item = { canvas, motion: null, key: "", ready: false, size: "", box };
   if (img.closest("#screen-cover")) {
     canvas.style.pointerEvents = "auto";
-    canvas.addEventListener("pointerdown", () => { tapAt = performance.now(); item.motion?.hop(performance.now()); }); // 表紙は、クリックで ぴょん
+    canvas.addEventListener("pointerdown", () => {
+      tapAt = performance.now();
+      coverTaps += 1;
+      item.motion?.hop(performance.now()); // 表紙は、クリックで ぴょん
+      if (coverTaps % 3 === 0) bigHop(item); // 3回・6回・9回…めは、もっと高く
+    });
   }
   mounts.set(img, item);
   return item;
+}
+
+// 表紙のフロリを、3の倍数回めにさわったとき:ふつうのぴょんに加えて、フロリ全体(かざりも いっしょに)を、さらに上へ のぼらせる
+let coverTaps = 0;
+function bigHop(item) {
+  if (reduced || !item.box?.animate) return;
+  const lift = Math.round((item.box.getBoundingClientRect().height || 240) * 0.3);
+  item.box.animate(
+    [
+      { translate: "0 0", offset: 0 },
+      { translate: "0 0", offset: 0.14 / 1.2, easing: "cubic-bezier(0.2, 0.7, 0.4, 1)" }, // かがんでから
+      { translate: `0 ${-lift}px`, offset: 0.54 / 1.2, easing: "cubic-bezier(0.6, 0, 0.8, 0.3)" }, // 高くのぼって
+      { translate: "0 0", offset: 0.94 / 1.2 }, // おりる
+      { translate: "0 0", offset: 1 },
+    ],
+    { duration: 1200 },
+  );
 }
 
 // フロリの動きの音:ひとりでに動くとき(ぴょん・伸び・手を振る・表情)は、鳴らさない(動くたびに鳴ってうるさいため)。
