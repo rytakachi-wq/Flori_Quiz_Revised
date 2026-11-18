@@ -23,7 +23,7 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const SRC = new URL('../', import.meta.url);   // src/
 const ART = {   // 絵(アプリの絵。assets/illust)
   dragon: '../assets/illust/dragon.webp', mouse: '../assets/illust/mouse.webp', frog: '../assets/illust/frog.webp', scorpion: '../assets/illust/scorpion.webp',
-  house: '../assets/illust/house.webp', sun: '../assets/illust/sun.webp', moon: '../assets/illust/moon.webp', cloud: '../assets/illust/cloud.webp', castle: '../assets/illust/castle.webp',
+  house: '../assets/movie/house.webp', sun: '../assets/illust/sun.webp', moon: '../assets/illust/moon.webp', cloud: '../assets/illust/cloud.webp', castle: '../assets/illust/castle.webp',
   tree: '../assets/illust/tree.webp', hat: '../assets/illust/tophat.webp', ribbon: '../assets/dress/head01.png',
   sparkle: '../assets/illust/sparkle.webp', bulb: '../assets/illust/bulb.webp', key: '../assets/illust/key.webp', heart: '../assets/illust/heart.webp', star: '../assets/illust/star_fill.webp', sweat: '../assets/illust/sweat.webp', fire: '../assets/illust/fire.webp',
 };
@@ -137,6 +137,15 @@ const PROLOGUE = MOVIES[0];
 
 
 // ================= 再生 =================
+const cardBg = document.getElementById('card-bg'), cardText = document.getElementById('card-text'), cardNo = document.getElementById('card-no'), cardName = document.getElementById('card-name');
+// 話数の札:絵(白紙の巻物)に、字を重ねる。字の場所(%)は、絵ごと
+const CARD_TEXT = { card_ep1: ['第1話', 'ネズミとパパの帽子'], card_ep2: ['第2話', 'カエルとママのリボン'], card_ep3: ['第3話', '決戦の前に'], card_ep4: ['第4話', 'ドラゴンと最後の戦い'] };
+const CARD_BOX = {
+  card_ep1: { left: '30%', right: '14%', top: '20%', bottom: '20%' },
+  card_ep2: { left: '29%', right: '19%', top: '20%', bottom: '20%' },
+  card_ep3: { left: '27%', right: '14%', top: '20%', bottom: '22%' },
+  card_ep4: { left: '24%', right: '16%', top: '20%', bottom: '20%' },
+};
 const marksEl = document.getElementById('marks'), cardEl = document.getElementById('card'), koma = document.getElementById('koma'), phone = document.getElementById('phone'), stage = document.getElementById('stage'), world = document.getElementById('world');
 const props = document.getElementById('props'), foesEl = document.getElementById('foes'), partsEl = document.getElementById('parts'), bgsEl = document.getElementById('bgs');
 const who = document.getElementById('who'), line = document.getElementById('line'), title = document.getElementById('title'), prog = document.getElementById('prog');
@@ -212,7 +221,7 @@ function setScene(i) {
   title.innerHTML = sc.titleArt ? `<img alt="" src="${artUrl(sc.titleArt)}">` : (sc.title || '');
   title.classList.toggle('on', Boolean(sc.title || sc.titleArt));
   cardEl.style.display = sc.card ? 'block' : 'none';
-  if (sc.card) { cardEl.src = artUrl(sc.card); cardEl.style.opacity = 0; }
+  if (sc.card) { cardBg.src = artUrl(sc.card); const t = CARD_TEXT[sc.card] || ['', '']; cardNo.textContent = t[0]; cardName.textContent = t[1]; Object.assign(cardText.style, CARD_BOX[sc.card] || {}); cardEl.style.opacity = 0; }
   marksEl.innerHTML = (sc.marks || []).map(m => `<img class="mark" alt="" src="${artUrl(m.art)}" style="left:${m.x}%;top:calc(var(--u)*${m.y});height:calc(var(--u)*${m.h})">`).join('');
   document.getElementById('cap').style.visibility = sc.lines ? 'visible' : 'hidden';
   foesEl.innerHTML = (sc.foes || []).map(f => `<img class="foe" alt="" src="${artUrl(f.art)}">`).join('');

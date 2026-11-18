@@ -44,7 +44,11 @@ body{font:16px system-ui,"Hiragino Sans","Yu Gothic",sans-serif;user-select:none
 .bubble.on{opacity:1}
 .mark{z-index:20;position:absolute;width:auto;pointer-events:none;opacity:0;filter:drop-shadow(0 calc(var(--u)*.4) calc(var(--u)*.4) rgba(0,0,0,.3))}
 #title img{width:76%;height:auto}
-#card{display:none;position:absolute;left:50%;top:calc(var(--u)*14);width:62%;transform:translateX(-50%);opacity:0;z-index:4}
+#card{display:none;position:absolute;left:50%;top:calc(var(--u)*12);width:84%;transform:translateX(-50%);opacity:0;z-index:4;filter:drop-shadow(0 calc(var(--u)*.6) calc(var(--u)*.8) rgba(0,0,0,.3))}
+#card-bg{display:block;width:100%;height:auto}
+#card-text{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#4a2f14;font-weight:bold;gap:calc(var(--u)*.4);line-height:1.25}
+#card-no{font-size:calc(var(--u)*5.2);letter-spacing:.06em}
+#card-name{font-size:calc(var(--u)*3.6)}
 #card.show{animation:cardIn 3.4s ease forwards}
 @keyframes cardIn{0%{opacity:0;transform:translate(-50%,calc(var(--u)*-3))}12%{opacity:1;transform:translate(-50%,0)}80%{opacity:1}100%{opacity:0}}
 .foe{z-index:10;position:absolute;height:auto;width:auto;filter:drop-shadow(0 calc(var(--u)*.7) calc(var(--u)*.7) rgba(0,0,0,.35))}
@@ -88,7 +92,7 @@ body{font:16px system-ui,"Hiragino Sans","Yu Gothic",sans-serif;user-select:none
     <div id="marks"></div>
   </div>
   <div id="title"></div>
-  <img id="card" alt="">
+  <div id="card"><img id="card-bg" alt=""><div id="card-text"><b id="card-no"></b><span id="card-name"></span></div></div>
   <div id="flash"></div>
   <div id="fade"></div>
 </div>
