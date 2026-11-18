@@ -46,11 +46,17 @@ body{font:16px system-ui,"Hiragino Sans","Yu Gothic",sans-serif;user-select:none
 .bubble.on{opacity:1}
 .mark{z-index:20;position:absolute;width:auto;pointer-events:none;opacity:0;filter:drop-shadow(0 calc(var(--u)*.4) calc(var(--u)*.4) rgba(0,0,0,.3))}
 #title img{width:76%;height:auto}
+#title .tcard{position:relative;width:88%;filter:drop-shadow(0 calc(var(--u)*.6) calc(var(--u)*.8) rgba(0,0,0,.3))}
+#title .tcard img{display:block;width:100%}
+#title .tcard-text{position:absolute;left:18%;right:18%;top:20%;bottom:20%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic UI",sans-serif;font-weight:900;line-height:1.15;-webkit-text-stroke:calc(var(--u)*.9) #fff;paint-order:stroke fill}
+#title .tt0{font-size:calc(var(--u)*5.6);color:#6a3f22;text-shadow:0 calc(var(--u)*.4) 0 rgba(160,110,60,.55)}
+#title .tt1{font-size:calc(var(--u)*8.2);color:#ff7a4d;text-shadow:0 calc(var(--u)*.5) 0 #c85a2a}
+#title .ttx{font-size:calc(var(--u)*10.5);color:#ff7a4d;text-shadow:0 calc(var(--u)*.5) 0 #c85a2a}
 #card{display:none;position:absolute;left:50%;top:calc(var(--u)*12);width:84%;transform:translateX(-50%);opacity:0;z-index:4;filter:drop-shadow(0 calc(var(--u)*.6) calc(var(--u)*.8) rgba(0,0,0,.3))}
 #card-bg{display:block;width:100%;height:auto}
 #card-text{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic UI",sans-serif;font-weight:900;gap:calc(var(--u)*.2);line-height:1.15}
 #card-no ruby{ruby-position:over}
-#card-no{position:relative;top:calc(var(--u)*-5.2);white-space:nowrap;font-size:calc(var(--u)*7.2);letter-spacing:-.02em;word-spacing:-.2em;color:#ff7a4d;-webkit-text-stroke:calc(var(--u)*1.1) #fff;paint-order:stroke fill;text-shadow:0 calc(var(--u)*.5) 0 #c85a2a}
+#card-no{position:relative;top:calc(var(--u)*-5.2);white-space:nowrap;font-size:calc(var(--u)*7.2);letter-spacing:-.09em;word-spacing:-.3em;color:#ff7a4d;-webkit-text-stroke:calc(var(--u)*1.1) #fff;paint-order:stroke fill;text-shadow:0 calc(var(--u)*.5) 0 #c85a2a}
 #card-name{white-space:pre-line;font-size:calc(var(--u)*4.2);color:#6a3f22;-webkit-text-stroke:calc(var(--u)*.9) #fff;paint-order:stroke fill;text-shadow:0 calc(var(--u)*.4) 0 rgba(160,110,60,.55)}
 #card.show{animation:cardIn 3.4s ease forwards}
 @keyframes cardIn{0%{opacity:0;transform:translate(-50%,calc(var(--u)*-3))}12%{opacity:1;transform:translate(-50%,0)}80%{opacity:1}100%{opacity:0}}
