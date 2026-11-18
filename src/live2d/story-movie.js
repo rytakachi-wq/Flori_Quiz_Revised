@@ -222,7 +222,7 @@ function setScene(i) {
   title.classList.toggle('on', Boolean(sc.title || sc.titleArt));
   cardEl.style.display = sc.card ? 'block' : 'none';
   if (sc.card) { cardBg.src = artUrl(sc.card); const t = CARD_TEXT[sc.card] || ['', '']; cardNo.textContent = t[0]; cardName.textContent = t[1]; Object.assign(cardText.style, CARD_BOX[sc.card] || {}); cardEl.style.opacity = 0; }
-  marksEl.innerHTML = (sc.marks || []).map(m => `<img class="mark" alt="" src="${artUrl(m.art)}" style="left:${m.x}%;top:calc(var(--u)*${m.y});height:calc(var(--u)*${m.h});${m.mask ? `-webkit-mask-image:${m.mask};mask-image:${m.mask}` : ''}">`).join('');
+  marksEl.innerHTML = (sc.marks || []).map(m => `<img class="mark" alt="" src="${artUrl(m.art)}" style="left:${m.x}%;top:calc(var(--u)*${m.y});height:calc(var(--u)*${m.h});${m.mask ? `-webkit-mask-image:${m.mask};mask-image:${m.mask};-webkit-mask-composite:source-in;mask-composite:intersect` : ''}">`).join('');
   document.getElementById('cap').style.visibility = sc.lines ? 'visible' : 'hidden';
   foesEl.innerHTML = (sc.foes || []).map(f => `<img class="foe" alt="" src="${artUrl(f.art)}">`).join('');
   partsEl.innerHTML = '';
