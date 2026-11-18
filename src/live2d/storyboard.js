@@ -40,7 +40,7 @@ export const PROLOGUE = { id: 'pro', code: 'P', label: 'プロローグ', scenes
     actors: { flori: A(50, { s: 1.6, ...BRAVE, cues: [CUE('cheer', 0.3, 2.6)] }) } },
   { bgm: 'walk', dur: 8.0, bg: 'sunrise', lines: [L('', 'フロリの冒険が始まる!')],
     actors: { flori: A(50, { s: 1.2, ...SMILE, faces: HOLD('nikkori'), cues: [CUE('flap', 0, 2.6)], walk: true, to: { x: 125 } }) } },
-  { bgm: 'walk', dur: 2.6, bg: 'sunrise', titleArt: 'title_start', hops: [{ at: 0.5, who: 'flori' }], actors: { flori: A(50, { s: 1.0, ...SMILE }) } },
+  { bgm: 'walk', dur: 2.6, bg: 'sunrise', titleCard: 'card_gold', titleText: ['RPGクエスト', 'スタート!'], hops: [{ at: 0.5, who: 'flori' }], actors: { flori: A(50, { s: 1.0, ...SMILE }) } },
 ] };
 
 export const EP1 = { id: 'ep1', code: '①', label: '①ネズミ', scenes: [
