@@ -48,7 +48,7 @@ import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js?v=20261
 import { hopFlori, startFamilyVisits, startLiveFlori } from "./live-flori.js?v=20261117z";
 import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js?v=20261117z";
 import { getVolume, holdBgm, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js?v=20261117z";
-import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=20261118a";
+import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=20261118b";
 
 
 const QUESTIONS_URL = "../data/questions/questions.json?v=20261117z"; // 問題を変えたら、この値と index.html の ?v= を変える
@@ -1424,7 +1424,7 @@ $("btn-credits").addEventListener("click", showCredits);
 // プロローグは、はじめて開いたとき、だれにでも見せる。①〜⑤は、総合得点が 20・40・60・80・100点になったあと、つぎにゲームを始める前に、1回だけ見せる。
 // 「その他」の「ものがたり」では、見られるようになったものを、いつでも見られる。
 const MOVIE_SEEN_KEY = "floriQuiz.movieSeen";
-const MOVIE_VER = "20261118a";
+const MOVIE_VER = "20261118b";
 const MOVIE_INFO = [
   { id: "pro", need: 0 },
   { id: "ep1", need: 20 },

@@ -227,6 +227,10 @@ function escapeHtml(text) {
   return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
+// 読みを答える問題の、答えにあたる語。ふりがなを付けない(付けると答えが見える)。読み上げにも、読みは使わない。
+// 問題データ q14「「海豚」は何と読む?」・q36「「百足」は何と読む?」(利用者の指示)
+const NO_FURIGANA = ["海豚", "百足"];
+
 // 文字を、[{ text, reading }] に分ける(読みは、ルビをつける部分だけ)。確認用にも使う。
 export function segments(text, digitMode = false) {
   const out = [];
@@ -237,6 +241,12 @@ export function segments(text, digitMode = false) {
   };
   let i = 0;
   while (i < text.length) {
+    const skip = NO_FURIGANA.find((word) => text.startsWith(word, i));
+    if (skip) {
+      push(skip, null); // ふりがなを付けない語
+      i += skip.length;
+      continue;
+    }
     const found = matchAt(text, i, digitMode);
     if (found) {
       for (const [t, reading] of found.segs) push(t, reading);
