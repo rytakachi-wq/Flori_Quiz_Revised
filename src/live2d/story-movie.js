@@ -216,7 +216,7 @@ function setScene(i) {
   for (const d of bgsEl.children) { if (d.dataset.bg === sc.bg) ensureBg(d); d.style.opacity = d.dataset.bg === sc.bg ? 1 : 0; }
   // 場面が かわるときの 暗転は、やめた(利用者の指示)   // 場面が かわるとき、暗転ぎみに つなぐ
   prevBg = sc.bg;
-  props.innerHTML = (sc.props || []).map(([art, x, y, h, o]) => `<img class="prop" alt="" src="${artUrl(art)}" style="${art === 'house' ? 'filter:brightness(1.2) contrast(.86) saturate(.9);' : ''}left:${x}%;${o?.ground !== undefined ? `bottom:calc(var(--u)*${GROUND + o.ground})` : `top:calc(var(--u)*${y})`};height:calc(var(--u)*${h})">`).join('');
+  props.innerHTML = (sc.props || []).map(([art, x, y, h, o]) => `<img class="prop" alt="" src="${artUrl(art)}" style="${art === 'house' ? 'filter:brightness(1.5) contrast(.82) saturate(.95);' : ''}left:${x}%;${o?.ground !== undefined ? `bottom:calc(var(--u)*${GROUND + o.ground})` : `top:calc(var(--u)*${y})`};height:calc(var(--u)*${h});${o?.w ? `width:calc(var(--u)*${o.w})` : ''}">`).join('');
   koma.textContent = `${movie.code}${i + 1}`;
   title.innerHTML = sc.titleArt ? `<img alt="" src="${artUrl(sc.titleArt)}">` : (sc.title || '');
   title.classList.toggle('on', Boolean(sc.title || sc.titleArt));
