@@ -24,7 +24,7 @@ const FROG_HOP = { frames: ['frog_crouch'], hop: 'frog_jump_mid' };
 const DRAGON_FLY = ['dragon_2', 'dragon_3'];
 
 export const PROLOGUE = { id: 'pro', code: 'P', label: 'プロローグ', scenes: [
-  { bgm: 'peace', dur: 5.4, bg: 'home', props: [['house', 30, null, 36, { ground: 12 }]], lines: [L('', 'フロリはパパフロリ・ママフロリと仲良く暮らしていました。')], hops: [{ at: 2.8, who: 'flori' }],
+  { bgm: 'peace', dur: 5.4, bg: 'home', props: [['house', 30, null, 36, { ground: 14.5 }]], lines: [L('', 'フロリはパパフロリ・ママフロリと仲良く暮らしていました。')], hops: [{ at: 2.8, who: 'flori' }],
     actors: { papa: A(74, { s: 0.45, y: BACKY, ...SMILE }), mama: A(90, { s: 0.45, y: BACKY + 3, ...SMILE }), flori: A(50, { s: 0.85, z: 2, ...SMILE }) } },
   { bgm: 'alarm', dur: 6.6, bg: 'dusk',  hops: [{ at: 5.2, who: 'flori' }, { at: 5.2, who: 'papa' }, { at: 5.2, who: 'mama' }], lines: [L('', 'ところがある日、空が真っ暗に…! ドラゴンが現れました!')],
     foes: [{ art: 'dragon_2', frames: DRAGON_FLY, fps: 4, h: 7, hTo: 30, from: [108, 4], to: [52, 41], yPow: 2.4, flip: false }], flash: 3.6, shake: [3.6, 0.9],
@@ -34,7 +34,7 @@ export const PROLOGUE = { id: 'pro', code: 'P', label: 'プロローグ', scenes
     foes: [{ art: 'dragon_2', frames: DRAGON_FLY, fps: 4, h: 30, hTo: 14, from: [26, 14], to: [-30, -12], flip: false }],
     actors: { papa: A(11, { s: BACK, y: BACKY, ...SURPRISE, faces: HOLD('surprised'), cues: [CUE('wave', 0.2, 2.6)], to: { x: -24, y: 78, s: 0.3 } }), mama: A(38, { s: BACK, y: BACKY, ...SURPRISE, faces: HOLD('surprised'), cues: [CUE('wave', 0.2, 2.6)], to: { x: -34, y: 74, s: 0.3 } }), flori: A(74, { s: 1.1, mood: 'しょんぼり', anim: 'sway', calm: true, faces: HOLD('wrong') }) } },
   { bgm: 'sad', dur: 6.4, bg: 'castle', lines: [L('パパフロリ', 'フロリ助けてくれ〜!', 0), L('ママフロリ', 'ひらめきの力を信じてネ!', 3.2)],
-    marks: [{ art: 'fx_cage', mask: 'radial-gradient(ellipse 11% 14% at 32% 57%, rgba(0,0,0,.3) 0%, rgba(0,0,0,.3) 65%, #000 100%), radial-gradient(ellipse 11% 14% at 68% 62%, rgba(0,0,0,.3) 0%, rgba(0,0,0,.3) 65%, #000 100%)', at: 0, to: 99, x: 65, y: 88, h: 32, still: true }],
+    marks: [{ art: 'fx_cage', mask: 'radial-gradient(ellipse 12% 16% at 32% 57%, rgba(0,0,0,.3) 0%, rgba(0,0,0,.3) 86%, #000 100%), radial-gradient(ellipse 12% 16% at 68% 62%, rgba(0,0,0,.3) 0%, rgba(0,0,0,.3) 86%, #000 100%)', at: 0, to: 99, x: 65, y: 88, h: 32, still: true }],
     actors: { papa: A(55, { y: 0, s: 0.4, mood: 'しょんぼり', faces: HOLD('wrong'), cues: [CUE('wave', 0.5, 2.6)] }), mama: A(75, { y: 6, s: 0.4, mood: 'しょんぼり', faces: HOLD('wrong'), cues: [CUE('wave', 1.2, 2.6)] }) } },
   { bgm: 'resolve', dur: 4.8, bg: 'dusk', lines: [L('フロリ', '任せて! ひらめきクイズでドラゴンを倒してパパとママを助けるヨ!')], hops: HOPS(4, 0.3, 1.2),
     actors: { flori: A(50, { s: 1.6, ...BRAVE, cues: [CUE('cheer', 0.3, 2.6)] }) } },
@@ -126,12 +126,12 @@ export const EP4 = { id: 'ep4', code: '④', label: '④ドラゴン', scenes: [
 
 export const ENDING = { id: 'epi', code: 'E', label: 'エンディング', scenes: [
   { bgm: 'warm', dur: 11.0, bg: 'castle', lines: [L('フロリ', 'パパ! ママ! お待たせ!', 0), L('パパフロリ', 'フロリ! 来てくれたんだね!', 3.8), L('ママフロリ', 'きっと来てくれると信じてたわ!', 7.4)],
-    marks: [{ art: 'fx_cage', mask: 'radial-gradient(ellipse 11% 14% at 32% 57%, rgba(0,0,0,.3) 0%, rgba(0,0,0,.3) 65%, #000 100%), radial-gradient(ellipse 11% 14% at 68% 62%, rgba(0,0,0,.3) 0%, rgba(0,0,0,.3) 65%, #000 100%)', at: 0, to: 99, x: 65, y: 91, h: 32, still: true }],
+    marks: [{ art: 'fx_cage', mask: 'radial-gradient(ellipse 12% 16% at 32% 57%, rgba(0,0,0,.3) 0%, rgba(0,0,0,.3) 86%, #000 100%), radial-gradient(ellipse 12% 16% at 68% 62%, rgba(0,0,0,.3) 0%, rgba(0,0,0,.3) 86%, #000 100%)', at: 0, to: 99, x: 65, y: 91, h: 32, still: true }],
     actors: { flori: A(-40, { s: 1.0, faces: [{ at: 0 }], cues: [CUE('expr', 0.4), CUE('wave', 1.8), CUE('expr', 4.9), CUE('flap', 6.2), CUE('expr', 8.8), CUE('wave', 9.6)], walk: true, len: 2.0, to: { x: 24 } }),
       papa: A(55, { y: 0, s: 0.4, mood: 'こまった', calm: true, faces: [{ at: 0, to: 3.8, pose: 'wrong' }, { at: 3.8, pose: 'smile' }] }),
       mama: A(75, { y: 0, s: 0.4, mood: 'こまった', calm: true, faces: [{ at: 0, to: 7.4, pose: 'wrong' }, { at: 7.4, pose: 'smile' }] }) } },
   { bgm: 'warm', dur: 7.0, bg: 'castle', lines: [L('フロリ', 'カギを手に入れたよ! 今から出すね!', 0), L('フロリ', 'えいっ! 檻が開いたヨ!', 4.2)],
-    marks: [{ art: 'fx_cage', mask: 'radial-gradient(ellipse 11% 14% at 32% 57%, rgba(0,0,0,.3) 0%, rgba(0,0,0,.3) 65%, #000 100%), radial-gradient(ellipse 11% 14% at 68% 62%, rgba(0,0,0,.3) 0%, rgba(0,0,0,.3) 65%, #000 100%)', at: 0, to: 5.0, x: 65, y: 91, h: 32, still: true }],
+    marks: [{ art: 'fx_cage', mask: 'radial-gradient(ellipse 12% 16% at 32% 57%, rgba(0,0,0,.3) 0%, rgba(0,0,0,.3) 86%, #000 100%), radial-gradient(ellipse 12% 16% at 68% 62%, rgba(0,0,0,.3) 0%, rgba(0,0,0,.3) 86%, #000 100%)', at: 0, to: 5.0, x: 65, y: 91, h: 32, still: true }],
     foes: [{ art: 'key', h: 9, ground: true, len: 3.2, until: 5.0, from: [30, 19], to: [38, 19] }],
     actors: { flori: A(18, { s: 0.9, faces: [{ at: 0 }], handSide: 'L', cues: [CUE('raise1', 0.2), CUE('expr', 4.0, 1.8)], walk: true, len: 3.2, to: { x: 26 } }),
       papa: A(55, { y: 0, s: 0.4, mood: 'こまった', calm: true, faces: HOLD('smile') }), mama: A(75, { y: 0, s: 0.4, mood: 'こまった', calm: true, faces: HOLD('smile') }) } },
@@ -141,7 +141,7 @@ export const ENDING = { id: 'epi', code: 'E', label: 'エンディング', scene
     actors: { flori: A(118, { s: 1.0, z: 2, ...JOY, anim: 'bounce', walk: true, to: { x: 18 } }), papa: A(130, { s: 0.7, y: 6, ...JOY, anim: 'bounce', walk: true, to: { x: 54 } }), mama: A(142, { s: 0.7, y: 12, ...JOY, anim: 'bounce', walk: true, to: { x: 86 } }) } },
   { bgm: 'joy', dur: 5.2, bg: 'sunrise', lines: [L('ママフロリ', 'ひらめきの力はかっこよかったわ!')], fx: { art: ['heart', 'sparkle'], mode: 'rise', rate: 110 }, hops: [{ at: 1, who: 'flori' }, { at: 2, who: 'papa' }, { at: 3, who: 'mama' }],
     actors: { papa: A(13, { s: BACK, y: BACKY, ...SMILE }), mama: A(87, { s: BACK, y: BACKY, ...SMILE }), flori: A(50, { s: FRONT, z: 2, ...JOY }) } },
-  { bgm: 'peace', dur: 5.4, bg: 'home', props: [['house', 30, null, 36, { ground: 12 }]], titleArt: 'title_end', lines: [L('', 'こうしてフロリたち家族はまた仲良く暮らしました。 おしまい。')],
+  { bgm: 'peace', dur: 5.4, bg: 'home', props: [['house', 30, null, 36, { ground: 14.5 }]], titleArt: 'title_end', lines: [L('', 'こうしてフロリたち家族はまた仲良く暮らしました。 おしまい。')],
     actors: { papa: A(74, { s: 0.45, y: BACKY, ...SMILE, cues: [CUE('wave', 0, 2.6)] }), mama: A(90, { s: 0.45, y: BACKY + 3, ...SMILE, cues: [CUE('wave', 0, 2.6)] }), flori: A(50, { s: 0.85, z: 2, ...SMILE, cues: [CUE('wave', 0, 2.6)] }) } },
 ] };
 
