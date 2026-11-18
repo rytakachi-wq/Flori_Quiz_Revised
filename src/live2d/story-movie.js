@@ -139,7 +139,7 @@ const PROLOGUE = MOVIES[0];
 // ================= 再生 =================
 const cardBg = document.getElementById('card-bg'), cardText = document.getElementById('card-text'), cardNo = document.getElementById('card-no'), cardName = document.getElementById('card-name');
 // 話数の札:絵(白紙の巻物)に、字を重ねる。字の場所(%)は、絵ごと
-const CARD_TEXT = { card_ep1: ['第1話', 'ネズミとパパの帽子'], card_ep2: ['第2話', 'カエルとママのリボン'], card_ep3: ['第3話', '決戦の前に'], card_ep4: ['第4話', 'ドラゴンと最後の戦い'] };
+const CARD_TEXT = { card_ep1: ['第1話', 'ネズミと\nパパの帽子'], card_ep2: ['第2話', 'カエルと\nママのリボン'], card_ep3: ['第3話', '決戦の前に'], card_ep4: ['第4話', 'ドラゴンと\n最後の戦い'] };
 const CARD_BOX = {
   card_ep1: { left: '30%', right: '14%', top: '20%', bottom: '20%' },
   card_ep2: { left: '29%', right: '19%', top: '20%', bottom: '20%' },
