@@ -520,3 +520,4 @@
 .mode-row .rules-again small { font-size: 14px; }
 .mode-row .rules-again:active { transform: translateY(3px); box-shadow: none; }
 @media (max-width: 340px) { .mode-row .mode-btn { padding-right: 8px; } .mode-row .rules-again { flex-basis: 70px; width: 70px; font-size: 22px; right: auto; height: auto; min-height: 0; } .mode-row .rules-again small { font-size: 12px; } }
+.mode-row .rules-again { align-self: stretch; margin: 0; }
