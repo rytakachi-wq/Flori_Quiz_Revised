@@ -509,3 +509,6 @@
 #screen-rules { background: linear-gradient(180deg, #d8ecf6 0%, #c3e2f1 38%, #a9d5eb 100%) !important; border-color: #56ace1; }
 #screen-rules .screen-head .title { color: #ffffff; -webkit-text-stroke: 5px #274e7a; }
 #screen-rules .rf-skip { color: #274e7a; }
+
+/* ルール3つとも:場面の背景(絵が出る所)も 水色に */
+#screen-rules .rf-stage, .tut-stage { background: linear-gradient(180deg, #e4f3fb 0%, #bfe0f2 55%, #9fd0ea 100%) !important; }
