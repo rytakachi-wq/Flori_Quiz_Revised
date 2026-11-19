@@ -569,3 +569,12 @@ html:not(.zz) body:not(.zz) rt:not(.zz) { color: inherit !important; text-shadow
   .home-help > span { font-size: 9.5px; letter-spacing: -0.03em; }
   .home-help .hub-ico { width: 22px; height: 22px; }
 }
+@media (max-width: 360px) { .home-help { min-height: 66px; } #btn-hub-records > span { line-height: 1.1; } }
+@media (max-width: 360px) { .home-help .hub-ico { width: 18px; height: 18px; } .home-help > span { font-size: 9px; line-height: 1.05; } .home-help { justify-content: center; } }
+@media (max-width: 360px) { #btn-hub-records .hub-ico, #btn-hub-story .hub-ico, #btn-hub-dress .hub-ico { width: 18px !important; height: 18px !important; margin: 0 !important; } #btn-hub-records > span { font-size: 9px !important; line-height: 1.05 !important; } }
+/* 下の3つのボタン(幅360px以下):story-skin.css の !important の指定に勝つよう、同じ重さで上書き。絵を小さく、文字を折り返して、ボタンに収める */
+@media (max-width: 360px) {
+  #screen-cover .home-help .hub-ico, #screen-cover .home-help-mid .hub-ico { width: 20px !important; height: 20px !important; }
+  #screen-cover .home-help, #screen-cover .home-help-mid { white-space: normal !important; font-size: 9px !important; padding: 2px 1px !important; }
+  #screen-cover .home-help > span, #screen-cover .home-help-mid > span { font-size: 9px !important; line-height: 1.05 !important; white-space: normal; }
+}
