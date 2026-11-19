@@ -529,3 +529,6 @@
 #btn-quiz { overflow: visible; }
 /* 文の中で、数字+数え方のふりがなの前後に、余分な空きができないように */
 ruby { white-space: nowrap; }
+
+/* オープニング:新しいロゴ(「ひらめきクイズ」入り)を 大きく */
+.opening .logo { width: min(380px, calc(88 * var(--vw))); }
