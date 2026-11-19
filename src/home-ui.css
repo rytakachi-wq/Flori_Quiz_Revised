@@ -539,3 +539,33 @@ ruby { white-space: nowrap; }
 /* ふりがな(rt)の色:漢字・カタカナの文字と、同じ色にする(読みやすさ)。ベタ塗り1色で、グラデーション・縁取り・影は付けない(利用者の指示)。
    ほかの画面の指定(.home-help rt など)に負けないよう、指定を重くしてある */
 html:not(.zz) body:not(.zz) rt:not(.zz) { color: inherit !important; text-shadow: none !important; -webkit-text-stroke: 0 !important; paint-order: normal !important; filter: none !important; background: none !important; box-shadow: none !important; opacity: 1; }
+
+/* せまい画面(幅360px以下):ふりがなが増えて、枠からはみ出す所を、折り返して収める */
+@media (max-width: 360px) {
+  .home-help { flex-direction: column; gap: 1px; padding: 3px 1px; min-width: 0; overflow: hidden; }
+  .home-help .hub-ico { width: 24px; height: 24px; }
+  .home-help > span { max-width: 100%; white-space: normal; overflow-wrap: anywhere; text-align: center; line-height: 1.2; font-size: 10px; }
+  .weak-list li { grid-template-columns: minmax(0, 1fr); grid-template-areas: "name" "num" "bar"; }
+  .weak-list .gb-num { justify-self: start; text-align: left; }
+  #s-daily, #s-rate, #s-dress, #s-plays { white-space: normal; overflow-wrap: anywhere; }
+  .mode-btn .tile-sub { white-space: normal; overflow-wrap: anywhere; line-height: 1.25; }
+  .mode-btn .tile-text { min-width: 0; }
+}
+
+/* せまい画面(幅360px以下・高さ620px以下):ふりがなで高くなる分を、へらして、1画面に収める */
+@media (max-width: 360px) {
+  .weak-box > *, .weak-list li > * { min-width: 0; }
+  .weak-msg { overflow-wrap: anywhere; word-break: break-all; }
+  #screen-records .scores dd { min-width: 0; overflow-wrap: anywhere; word-break: break-all; line-height: 1.3; }
+  #screen-rpg .rpg-window > .rpg-choices { grid-auto-rows: auto !important; }
+  #screen-rpg .rpg-choice { min-height: 28px; padding-top: 2px; padding-bottom: 2px; }
+}
+@media (max-width: 360px) and (max-height: 620px) {
+  #screen-setup .mode-btn .tile-sub { display: none; }
+}
+@media (max-width: 360px) {
+  #screen-records .scores dd, #s-daily { font-size: 13px; letter-spacing: -0.02em; }
+  #screen-records .scores dd ruby { white-space: normal; }
+  .home-help > span { font-size: 9.5px; letter-spacing: -0.03em; }
+  .home-help .hub-ico { width: 22px; height: 22px; }
+}
