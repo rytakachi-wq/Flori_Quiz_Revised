@@ -535,3 +535,7 @@ ruby { white-space: nowrap; }
 
 /* オープニングの「画面をタッチしてスタート!」:中の色を水色に */
 .opening .opening-hint { color: #1c4a78; background: linear-gradient(180deg, #a9ddfb, #62bef7); border-color: #274e7a; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7); }
+
+/* ふりがな(rt)の色:漢字・カタカナの文字と、同じ色にする(読みやすさ)。ベタ塗り1色で、グラデーション・縁取り・影は付けない(利用者の指示)。
+   ほかの画面の指定(.home-help rt など)に負けないよう、指定を重くしてある */
+html:not(.zz) body:not(.zz) rt:not(.zz) { color: inherit !important; text-shadow: none !important; -webkit-text-stroke: 0 !important; paint-order: normal !important; filter: none !important; background: none !important; box-shadow: none !important; opacity: 1; }
