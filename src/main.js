@@ -2535,7 +2535,7 @@ const FOE_ART = {
   宝箱: { key: "chest", src: "../assets/illust/gift.webp" },
   サソリ: { key: "scorpion", src: "../assets/movie/rule_scorpion.webp" },
   ドラゴン: { key: "dragon", src: "../assets/movie/rule_dragon.webp" },
-  オニ: { key: "dragon", src: "../assets/illust/oni.webp" },
+  オニ: { key: "dragon", src: "../assets/movie/rule_dragon.webp" },
 };
 function foeImage(stage) {
   const img = document.createElement("img");

@@ -496,3 +496,16 @@
 #screen-dex .dex-card:has(.dex-new) .dex-cat { margin-bottom: 15px; }
 #screen-dex .dex-card:has(.dex-new) .dex-icon { font-size: 24px; margin-top: -2px; }
 #screen-dex .dex-new { font-size: 9px; padding: 0 4px; border-radius: 0 8px 0 0; line-height: 1.35; }
+
+/* ===== クイズ選択:ルールのボタンは、各カードの右(赤丸の所)に 重ねて置く ===== */
+.mode-row { position: relative; display: block; }
+.mode-row .mode-btn { width: 100%; padding-right: 112px; }
+.mode-row .rules-again { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 92px; height: 44px; min-height: 44px; padding: 0 6px; flex-direction: row; gap: 5px; font-size: 18px; border-radius: 14px; z-index: 2; }
+.mode-row .rules-again small { font-size: 14px; }
+.mode-row .rules-again:active { transform: translateY(calc(-50% + 3px)); box-shadow: none; }
+@media (max-width: 340px) { .mode-row .mode-btn { padding-right: 92px; } .mode-row .rules-again { width: 74px; right: 8px; height: 40px; min-height: 40px; font-size: 15px; } .mode-row .rules-again small { font-size: 12px; } }
+
+/* ===== ルール説明の画面:背景も 水色に ===== */
+#screen-rules { background: linear-gradient(180deg, #d8ecf6 0%, #c3e2f1 38%, #a9d5eb 100%) !important; border-color: #56ace1; }
+#screen-rules .screen-head .title { color: #ffffff; -webkit-text-stroke: 5px #274e7a; }
+#screen-rules .rf-skip { color: #274e7a; }
