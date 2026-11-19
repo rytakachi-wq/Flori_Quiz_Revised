@@ -330,7 +330,7 @@ body.has-pager { padding-bottom: 0 !important; }
 #screen-credits .credits-roll .cr-section { border-top-color: #a0d1e9; }
 /* 点数(ゲーム中):大きく・金の文字・茶色の板 */
 #screen-credits .credits-hud { left: 10px; right: 10px; top: 8px; }
-#screen-credits .credits-score { font-size: 26px; line-height: 1; padding: 6px 14px; color: #a0d1e9; text-shadow: 0 2px 0 #204065; background: rgba(32, 64, 101, 0.82); border: 3px solid #3da0dd; border-radius: 999px; }
+#screen-credits .credits-score { font-size: 26px; line-height: 1; padding: 6px 14px; color: #1d5b8f; text-shadow: 0 1px 0 #ffffff; background: rgba(176, 229, 255, 0.94); border: 3px solid #3da0dd; border-radius: 999px; }
 #screen-credits .credits-msg { color: #28507d; background: #d8ecf6; border: 3px solid #2c588b; text-shadow: none; }
 /* 背景:朝 → 夕やけ → 夜 へ、なめらかに(朝の絵と夜の絵を まぜ、まんなかで 夕やけの色を重ねる) */
 #screen-credits .credits-stage::before { opacity: calc(var(--dusk, 0) * var(--dusk, 0) * (3 - 2 * var(--dusk, 0))); }
@@ -344,7 +344,7 @@ body.has-pager { padding-bottom: 0 !important; }
 #screen-credits :is(.credits-hud, .credits-msg) { z-index: 2; }
 #screen-credits .cres-flori { height: clamp(130px, calc(30 * var(--dvh)), 250px); filter: drop-shadow(0 4px 6px rgba(49, 99, 156, 0.45)); }
 #screen-credits .cres-title { font-size: 26px; color: #d8ecf6; -webkit-text-stroke: 6px #31639c; paint-order: stroke fill; text-shadow: none; }
-#screen-credits .cres-score { min-width: 62%; padding: 6px 18px; font-size: 48px; color: #3d7bc2; text-shadow: 0 2px 0 #ffffff; background: linear-gradient(180deg, #dff0f8, #add7ec); border: 3px solid #3d7bc2; border-radius: 16px; box-shadow: 0 4px 0 #31639c; }
+#screen-credits .cres-score { min-width: 62%; padding: 6px 18px; font-size: 48px; color: #3d7bc2; text-shadow: 0 2px 0 #ffffff; background: linear-gradient(180deg, #e6f8ff, #9fdcff); border: 3px solid #3d7bc2; border-radius: 16px; box-shadow: 0 4px 0 #31639c; }
 #screen-credits .cres-score:empty { display: none; }
 #screen-credits .cres-kills { font-size: 18px; color: #2d5b90; text-shadow: 0 2px 0 #ffffff; }
 
