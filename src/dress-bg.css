@@ -40,3 +40,5 @@
 #screen-dress.is-lively .dress-hero { animation: none; }
 /* 一番上の★の説明「レジェンド」:光って見えるのをやめて、ほかと同じ ふつうの枠に(色だけ ピンク) */
 #screen-dress .dress-legend span.rare-3 { box-shadow: none; text-shadow: none; border-color: #d9488f; color: #c0397f; }
+/* 一番上の★の説明:文字(ふりがな)の まわりに、灰色の丸い枠が出ていたので、外側の1つだけを枠にして、中の文字には、枠・余白・影をつけない */
+#screen-dress .dress-legend span span { border: 0 !important; padding: 0 !important; background: none !important; box-shadow: none !important; border-radius: 0 !important; }
