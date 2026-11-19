@@ -62,16 +62,17 @@ if (!draw.toString().includes('opts.patch')) document.title = '(古い live2d.js
 // ---- 顔の絵(表情の絵 wave_*.png の顔の部分を、動くフロリの顔に はりつける。端は ぼかさない) ----
 const FACE = { cx: 415, cy: 312, rx: 255, ry: 130 };
 const POSE_IMG = {};
-await Promise.all(['surprised', 'wrong', 'nikkori', 'smile'].map(async k => { POSE_IMG[k] = await loadImg(`../assets/flori/m/wave_${k}.png`); }));   // いっぺんに読む
+for (const k of ['surprised', 'wrong', 'nikkori', 'smile']) loadImg(`../assets/flori/m/wave_${k}.png`).then(im => { POSE_IMG[k] = im; });   // 待たずに始める(読めたものから、顔にはりつける)
 const patchCache = {};
-const patchOf = key => patchCache[key] ??= (() => {
+const patchOf = key => patchCache[key] ?? (POSE_IMG[key]?.naturalWidth ? (patchCache[key] = makePatch(key)) : null);
+const makePatch = key => {
   const c = document.createElement('canvas'); c.width = FACE.rx * 2; c.height = FACE.ry * 2;
   const g = c.getContext('2d');
   g.drawImage(POSE_IMG[key], FACE.cx - FACE.rx, FACE.cy - FACE.ry, c.width, c.height, 0, 0, c.width, c.height);
   g.globalCompositeOperation = 'destination-in';
   g.beginPath(); g.ellipse(FACE.rx, FACE.ry, FACE.rx, FACE.ry, 0, 0, Math.PI * 2); g.fillStyle = '#000'; g.fill();
   return c;
-})();
+};
 function faceAngle(m) {
   const d = m.deformers.find(x => x.binds.length === 1 && m.params[x.binds[0].param].name === '顔');
   if (!d) return 0;
@@ -114,7 +115,7 @@ function drawActor(a, now, d, sceneT) {
   const motion = motionOf(a, useMood, calm, d.tilt, d.handSide);
   const m = reduced ? { bounce: 0, sx: 1, sy: 1 } : motion.update(now);
   const ctx = a.cv.getContext('2d');
-  const patch = pasteKey ? (c) => {
+  const patch = pasteKey && patchOf(pasteKey) ? (c) => {
     const pc = patchOf(pasteKey);
     c.save(); c.globalAlpha = pasteAlpha;
     c.translate(PIVOT.x, PIVOT.y); c.rotate(faceAngle(a.m) * Math.PI / 180); c.translate(-PIVOT.x, -PIVOT.y);
@@ -173,8 +174,8 @@ const bar = document.getElementById('bar');
 const closeAll = () => parent.postMessage('close-story-movie', '*');
 const xBtn = document.getElementById('x'); xBtn.textContent = STORY ? '飛ばす' : '閉じる'; xBtn.onclick = closeAll;
 if (!params.get('debug')) koma.style.display = 'none';
-if (STORY) bar.style.display = 'none';
-else {   // ボタンは「じどうで すすむ」だけ(ムービーのえらびかたは、ゲームの画面で)
+bar.style.display = 'none';
+{   // 「自動で進む」は「次へ」と同じ列に(ゲームの中のムービーにも出す)
   const autoBtn = document.createElement('button'); autoBtn.textContent = '自動で進む:なし'; autoBtn.onclick = () => { auto = !auto; autoKey = ''; autoBtn.textContent = auto ? '自動で進む:あり' : '自動で進む:なし'; autoBtn.classList.toggle('on', auto); }; autoBtn.id = 'auto'; document.getElementById('btnrow').prepend(autoBtn);
 }
 const nextOpen = from => { for (let i = from; i < MOVIES.length; i++) if (isOpen(MOVIES[i].id)) return i; return -1; };

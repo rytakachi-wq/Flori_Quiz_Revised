@@ -421,8 +421,27 @@ const fmtPts = (internal) => {
 const pickOf = (list) => list[Math.floor(Math.random() * list.length)];
 
 // ゲームを始める前に、見られるようになった ものがたり(ムービー)があれば、先に見せる
+// 今だけ(仮):クイズを始めるとき、物語(第1〜4話・エンディング)は 自動では流さない。ただし、RPGをはじめて押したときは、プロローグを 流す。
+const MOVIE_AUTO_ON_START = false;
+const RPG_PROLOGUE_KEY = "floriQuiz.rpgPrologueSeen";
+function rpgPrologueSeen() {
+  try {
+    return localStorage.getItem(RPG_PROLOGUE_KEY) === "1";
+  } catch {
+    return true; // 保存できないときは、何度も出さない
+  }
+}
 function startPlay(nextMode, startMessage = null) {
-  if (dueMovie()) {
+  if (nextMode === "rpg" && !rpgPrologueSeen()) {
+    try {
+      localStorage.setItem(RPG_PROLOGUE_KEY, "1");
+    } catch {
+      // 保存できなくても、見るのには 困らない
+    }
+    openMovie("mode=story&play=pro").then(() => startPlayNow(nextMode, startMessage));
+    return;
+  }
+  if (MOVIE_AUTO_ON_START && dueMovie()) {
     showDueMovies().then(() => startPlayNow(nextMode, startMessage));
     return;
   }
@@ -1556,6 +1575,15 @@ async function warmUpMovie() {
     if (navigator.connection?.saveData) return;
     const model = await (await fetch("./live2d/model.json")).json();
     const files = [...new Set(model.meshes.map((m) => m.img))];
+    // ムービーのプログラムも先に読む(story-movie.js が読みこむ ファイルは、その中の import から調べる)
+    try {
+      const html = await (await fetch(`./live2d/story-movie.html?v=${MOVIE_VER}`)).text();
+      const entry = new URL(html.match(/src="(story-movie\.js[^"]*)"/)?.[1] ?? "story-movie.js", new URL("./live2d/story-movie.html", location.href)).href;
+      const code = await (await fetch(entry)).text();
+      for (const m of code.matchAll(/from\s+'([^']+)'/g)) fetch(new URL(m[1], entry).href).catch(() => {});
+    } catch {
+      // 失敗しても、ふつうに読みこむだけ
+    }
     const urls = [
       "../assets/movie/bg_home_hd.webp",
       ...["surprised", "wrong", "nikkori", "smile"].map((k) => `../assets/flori/m/wave_${k}.png`),
@@ -1566,7 +1594,7 @@ async function warmUpMovie() {
     // 先読みに失敗しても、ふつうに読みこむだけ
   }
 }
-setTimeout(warmUpMovie, 1500);
+setTimeout(warmUpMovie, 500);
 $("btn-credits-back").addEventListener("click", () => show("cover", -1));
 const PAGE_OPEN = {
   cover: () => show("cover"),
@@ -1590,7 +1618,7 @@ function askRestart(action) {
 }
 // 消すのは、成績・図鑑・着せ替え・続き。音の大きさ・ふりがな・文字の大きさなどの設定は、のこす。
 function eraseSaveData() {
-  for (const key of ["floriQuiz.stats", "floriQuiz.dress", "floriQuiz.dexViewed", "floriQuiz.notice", "floriQuiz.bestScore", "floriQuiz.relaxGuideSeen", "floriQuiz.movieSeen", ...GUIDE_SEEN_KEYS]) {
+  for (const key of ["floriQuiz.stats", "floriQuiz.dress", "floriQuiz.dexViewed", "floriQuiz.notice", "floriQuiz.bestScore", "floriQuiz.relaxGuideSeen", "floriQuiz.movieSeen", "floriQuiz.rpgPrologueSeen", ...GUIDE_SEEN_KEYS]) {
     try {
       localStorage.removeItem(key);
     } catch {
