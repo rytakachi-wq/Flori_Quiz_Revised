@@ -5,7 +5,7 @@
 // 辞書(furigana-data.js)の読みで <ruby> をつける。設定が変わったら、包んだ文字を作りなおす。
 // 辞書にない漢字は、ふりがながつかない(開発用の確認で、画面の文字は全部当てはまることを確かめてある)。
 
-import { ENTRIES, KYOIKU_BY_GRADE } from "./furigana-data.js?v=20261119e2";
+import { ENTRIES, KYOIKU_BY_GRADE } from "./furigana-data.js?v=20261119p";
 
 const STORAGE_KEY = "floriQuiz.furigana";
 export const MODES = ["all", "many", "few", "none"];
@@ -386,13 +386,13 @@ export function rubyHtml(text, mode, kana = false, allowAnswer = false) {
 }
 
 // ---- 設定 ----
-let mode = "all";
+let mode = "many"; // はじめの設定は「多め」(利用者の指示。2026-11-19。保存した設定が あれば、そちらを使う)
 try {
   let saved = localStorage.getItem(STORAGE_KEY);
   if (saved === "chu") saved = "few"; // 前の「中学以降だけ」は、いちばん近い「少なめ」へ
   if (MODES.includes(saved)) mode = saved;
 } catch {
-  // 読めなければ、はじめの設定(すべての漢字)にする。
+  // 読めなければ、はじめの設定(多め)にする。
 }
 
 export function getFuriganaMode() {
