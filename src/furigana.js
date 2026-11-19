@@ -5,7 +5,7 @@
 // 辞書(furigana-data.js)の読みで <ruby> をつける。設定が変わったら、包んだ文字を作りなおす。
 // 辞書にない漢字は、ふりがながつかない(開発用の確認で、画面の文字は全部当てはまることを確かめてある)。
 
-import { ENTRIES, KYOIKU_BY_GRADE } from "./furigana-data.js?v=20261119p";
+import { ENTRIES, KYOIKU_BY_GRADE } from "./furigana-data.js?v=20261119v";
 
 const STORAGE_KEY = "floriQuiz.furigana";
 export const MODES = ["all", "many", "few", "none"];
@@ -204,7 +204,7 @@ function digitMatch(text, i, digits) {
   const n = Number(digits);
   const base = zeroPadded ? [...digits].map((d) => (d === "0" ? "ぜろ" : DIG[d])).join("") : bigNumberKana(n);
   const following = rest.slice(word.length);
-  const opts = { fraction: word === "分" && isFraction(following), span: word === "日" && /^(のうち|中|で|間|ごと|あたり)/.test(following) };
+  const opts = { fraction: word === "分" && isFraction(following), span: word === "日" && /^(のうち|中|で|間|ごと|あたり|に[  ]*[0-9])/.test(following) };
   let [num, cnt] = DIGIT_COUNTERS[word](zeroPadded ? 9 : n, base, opts);
   if (zeroPadded) [num, cnt] = [base, word === "分" ? "ふん" : DIGIT_COUNTERS[word](9, base, opts)[1]];
   const next = longestMatch(text, after);

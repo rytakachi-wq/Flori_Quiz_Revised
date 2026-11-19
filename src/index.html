@@ -53,9 +53,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
-  <link rel="stylesheet" href="style.css?v=20261119p">
-  <link rel="stylesheet" href="story-skin.css?v=20261119p">
-  <link rel="stylesheet" href="home-ui.css?v=20261119n">
+  <link rel="stylesheet" href="style.css?v=20261119v">
+  <link rel="stylesheet" href="story-skin.css?v=20261119v">
+  <link rel="stylesheet" href="home-ui.css?v=20261119v">
   <link rel="stylesheet" href="dress-bg.css?v=15">
 </head>
 <body>
@@ -182,7 +182,7 @@
       <div class="setup-guide"><img class="flori setup-flori" src="../assets/flori/m/wave_nikkori.png" alt=""><p class="setup-say">どれに挑戦する?</p></div>
       <div class="mode-list">
         <div class="mode-row"><button id="btn-rpg" class="mode-btn m-rpg" type="button"><span class="tile-icon" aria-hidden="true"><img class="mode-ico" src="../assets/movie/dragon_1.webp" alt=""></span><span class="tile-text"><span class="tile-label">RPGクエスト</span><span class="tile-sub">ランダムな問題でボスを倒そう</span></span></button><button id="btn-show-rules" class="rules-again r-rpg" type="button" data-kind="rpg"><span aria-hidden="true">📖</span><small>ルール</small></button></div>
-        <div class="mode-row"><button id="btn-daily" class="mode-btn m-daily" type="button"><span class="tile-icon" aria-hidden="true"><img class="mode-ico" src="../assets/illust/daycal.webp" alt=""></span><span class="tile-text"><span class="tile-label">毎日1問</span><span class="tile-sub">1日に1問だけ</span></span><span class="tile-dot" hidden></span></button><button id="btn-show-rules-daily" class="rules-again r-daily" type="button" data-kind="daily"><span aria-hidden="true">📖</span><small>ルール</small></button></div>
+        <div class="mode-row"><button id="btn-daily" class="mode-btn m-daily" type="button"><span class="tile-icon" aria-hidden="true"><img class="mode-ico" src="../assets/illust/daycal.webp" alt=""></span><span class="tile-text"><span class="tile-label">毎日1問</span><span class="tile-sub">1日に  1問だけ</span></span><span class="tile-dot" hidden></span></button><button id="btn-show-rules-daily" class="rules-again r-daily" type="button" data-kind="daily"><span aria-hidden="true">📖</span><small>ルール</small></button></div>
         <div class="mode-row"><button id="btn-review" class="mode-btn m-review" type="button"><span class="tile-icon" aria-hidden="true"><img class="mode-ico" src="../assets/illust/notebook.webp" alt=""></span><span class="tile-text"><span class="tile-label">復習</span><span class="tile-sub">間違えた問題をもう1度</span></span><span class="tile-dot" hidden></span></button><button id="btn-show-rules-review" class="rules-again r-review" type="button" data-kind="review"><span aria-hidden="true">📖</span><small>ルール</small></button></div>
       </div>
       <div id="flow-reward" class="reward-card" hidden></div>
@@ -322,7 +322,7 @@
       </dl>
       <ul id="s-groups" class="group-box" aria-label="科目ごとの正解"></ul>
       <section id="s-weak" class="weak-box" aria-label="にがてな分野さがし">
-        <h3 class="weak-title" data-kana>🔍 分野ごとの正答率(直近20問)</h3>
+        <h3 class="weak-title" data-kana>🔍 分野ごとの正答率<span class="weak-sub">(直近20問)</span></h3>
         <ul id="s-weak-list" class="weak-list"></ul>
         <p id="s-weak-msg" class="weak-msg" data-kana></p>
         <button id="btn-weak-review" class="btn btn-main weak-btn" type="button" hidden></button>
@@ -666,6 +666,6 @@
       <button id="btn-oni-yes" class="btn btn-main" type="button">挑戦する!</button>
     </div>
   </dialog>
-  <script type="module" src="main.js?v=20261119p"></script>
+  <script type="module" src="main.js?v=20261119v"></script>
 </body>
 </html>

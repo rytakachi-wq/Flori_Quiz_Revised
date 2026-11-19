@@ -578,3 +578,8 @@ html:not(.zz) body:not(.zz) rt:not(.zz) { color: inherit !important; text-shadow
   #screen-cover .home-help, #screen-cover .home-help-mid { white-space: normal !important; font-size: 9px !important; padding: 2px 1px !important; }
   #screen-cover .home-help > span, #screen-cover .home-help-mid > span { font-size: 9px !important; line-height: 1.05 !important; white-space: normal; }
 }
+
+/* 成績の「分野ごとの正答率」:ふりがなが、となりの「(直近20問)」のふりがなと重なっていたので、2行に分ける */
+.weak-title .weak-sub { display: block; margin-top: 2px; font-size: 0.92em; }
+/* 「毎日1問」の説明「1日に 1問だけ」:2つのふりがなが重ならないよう、少し大きく */
+#btn-daily .tile-sub { font-size: 13px; letter-spacing: 0.04em; }
