@@ -5,7 +5,7 @@
 // 辞書(furigana-data.js)の読みで <ruby> をつける。設定が変わったら、包んだ文字を作りなおす。
 // 辞書にない漢字は、ふりがながつかない(開発用の確認で、画面の文字は全部当てはまることを確かめてある)。
 
-import { ENTRIES, KYOIKU_BY_GRADE } from "./furigana-data.js?v=20261119d";
+import { ENTRIES, KYOIKU_BY_GRADE } from "./furigana-data.js?v=20261119e";
 
 const STORAGE_KEY = "floriQuiz.furigana";
 export const MODES = ["all", "many", "few", "none"];
@@ -212,10 +212,23 @@ function digitMatch(text, i, digits) {
   return { length: digits.length + word.length, segs: [[digits + word, num + cnt]] };
 }
 
+// 数え方のつかない数(「1から9まで」「10の位」など)に、ほどほどに、ふりがなをつける(利用者の指示)。
+// つけない:3けたをこえる数(年・金額など)・式の中(+ − × ÷ = ( ) や 英字・□ のとなり)・「1、2、3」のような数のならび・小数
+const FORMULA_NEIGHBOR = /[+＋\-−×÷＝=<>＜＞()（）\[\]A-Za-zＡ-Ｚ□〜~・/／:：]/;
+function bareNumber(text, i, digits) {
+  if (digits.length > 3 || (digits.length > 1 && digits[0] === "0")) return null;
+  const before = text[i - 1] ?? "";
+  const after = text[i + digits.length] ?? "";
+  if (/[0-9.,]/.test(before) || /[0-9.,]/.test(after) || FORMULA_NEIGHBOR.test(before) || FORMULA_NEIGHBOR.test(after)) return null;
+  // 「1、2、3」のような、数のならび
+  if ((after === "、" && /[0-9]/.test(text[i + digits.length + 1] ?? "")) || (before === "、" && /[0-9]/.test(text[i - 2] ?? ""))) return null;
+  return { length: digits.length, segs: [[digits, bigNumberKana(Number(digits))]] };
+}
+
 // text の i 番目から、辞書か数え方に当てはまる部分を探す。digitMode = 数字+数え方にも、ふりがなをつける
 function matchAt(text, i, digitMode = false) {
   const digits = /^[0-9]+/.exec(text.slice(i));
-  if (digits && digitMode) return digitMatch(text, i, digits[0]);
+  if (digits && digitMode) return digitMatch(text, i, digits[0]) ?? bareNumber(text, i, digits[0]);
   if (digits) {
     const after = i + digits[0].length;
     const counter = text[after];
