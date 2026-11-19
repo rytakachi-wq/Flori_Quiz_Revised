@@ -594,3 +594,9 @@ html:not(.zz) body:not(.zz) rt:not(.zz) { color: inherit !important; text-shadow
 /* 図鑑のカード:「NEW!」の札が、カテゴリの文字に重なっていたので、文字を上げる */
 #screen-dex .dex-card:has(.dex-new) .dex-cat, #screen-note .dex-card:has(.dex-new) .dex-cat { margin-bottom: 16px !important; }
 #screen-dex .dex-card:has(.dex-new) .dex-icon, #screen-note .dex-card:has(.dex-new) .dex-icon { font-size: 22px; margin-top: -3px; }
+
+/* 全体:字と字の間を、ほんの少し(0.03em)開ける(利用者の指示「全体的にこれやって」)。ふりがなは、0のまま(幅が増えないように) */
+html body { letter-spacing: 0.03em; }
+html body rt { letter-spacing: 0; }
+/* せまい画面(幅360px以下):図鑑のカードの「NEW!」の札が、カテゴリの文字にかぶるので、文字を右へよせる */
+@media (max-width: 360px) { #screen-dex .dex-card:has(.dex-new) .dex-cat, #screen-note .dex-card:has(.dex-new) .dex-cat { padding-left: 24px; } #screen-dex .dex-new, #screen-note .dex-new { font-size: 8px; padding: 0 3px; } }
