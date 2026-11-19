@@ -1,7 +1,7 @@
 // きせかえ(フロリの色・頭・体・顔・背景)と、そのもらい方(解放の条件)。成績(storage.js)から、条件を数える。
 // 名前や個人情報は入れない。きせかえの選びかただけ、端末内に保存する。
 
-import { OLD_UNLOCKS, RARITY, UNLOCKS } from "./dress-unlocks.js?v=20261119e";
+import { OLD_UNLOCKS, PREV_UNLOCKS, RARITY, UNLOCKS } from "./dress-unlocks.js?v=20261119f";
 
 const DRESS_KEY = "floriQuiz.dress";
 
@@ -46,10 +46,10 @@ const SPEC = [
   ["versus70", "70回対戦", "versus", 70], ["timed40", "時間チャレンジ40回", "timed", 40], ["play250", "250回プレイ", "plays", 250],
   ["streak70", "毎日1問70日連続", "streak", 70], ["perfect60", "パーフェクト60回", "perfect", 60], ["play300", "300回プレイ", "plays", 300],
   // RPG(rpgClear=クリアした回数 rpgPerfect=ノーダメージでクリアした回数 rpgBoss=ボス戦まで進んだ回数 rpgChest=宝箱の問題に正解した数)
-  ["rpgClear1", "RPG制覇", "rpgClear", 1], ["rpgClear3", "RPG制覇3回", "rpgClear", 3], ["rpgClear5", "RPG制覇5回", "rpgClear", 5],
-  ["rpgClear10", "RPG制覇10回", "rpgClear", 10], ["rpgClear20", "RPG制覇20回", "rpgClear", 20], ["rpgClear30", "RPG制覇30回", "rpgClear", 30],
-  ["rpgPerfect1", "RPGノーダメージ制覇", "rpgPerfect", 1], ["rpgPerfect3", "RPGノーダメージ制覇3回", "rpgPerfect", 3],
-  ["rpgPerfect5", "RPGノーダメージ制覇5回", "rpgPerfect", 5], ["rpgPerfect10", "RPGノーダメージ制覇10回", "rpgPerfect", 10],
+  ["rpgClear1", "RPGクエストをクリア", "rpgClear", 1], ["rpgClear3", "RPGクエストを3回クリア", "rpgClear", 3], ["rpgClear5", "RPGクエストを5回クリア", "rpgClear", 5],
+  ["rpgClear10", "RPGクエストを10回クリア", "rpgClear", 10], ["rpgClear20", "RPGクエストを20回クリア", "rpgClear", 20], ["rpgClear30", "RPGクエストを30回クリア", "rpgClear", 30],
+  ["rpgPerfect1", "RPGクエストをノーダメージでクリア", "rpgPerfect", 1], ["rpgPerfect3", "RPGクエストをノーダメージで3回クリア", "rpgPerfect", 3],
+  ["rpgPerfect5", "RPGクエストをノーダメージで5回クリア", "rpgPerfect", 5], ["rpgPerfect10", "RPGクエストをノーダメージで10回クリア", "rpgPerfect", 10],
   ["rpgBoss1", "RPGボス戦に初挑戦", "rpgBoss", 1], ["rpgBoss3", "RPGボス戦に3回挑戦", "rpgBoss", 3], ["rpgBoss5", "RPGボス戦に5回挑戦", "rpgBoss", 5],
   ["rpgBoss10", "RPGボス戦に10回挑戦", "rpgBoss", 10], ["rpgBoss20", "RPGボス戦に20回挑戦", "rpgBoss", 20],
   ["rpgChest3", "RPGたからばこ3個", "rpgChest", 3], ["rpgChest5", "RPGたからばこ5個", "rpgChest", 5],
@@ -91,9 +91,9 @@ const SPEC = [
   ["timedPerfect40", "時間内パーフェクト40回", "timedPerfect", 40], ["timedPerfect50", "時間内パーフェクト50回", "timedPerfect", 50], ["timedPerfect60", "時間内パーフェクト60回", "timedPerfect", 60],
   ["garden7", "お花畑7回完成", "garden", 7], ["garden25", "お花畑25回完成", "garden", 25], ["garden40", "お花畑40回完成", "garden", 40],
   ["garden50", "お花畑50回完成", "garden", 50], ["garden60", "お花畑60回完成", "garden", 60], ["garden80", "お花畑80回完成", "garden", 80],
-  ["rpgClear75", "RPG制覇75回", "rpgClear", 75], ["rpgClear100", "RPG制覇100回", "rpgClear", 100], ["rpgClear125", "RPG制覇125回", "rpgClear", 125],
-  ["rpgPerfect4", "RPGノーダメージ制覇4回", "rpgPerfect", 4], ["rpgPerfect7", "RPGノーダメージ制覇7回", "rpgPerfect", 7], ["rpgPerfect12", "RPGノーダメージ制覇12回", "rpgPerfect", 12],
-  ["rpgPerfect15", "RPGノーダメージ制覇15回", "rpgPerfect", 15], ["rpgPerfect20", "RPGノーダメージ制覇20回", "rpgPerfect", 20], ["rpgPerfect30", "RPGノーダメージ制覇30回", "rpgPerfect", 30],
+  ["rpgClear75", "RPGクエストを75回クリア", "rpgClear", 75], ["rpgClear100", "RPGクエストを100回クリア", "rpgClear", 100], ["rpgClear125", "RPGクエストを125回クリア", "rpgClear", 125],
+  ["rpgPerfect4", "RPGクエストをノーダメージで4回クリア", "rpgPerfect", 4], ["rpgPerfect7", "RPGクエストをノーダメージで7回クリア", "rpgPerfect", 7], ["rpgPerfect12", "RPGクエストをノーダメージで12回クリア", "rpgPerfect", 12],
+  ["rpgPerfect15", "RPGクエストをノーダメージで15回クリア", "rpgPerfect", 15], ["rpgPerfect20", "RPGクエストをノーダメージで20回クリア", "rpgPerfect", 20], ["rpgPerfect30", "RPGクエストをノーダメージで30回クリア", "rpgPerfect", 30],
   ["rpgBoss80", "RPGボス戦に80回挑戦", "rpgBoss", 80], ["rpgBoss100", "RPGボス戦に100回挑戦", "rpgBoss", 100], ["rpgBoss125", "RPGボス戦に125回挑戦", "rpgBoss", 125],
   ["rpgBoss150", "RPGボス戦に150回挑戦", "rpgBoss", 150], ["rpgChest75", "RPGたからばこ75個", "rpgChest", 75], ["rpgChest125", "RPGたからばこ125個", "rpgChest", 125],
   ["rpgChest150", "RPGたからばこ150個", "rpgChest", 150], ["rpgChest200", "RPGたからばこ200個", "rpgChest", 200], ["rpgChest250", "RPGたからばこ250個", "rpgChest", 250],
@@ -114,8 +114,8 @@ const SPEC = [
   ["timed80", "時間チャレンジ80回", "timed", 80], ["garden20", "お花畑20回完成", "garden", 20], ["garden34", "お花畑34回完成", "garden", 34],
   ["garden38", "お花畑38回完成", "garden", 38], ["garden42", "お花畑42回完成", "garden", 42], ["garden46", "お花畑46回完成", "garden", 46],
   ["garden54", "お花畑54回完成", "garden", 54], ["garden58", "お花畑58回完成", "garden", 58], ["garden62", "お花畑62回完成", "garden", 62],
-  ["garden66", "お花畑66回完成", "garden", 66], ["garden70", "お花畑70回完成", "garden", 70], ["rpgClear7", "RPG制覇7回", "rpgClear", 7],
-  ["rpgClear12", "RPG制覇12回", "rpgClear", 12], ["rpgClear28", "RPG制覇28回", "rpgClear", 28], ["rpgBoss40", "RPGボス戦に40回挑戦", "rpgBoss", 40],
+  ["garden66", "お花畑66回完成", "garden", 66], ["garden70", "お花畑70回完成", "garden", 70], ["rpgClear7", "RPGクエストを7回クリア", "rpgClear", 7],
+  ["rpgClear12", "RPGクエストを12回クリア", "rpgClear", 12], ["rpgClear28", "RPGクエストを28回クリア", "rpgClear", 28], ["rpgBoss40", "RPGボス戦に40回挑戦", "rpgBoss", 40],
   ["rpgBoss45", "RPGボス戦に45回挑戦", "rpgBoss", 45], ["rpgBoss50", "RPGボス戦に50回挑戦", "rpgBoss", 50], ["rpgBoss55", "RPGボス戦に55回挑戦", "rpgBoss", 55],
   ["rpgBoss60", "RPGボス戦に60回挑戦", "rpgBoss", 60], ["rpgBoss65", "RPGボス戦に65回挑戦", "rpgBoss", 65], ["rpgBoss70", "RPGボス戦に70回挑戦", "rpgBoss", 70],
   ["rpgBoss75", "RPGボス戦に75回挑戦", "rpgBoss", 75], ["rpgBoss85", "RPGボス戦に85回挑戦", "rpgBoss", 85], ["rpgBoss90", "RPGボス戦に90回挑戦", "rpgBoss", 90],
@@ -124,7 +124,7 @@ const SPEC = [
   ["rpgChest90", "RPGたからばこ90個", "rpgChest", 90], ["rpgChest95", "RPGたからばこ95個", "rpgChest", 95], ["rpgChest100", "RPGたからばこ100個", "rpgChest", 100],
   ["rpgChest105", "RPGたからばこ105個", "rpgChest", 105], ["rpgChest110", "RPGたからばこ110個", "rpgChest", 110], ["rpgChest115", "RPGたからばこ115個", "rpgChest", 115],
   ["rpgChest120", "RPGたからばこ120個", "rpgChest", 120],
-  ["play120", "120回プレイ", "plays", 120], ["versus8", "8回対戦", "versus", 8], ["review8", "復習コンプリート8回", "review", 8], ["timed15", "時間チャレンジ15回", "timed", 15], ["rpgClear15", "RPG制覇15回", "rpgClear", 15], ["rpgBoss25", "RPGボス戦に25回挑戦", "rpgBoss", 25],
+  ["play120", "120回プレイ", "plays", 120], ["versus8", "8回対戦", "versus", 8], ["review8", "復習コンプリート8回", "review", 8], ["timed15", "時間チャレンジ15回", "timed", 15], ["rpgClear15", "RPGクエストを15回クリア", "rpgClear", 15], ["rpgBoss25", "RPGボス戦に25回挑戦", "rpgBoss", 25],
   ["play19", "19回プレイ", "plays", 19], ["play27", "27回プレイ", "plays", 27], ["play31", "31回プレイ", "plays", 31],
   ["play34", "34回プレイ", "plays", 34], ["play39", "39回プレイ", "plays", 39], ["play42", "42回プレイ", "plays", 42],
   ["play44", "44回プレイ", "plays", 44], ["play48", "48回プレイ", "plays", 48], ["play52", "52回プレイ", "plays", 52],
@@ -147,10 +147,10 @@ const SPEC = [
   ["timed33", "時間チャレンジ33回", "timed", 33], ["timed34", "時間チャレンジ34回", "timed", 34], ["timed36", "時間チャレンジ36回", "timed", 36],
   ["timed37", "時間チャレンジ37回", "timed", 37], ["timed38", "時間チャレンジ38回", "timed", 38], ["timed39", "時間チャレンジ39回", "timed", 39],
   ["garden11", "お花畑11回完成", "garden", 11], ["garden13", "お花畑13回完成", "garden", 13], ["garden14", "お花畑14回完成", "garden", 14],
-  ["garden17", "お花畑17回完成", "garden", 17], ["garden19", "お花畑19回完成", "garden", 19], ["rpgClear17", "RPG制覇17回", "rpgClear", 17],
-  ["rpgClear18", "RPG制覇18回", "rpgClear", 18], ["rpgClear19", "RPG制覇19回", "rpgClear", 19], ["rpgClear21", "RPG制覇21回", "rpgClear", 21],
-  ["rpgClear22", "RPG制覇22回", "rpgClear", 22], ["rpgClear23", "RPG制覇23回", "rpgClear", 23], ["rpgClear24", "RPG制覇24回", "rpgClear", 24],
-  ["rpgClear25", "RPG制覇25回", "rpgClear", 25], ["rpgBoss24", "RPGボス戦に24回挑戦", "rpgBoss", 24], ["rpgBoss26", "RPGボス戦に26回挑戦", "rpgBoss", 26],
+  ["garden17", "お花畑17回完成", "garden", 17], ["garden19", "お花畑19回完成", "garden", 19], ["rpgClear17", "RPGクエストを17回クリア", "rpgClear", 17],
+  ["rpgClear18", "RPGクエストを18回クリア", "rpgClear", 18], ["rpgClear19", "RPGクエストを19回クリア", "rpgClear", 19], ["rpgClear21", "RPGクエストを21回クリア", "rpgClear", 21],
+  ["rpgClear22", "RPGクエストを22回クリア", "rpgClear", 22], ["rpgClear23", "RPGクエストを23回クリア", "rpgClear", 23], ["rpgClear24", "RPGクエストを24回クリア", "rpgClear", 24],
+  ["rpgClear25", "RPGクエストを25回クリア", "rpgClear", 25], ["rpgBoss24", "RPGボス戦に24回挑戦", "rpgBoss", 24], ["rpgBoss26", "RPGボス戦に26回挑戦", "rpgBoss", 26],
   ["rpgBoss27", "RPGボス戦に27回挑戦", "rpgBoss", 27], ["rpgBoss28", "RPGボス戦に28回挑戦", "rpgBoss", 28], ["rpgBoss29", "RPGボス戦に29回挑戦", "rpgBoss", 29],
   ["rpgBoss30", "RPGボス戦に30回挑戦", "rpgBoss", 30], ["rpgChest14", "RPGたからばこ14個", "rpgChest", 14], ["rpgChest23", "RPGたからばこ23個", "rpgChest", 23],
   ["rpgChest27", "RPGたからばこ27個", "rpgChest", 27], ["rpgChest29", "RPGたからばこ29個", "rpgChest", 29], ["rpgChest31", "RPGたからばこ31個", "rpgChest", 31],
@@ -158,12 +158,12 @@ const SPEC = [
   ["rpgChest35", "RPGたからばこ35個", "rpgChest", 35], ["rpgChest36", "RPGたからばこ36個", "rpgChest", 36], ["rpgChest37", "RPGたからばこ37個", "rpgChest", 37],
   ["rpgChest38", "RPGたからばこ38個", "rpgChest", 38], ["rpgChest39", "RPGたからばこ39個", "rpgChest", 39], ["rpgChest40", "RPGたからばこ40個", "rpgChest", 40],
   ["rpgChest21", "RPGたからばこ21個", "rpgChest", 21],
-  ["play12", "12回プレイ", "plays", 12], ["play25", "25回プレイ", "plays", 25], ["play35", "35回プレイ", "plays", 35], ["hardPerfect2", "難しいパーフェクト2回", "perfectHard", 2], ["streak40", "毎日1問40日連続", "streak", 40], ["daily7", "毎日1問7日", "daily", 7], ["versus15", "15回対戦", "versus", 15], ["garden8", "お花畑8回完成", "garden", 8], ["garden30", "お花畑30回完成", "garden", 30], ["rpgClear8", "RPG制覇8回", "rpgClear", 8], ["rpgClear40", "RPG制覇40回", "rpgClear", 40], ["rpgPerfect2", "RPGノーダメージ制覇2回", "rpgPerfect", 2], ["rpgBoss8", "RPGボス戦に8回挑戦", "rpgBoss", 8], ["rpgBoss15", "RPGボス戦に15回挑戦", "rpgBoss", 15],
-  ["streak80", "毎日1問80日連続", "streak", 80], ["daily25", "毎日1問25日", "daily", 25], ["timedPerfect10", "時間内パーフェクト10回", "timedPerfect", 10], ["rpgClear50", "RPG制覇50回", "rpgClear", 50], ["rpgPerfect6", "RPGノーダメージ制覇6回", "rpgPerfect", 6],
+  ["play12", "12回プレイ", "plays", 12], ["play25", "25回プレイ", "plays", 25], ["play35", "35回プレイ", "plays", 35], ["hardPerfect2", "難しいパーフェクト2回", "perfectHard", 2], ["streak40", "毎日1問40日連続", "streak", 40], ["daily7", "毎日1問7日", "daily", 7], ["versus15", "15回対戦", "versus", 15], ["garden8", "お花畑8回完成", "garden", 8], ["garden30", "お花畑30回完成", "garden", 30], ["rpgClear8", "RPGクエストを8回クリア", "rpgClear", 8], ["rpgClear40", "RPGクエストを40回クリア", "rpgClear", 40], ["rpgPerfect2", "RPGクエストをノーダメージで2回クリア", "rpgPerfect", 2], ["rpgBoss8", "RPGボス戦に8回挑戦", "rpgBoss", 8], ["rpgBoss15", "RPGボス戦に15回挑戦", "rpgBoss", 15],
+  ["streak80", "毎日1問80日連続", "streak", 80], ["daily25", "毎日1問25日", "daily", 25], ["timedPerfect10", "時間内パーフェクト10回", "timedPerfect", 10], ["rpgClear50", "RPGクエストを50回クリア", "rpgClear", 50], ["rpgPerfect6", "RPGクエストをノーダメージで6回クリア", "rpgPerfect", 6],
   ["play85", "85回プレイ", "plays", 85], ["streak15", "毎日1問15日連続", "streak", 15], ["streak35", "毎日1問35日連続", "streak", 35], ["streak45", "毎日1問45日連続", "streak", 45], ["streak55", "毎日1問55日連続", "streak", 55], ["streak65", "毎日1問65日連続", "streak", 65], ["streak75", "毎日1問75日連続", "streak", 75], ["daily45", "毎日1問45日", "daily", 45], ["daily55", "毎日1問55日", "daily", 55], ["daily65", "毎日1問65日", "daily", 65], ["daily75", "毎日1問75日", "daily", 75], ["daily80", "毎日1問80日", "daily", 80], ["rpgBoss35", "RPGボス戦に35回挑戦", "rpgBoss", 35],
-  ["perfect55", "パーフェクト55回", "perfect", 55], ["versus45", "45回対戦", "versus", 45], ["versus55", "55回対戦", "versus", 55], ["review35", "復習コンプリート35回", "review", 35], ["garden35", "お花畑35回完成", "garden", 35], ["garden45", "お花畑45回完成", "garden", 45], ["rpgClear35", "RPG制覇35回", "rpgClear", 35], ["rpgClear45", "RPG制覇45回", "rpgClear", 45],
+  ["perfect55", "パーフェクト55回", "perfect", 55], ["versus45", "45回対戦", "versus", 45], ["versus55", "55回対戦", "versus", 55], ["review35", "復習コンプリート35回", "review", 35], ["garden35", "お花畑35回完成", "garden", 35], ["garden45", "お花畑45回完成", "garden", 45], ["rpgClear35", "RPGクエストを35回クリア", "rpgClear", 35], ["rpgClear45", "RPGクエストを45回クリア", "rpgClear", 45],
   ["sci15", "理系の問題に15問挑戦", "genreSci", 15], ["sci20", "理系の問題に20問挑戦", "genreSci", 20], ["sci25", "理系の問題に25問挑戦", "genreSci", 25], ["hum20", "文系の問題に20問挑戦", "genreHum", 20], ["hum25", "文系の問題に25問挑戦", "genreHum", 25], ["idea20", "ひらめきの問題に20問挑戦", "genreIdea", 20], ["idea25", "ひらめきの問題に25問挑戦", "genreIdea", 25],
-  ["play95", "95回プレイ", "plays", 95], ["versus65", "65回対戦", "versus", 65], ["versus75", "75回対戦", "versus", 75], ["garden55", "お花畑55回完成", "garden", 55], ["garden65", "お花畑65回完成", "garden", 65], ["rpgClear55", "RPG制覇55回", "rpgClear", 55], ["nohint30", "ヒントを使わずに30問正解", "noHint", 30], ["nohint35", "ヒントを使わずに35問正解", "noHint", 35], ["nohint50", "ヒントを使わずに50問正解", "noHint", 50], ["nohint55", "ヒントを使わずに55問正解", "noHint", 55], ["nohint60", "ヒントを使わずに60問正解", "noHint", 60], ["sci30", "理系の問題に30問挑戦", "genreSci", 30], ["hum30", "文系の問題に30問挑戦", "genreHum", 30], ["idea30", "ひらめきの問題に30問挑戦", "genreIdea", 30],
+  ["play95", "95回プレイ", "plays", 95], ["versus65", "65回対戦", "versus", 65], ["versus75", "75回対戦", "versus", 75], ["garden55", "お花畑55回完成", "garden", 55], ["garden65", "お花畑65回完成", "garden", 65], ["rpgClear55", "RPGクエストを55回クリア", "rpgClear", 55], ["nohint30", "ヒントを使わずに30問正解", "noHint", 30], ["nohint35", "ヒントを使わずに35問正解", "noHint", 35], ["nohint50", "ヒントを使わずに50問正解", "noHint", 50], ["nohint55", "ヒントを使わずに55問正解", "noHint", 55], ["nohint60", "ヒントを使わずに60問正解", "noHint", 60], ["sci30", "理系の問題に30問挑戦", "genreSci", 30], ["hum30", "文系の問題に30問挑戦", "genreHum", 30], ["idea30", "ひらめきの問題に30問挑戦", "genreIdea", 30],
   ["nohint65", "ヒントを使わずに65問正解", "noHint", 65], ["nohint70", "ヒントを使わずに70問正解", "noHint", 70], ["nohint75", "ヒントを使わずに75問正解", "noHint", 75], ["nohint80", "ヒントを使わずに80問正解", "noHint", 80],
   ["norm5", "ふつうの問題に5問正解", "normRight", 5], ["hard15", "難しい問題に15問正解", "hardRight", 15], ["norm20", "ふつうの問題に20問正解", "normRight", 20],
   ["hard20", "難しい問題に20問正解", "hardRight", 20], ["norm25", "ふつうの問題に25問正解", "normRight", 25], ["hard25", "難しい問題に25問正解", "hardRight", 25],
@@ -547,7 +547,7 @@ for (const [slot, list] of [["color", COLORS], ["theme", THEMES]]) {
 
 // 条件とレア度は、dress-unlocks.js の表のとおり。レア度:0=ノーマル 1=レア 2=スーパーレア 3=レジェンド
 export const RARITY_NAMES = ["ノーマル", "レア", "スーパーレア", "レジェンド"];
-for (const [kind, list] of [["color", COLORS], ["theme", THEMES], ["head", HEADS], ["body", BODIES], ["face", FACES]]) {
+for (const [kind, list] of [["color", COLORS], ["theme", THEMES], ["bg", BGS], ["head", HEADS], ["body", BODIES], ["face", FACES]]) {
   for (const item of list) {
     item.key = `${kind}:${item.id}`;
     if (!(item.key in UNLOCKS)) continue;
@@ -561,6 +561,7 @@ for (const [kind, list] of [["color", COLORS], ["theme", THEMES], ["head", HEADS
 
 // 前の版で、すでに手に入れたものは、条件が変わっても、残す(初めて開いたとき、前の条件で開いていたものを、おぼえる)
 const OWNED_KEY = "floriQuiz.dressOwned";
+const OWNED2_KEY = "floriQuiz.dressOwned2"; // 条件を変えたときの、残す処理を、したか
 let owned = new Set();
 try {
   owned = new Set(JSON.parse(localStorage.getItem(OWNED_KEY) ?? "[]"));
@@ -569,10 +570,18 @@ try {
 }
 export function keepOwned({ have, stars }) {
   try {
-    if (localStorage.getItem(OWNED_KEY) !== null) return;
     const open = (u) => (typeof u === "string" ? have.has(u) : stars >= u.stars);
-    owned = new Set(Object.entries(OLD_UNLOCKS).filter(([, u]) => open(u)).map(([key]) => key));
-    localStorage.setItem(OWNED_KEY, JSON.stringify([...owned]));
+    if (localStorage.getItem(OWNED_KEY) === null) {
+      owned = new Set(Object.entries(OLD_UNLOCKS).filter(([, u]) => open(u)).map(([key]) => key));
+      localStorage.setItem(OWNED_KEY, JSON.stringify([...owned]));
+    }
+    // 条件を変えたとき(解放条件を、レア度順にそろえなおした)、変える前の条件で すでに開いていたものは、残す。背景は、それまで、全部はじめから えらべたので、遊んだことのある人は、全部残す
+    if (localStorage.getItem(OWNED2_KEY) === null) {
+      for (const [key, u] of Object.entries(PREV_UNLOCKS)) if (open(u)) owned.add(key);
+      if (have.size > 0 || stars > 0) for (const item of BGS) owned.add(item.key);
+      localStorage.setItem(OWNED_KEY, JSON.stringify([...owned]));
+      localStorage.setItem(OWNED2_KEY, "1");
+    }
   } catch {
     // 保存できなくても遊べる
   }
