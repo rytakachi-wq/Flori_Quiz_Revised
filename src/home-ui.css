@@ -532,3 +532,6 @@ ruby { white-space: nowrap; }
 
 /* オープニング:新しいロゴ(「ひらめきクイズ」入り)を 大きく */
 .opening .logo { width: min(380px, calc(88 * var(--vw))); }
+
+/* オープニングの「画面をタッチしてスタート!」:中の色を水色に */
+.opening .opening-hint { color: #1c4a78; background: linear-gradient(180deg, #a9ddfb, #62bef7); border-color: #274e7a; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7); }
