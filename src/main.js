@@ -2600,6 +2600,8 @@ function updateRpgHintButton() {
   const button = $("btn-rpg-hint");
   button.hidden = !rpgQuestion?.hint;
   button.disabled = rpgHinted || rpgAnswered || !play.canHint;
+  $("btn-rpg-giveup").hidden = false;
+  $("btn-rpg-giveup").disabled = rpgAnswered;
 }
 
 // ウィンドウに収まらないとき(長い問題・長い解説)は、文字と選択肢を、少しずつ小さくして収める(6割まで)
@@ -2719,7 +2721,7 @@ function startRpgTimer() {
   $("rpg-timer").hidden = false;
   renderRpgTimer();
   rpgTimerId = setInterval(() => {
-    if ($("dlg-quit").open || $("dlg-volume").open || $("dlg-rpg-hint").open) return;
+    if ($("dlg-quit").open || $("dlg-volume").open || $("dlg-rpg-hint").open || $("dlg-rpg-giveup").open) return;
     rpgTimerLeft -= 0.1;
     renderRpgTimer();
     if (rpgTimerLeft <= 0) {
@@ -2854,10 +2856,21 @@ $("btn-rpg-hint-yes").addEventListener("click", () => {
   fitRpgWindow(); // ヒントの分だけ、ふえたので、収めなおす
   setTimeout(fitRpgWindow, 150);
 });
+// 「分からない」:答えを見ると、不正解(ハート-1)になる。間違えて押さないように、先に聞く(オニ戦でも同じ)
+$("btn-rpg-giveup").addEventListener("click", () => {
+  if (rpgAnswered) return;
+  $("dlg-rpg-giveup").showModal();
+});
+$("btn-rpg-giveup-no").addEventListener("click", () => $("dlg-rpg-giveup").close());
+$("btn-rpg-giveup-yes").addEventListener("click", () => {
+  $("dlg-rpg-giveup").close();
+  if (rpgAnswered) return;
+  rpgAnswer(-1);
+});
 $("btn-rpg-next").addEventListener("click", rpgNext);
 $("btn-rpg-quit").addEventListener("click", () => $("dlg-quit").showModal());
 document.addEventListener("keydown", (event) => {
-  if ($("screen-rpg").hidden || rpgAnswered || event.ctrlKey || event.metaKey || event.altKey || $("dlg-quit").open || $("dlg-rpg-hint").open || $("dlg-volume").open) return;
+  if ($("screen-rpg").hidden || rpgAnswered || event.ctrlKey || event.metaKey || event.altKey || $("dlg-quit").open || $("dlg-rpg-hint").open || $("dlg-rpg-giveup").open || $("dlg-volume").open) return;
   const index = Number(event.key) - 1;
   if (Number.isInteger(index) && index >= 0 && rpgQuestion && index < rpgQuestion.choices.length) rpgAnswer(index);
 });

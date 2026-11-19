@@ -3823,3 +3823,18 @@ html[data-pattern] :is(#screen-menu, #screen-note, #screen-credits, #screen-dex,
 
 /* RPG:ダメージで、場面を赤くしない(利用者の指示。敵の動きは、もとのまま) */
 .rpg-field.is-hurt { box-shadow: none; }
+
+/* ---- 「読み上げ」「ヒントを見る」「分からない」の並び:RPGと同じ形(上の段に、黄色の丸いボタン。🔊は絵だけ)。RPG・復習・毎日1問で、そろえる ---- */
+.q-toprow { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px; width: 100%; min-height: 30px; }
+.rpg-toprow { flex-wrap: wrap; justify-content: center; }
+.rpg-toprow .rpg-fx { flex: 1 1 100%; }
+.q-toprow .rpg-hint-btn, .rpg-toprow .rpg-hint-btn { flex: none; align-self: center; margin: 0; min-height: 38px; padding: 2px 12px; font-size: 15px; font-weight: bold; white-space: nowrap; color: #6b4a00; text-shadow: none; background: #fff3c4; border: 3px solid #f0c75a; border-radius: 999px; box-shadow: 0 3px 0 rgba(160, 120, 20, 0.35); cursor: pointer; }
+.q-toprow .rpg-hint-btn:disabled, .rpg-toprow .rpg-hint-btn:disabled { opacity: 0.45; cursor: default; }
+.q-toprow .rpg-hint-btn[hidden], .rpg-toprow .rpg-hint-btn[hidden] { display: none; }
+.q-toprow .rpg-read-btn, .rpg-toprow .rpg-read-btn { min-width: 42px; padding: 1px 10px; }
+@media (max-height: 640px) { .q-toprow .rpg-hint-btn, .rpg-toprow .rpg-hint-btn { min-height: 32px; padding: 1px 10px; font-size: 14px; } }
+#screen-question.is-answered #q-toprow { display: none; }
+
+/* 問題図鑑・間違いノートのカード:「No.」と★が かぶらないように、★を、No.の下の段に出す */
+#screen-dex .dex-card .dex-rarity, #screen-note .dex-card .dex-rarity { position: static; top: auto; right: auto; justify-self: start; margin-top: -2px; line-height: 1; font-size: 10.5px; letter-spacing: -0.12em; }
+#screen-dex .dex-card, #screen-note .dex-card { min-height: 118px; }

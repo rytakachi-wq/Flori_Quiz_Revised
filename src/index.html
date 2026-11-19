@@ -401,6 +401,11 @@
 
       <div id="q-timer" class="timer" hidden><div class="timer-track"><span id="q-timer-bar" class="timer-bar"></span></div><span id="q-timer-text" class="timer-text"></span></div>
       <div id="q-art" class="q-art" aria-hidden="true" hidden></div>
+      <div id="q-toprow" class="q-toprow">
+        <button id="btn-read" class="rpg-hint-btn rpg-read-btn" type="button" aria-label="読み上げ" data-no-se="1" hidden><span aria-hidden="true">🔊</span></button>
+        <button id="btn-hint" class="rpg-hint-btn" type="button">💡 ヒントを見る</button>
+        <button id="btn-giveup" class="rpg-hint-btn" type="button">分からない</button>
+      </div>
       <div class="q-row">
         <div class="stage">
           <img id="q-flori" class="flori flori-small" src="" alt="">
@@ -409,11 +414,6 @@
         <p id="q-text" class="question" data-kana></p>
       </div>
       <div id="q-hint-area" class="hint-area" hidden>
-        <div class="hint-buttons">
-          <button id="btn-read" class="btn btn-sub btn-read" type="button" data-no-se="1" hidden><span aria-hidden="true">🔊</span> 読み上げ</button>
-          <button id="btn-hint" class="btn btn-sub" type="button">ヒントを見る</button>
-          <button id="btn-giveup" class="btn btn-plain" type="button">分からない</button>
-        </div>
         <p id="q-hint" class="hint" data-kana hidden></p>
       </div>
       <ol id="q-choices" class="choices" data-kana></ol>
@@ -452,6 +452,7 @@
           <p id="rpg-fx" class="rpg-fx" role="status"></p>
           <button id="btn-rpg-read" class="rpg-hint-btn rpg-read-btn" type="button" aria-label="読み上げ" data-no-se="1" hidden><span aria-hidden="true">🔊</span></button>
           <button id="btn-rpg-hint" class="rpg-hint-btn" type="button">💡 ヒントを見る</button>
+          <button id="btn-rpg-giveup" class="rpg-hint-btn" type="button">分からない</button>
         </div>
         <div id="rpg-timer" class="timer rpg-timer" hidden><div class="timer-track"><span id="rpg-timer-bar" class="timer-bar"></span></div><span id="rpg-timer-text" class="timer-text"></span></div>
         <p id="rpg-text" class="rpg-text" data-kana></p>
@@ -558,6 +559,14 @@
     <div class="buttons">
       <button id="btn-rpg-hint-no" class="btn btn-sub" type="button">やめとく</button>
       <button id="btn-rpg-hint-yes" class="btn btn-main" type="button" data-no-se="1">見る!</button>
+    </div>
+  </dialog>
+  <dialog id="dlg-rpg-giveup" class="dialog hint-dialog" aria-labelledby="dlg-rpg-giveup-text">
+    <img class="flori flori-small hint-dlg-flori" src="../assets/flori/m/wave_wrong.png" alt="">
+    <p id="dlg-rpg-giveup-text">答えを見ますか?<br>この問題は <b>不正解</b>になって、ハートが <b>1つ</b> 減っちゃうヨ。</p>
+    <div class="buttons">
+      <button id="btn-rpg-giveup-yes" class="btn btn-sub" type="button">答えを見る</button>
+      <button id="btn-rpg-giveup-no" class="btn btn-main" type="button">もう少し考える</button>
     </div>
   </dialog>
   <dialog id="dlg-hint" class="dialog hint-dialog" aria-labelledby="dlg-hint-text">
