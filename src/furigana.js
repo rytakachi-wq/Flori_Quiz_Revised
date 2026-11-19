@@ -5,7 +5,7 @@
 // 辞書(furigana-data.js)の読みで <ruby> をつける。設定が変わったら、包んだ文字を作りなおす。
 // 辞書にない漢字は、ふりがながつかない(開発用の確認で、画面の文字は全部当てはまることを確かめてある)。
 
-import { ENTRIES, KYOIKU_BY_GRADE } from "./furigana-data.js?v=20261119b";
+import { ENTRIES, KYOIKU_BY_GRADE } from "./furigana-data.js?v=20261119c";
 
 const STORAGE_KEY = "floriQuiz.furigana";
 export const MODES = ["all", "many", "few", "none"];
@@ -104,6 +104,7 @@ function counterSegs(digits, counter, following = "") {
   }
   if (counter === "本") return [[digits, null], ["本", soundChange(digits, ["ほん", "ぽん", "ぼん"])]];
   if (counter === "匹") return [[digits, null], ["匹", soundChange(digits, ["ひき", "ぴき", "びき"])]];
+  if (counter === "票") return [[digits, null], ["票", soundChange(digits, ["ひょう", "ぴょう", "びょう"])]];
   if (counter === "分") {
     // 「3分の2」(分数)は「ぶん」。「3分の人」(時間)は「ふん・ぷん」
     if (isFraction(following)) return [[digits, null], ["分", "ぶん"]];
@@ -157,7 +158,14 @@ const DIGIT_COUNTERS = {
     if ([1, 6, 8, 0].includes(n % 10) && n) return [shorten(base), "ぷん"];
     return [base, [3, 4].includes(n % 10) ? "ぷん" : "ふん"];
   },
-  回: kai("かい"), 個: kai("こ"), こ: kai("こ"), 県: kai("けん"), 点: kai("てん", false), 滴: kai("てき", false), 等星: kai("とうせい", false),
+  回: kai("かい"), 個: kai("こ"), こ: kai("こ"), 県: kai("けん"), 滴: kai("てき", false), 等星: kai("とうせい", false),
+  // 点:1点=いってん・8点=はってん・10点=じゅってん・20点=にじゅってん。100点=ひゃくてん(ひゃってん、ではない)
+  点: (n, base) => (n % 1000 && [1, 8, 0].includes(n % 10) && !(n >= 100 && n % 100 === 0) ? [shorten(base), "てん"] : [base, "てん"]),
+  // 票・世紀・周・歩目・体・話・万・千・大庭園・都道府県(数え方の読みを足した。2026-11-19)
+  票: sound(["ひょう", "ぴょう", "びょう"]), 世紀: kai("せいき", false), 周: kai("しゅう", false), 体: kai("たい", false), 話: plainCnt("わ"),
+  歩目: (n, base) => ([1, 6, 8, 0].includes(n % 10) && n ? [shorten(base), "ぽめ"] : n % 10 === 3 ? [base, "ぽめ"] : [base, "ほめ"]),
+  万: plainCnt("まん"), 千: (n, base) => (n === 3 ? [base, "ぜん"] : n === 8 ? [shorten("はち"), "せん"] : [base, "せん"]),
+  大庭園: plainCnt("だいていえん"), 都道府県: plainCnt("とどうふけん"),
   人: (n, base) => (n === 1 ? ["", "ひとり"] : n === 2 ? ["", "ふたり"] : [swapEnd(base, "よん", "よ"), "にん"]),
   日: (n, base, o) => {
     if (n === 1) return ["", o.span ? "いちにち" : "ついたち"];
