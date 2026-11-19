@@ -5,7 +5,7 @@
 // 辞書(furigana-data.js)の読みで <ruby> をつける。設定が変わったら、包んだ文字を作りなおす。
 // 辞書にない漢字は、ふりがながつかない(開発用の確認で、画面の文字は全部当てはまることを確かめてある)。
 
-import { ENTRIES, KYOIKU_BY_GRADE } from "./furigana-data.js?v=20261119a";
+import { ENTRIES, KYOIKU_BY_GRADE } from "./furigana-data.js?v=20261119b";
 
 const STORAGE_KEY = "floriQuiz.furigana";
 export const MODES = ["all", "many", "few", "none"];
@@ -433,7 +433,8 @@ function hostify(node) {
   const parent = node.parentElement;
   if (!parent || SKIP_TAGS.has(parent.tagName) || parent.closest(`.${HOST_CLASS}, [data-no-ruby]`)) return;
   // 問題・選択肢・ヒント・解説(data-kana の中)は、カタカナにも ふりがなをつけられるように、カタカナだけの文字も包む
-  const kana = Boolean(parent.closest("[data-kana]"));
+  // カタカナ・数字(+数え方)のふりがなも、全部の画面で付ける(利用者の指示「全画面」。「全部」の設定のときだけ)
+  const kana = true;
   if (!KANJI.test(node.nodeValue) && !(kana && (KATAKANA_ANY.test(node.nodeValue) || DIGIT_COUNTER_HINT.test(node.nodeValue)))) return;
   const host = document.createElement("span");
   host.className = HOST_CLASS;

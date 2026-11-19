@@ -1,8 +1,8 @@
 // ものがたり(ムービー)の効果音。ゲームに入っている音のファイル(assets/audio/)と、ここで作る音(WebAudio。ファイルなし)。
 // 音の大きさは、設定の「効果音」のつまみ(se)に合わせる。リストは docs/movie-sfx-list.md。
 // 使いかた:sfx('名前', 音量の倍率) / 場面ごとの音は SCENE_SFX、場面のしかけ(札・印・ひかり・ゆれ・ぴょん・歩く・ハート・セリフ)は、story-movie.js が自動で鳴らす。
-import { curve, getVolume } from '../audio.js?v=20261119a';
-import { audioCtx } from './story-bgm.js?v=20261119a';
+import { curve, getVolume } from '../audio.js?v=20261119b';
+import { audioCtx } from './story-bgm.js?v=20261119b';
 
 // ---- ゲームの音のファイル ----
 const FILES = {

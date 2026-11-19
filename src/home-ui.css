@@ -521,3 +521,11 @@
 .mode-row .rules-again:active { transform: translateY(3px); box-shadow: none; }
 @media (max-width: 340px) { .mode-row .mode-btn { padding-right: 8px; } .mode-row .rules-again { flex-basis: 70px; width: 70px; font-size: 22px; right: auto; height: auto; min-height: 0; } .mode-row .rules-again small { font-size: 12px; } }
 .mode-row .rules-again { align-self: stretch; margin: 0; }
+
+/* カタカナ・数字にも ふりがなを付けたので(全画面)、ホームの大きな「クイズ スタート!」のふりがなを小さくして、ボタンに収める */
+#btn-quiz .pb-text rt { font-size: 11px; }
+#btn-quiz .pb-text b { line-height: 1.35; }
+#btn-quiz .pb-text small rt { font-size: 9px; }
+#btn-quiz { overflow: visible; }
+/* 文の中で、数字+数え方のふりがなの前後に、余分な空きができないように */
+ruby { white-space: nowrap; }
