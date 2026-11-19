@@ -235,5 +235,5 @@ export function createMotion(model, opts = {}) {
   }
 
   // cue(kind, now): 動きを、指定して出す(kind = wave[手を振る]・cheer[ばんざい]・flap[ぱたぱた]・stretch[伸び]・expr[表情]・gaze[白目で見る]・dart[きょろきょろ]・brow[眉]・mouth[口])。ぴょんの最中は、あとで出る
-  return { cue(kind, now) { if (!opts.noArms || GROUP[kind] !== 'arm') { ev = nextEvent(now / 1000, kind); opts.onEvent?.(kind); } }, update, hop(now) { const t = now / 1000; if (t - hopT0 >= HOP_SECONDS) { hopT0 = t; opts.onEvent?.('hop'); } } };
+  return { cue(kind, now) { if (!opts.noArms || GROUP[kind] !== 'arm') { ev = nextEvent(now / 1000, kind); opts.onEvent?.(kind); } }, update, hop(now) { const t = now / 1000; if (t - hopT0 >= HOP_SECONDS) { hopT0 = t; opts.onEvent?.('hop'); return true; } return false; } };   // 返す値:ほんとうに跳ねはじめたか(跳ねている最中のさわりは、false)
 }

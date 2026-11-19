@@ -259,6 +259,19 @@ document.addEventListener("animationend", (event) => {
   if (overlays.has(event.target)) sync(event.target);
 }, true);
 setInterval(syncAll, 1000); // 念のため、1秒ごとに合わせ直す(変わっていなければ、何もしない)
+// 絵の位置・大きさが かわったら、すぐ(1コマ以内に)かざりを合わせ直す。結果発表などで、画面の中身が出てきて、フロリが動いたとき、かざりが1秒おくれて ついてくるのを なおす
+function watchLayout() {
+  for (const [img, pair] of overlays) {
+    const w = img.offsetWidth;
+    if (!w) continue; // かくれている・まだ大きさがない
+    const key = `${img.offsetLeft}|${img.offsetTop}|${w}|${img.offsetHeight}`;
+    if (pair.layoutKey === key) continue;
+    pair.layoutKey = key;
+    place(img);
+  }
+  requestAnimationFrame(watchLayout);
+}
+requestAnimationFrame(watchLayout);
 
 // 画面の大きさが変わらなくても、絵の位置だけが変わったとき(解説の大きさに合わせて、絵が小さくなる など)に、かざりを、合わせ直す
 export const refreshDecor = refresh;

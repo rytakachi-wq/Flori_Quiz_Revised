@@ -219,9 +219,9 @@ function mount(img) {
     canvas.style.pointerEvents = "auto";
     canvas.addEventListener("pointerdown", () => {
       tapAt = performance.now();
+      if (!item.motion?.hop(performance.now())) return; // 表紙は、クリックで ぴょん(跳ねている最中のさわりは、数えない。数えると、見えている ぴょん が2回で、大ジャンプになってしまう)
       coverTaps += 1;
-      item.motion?.hop(performance.now()); // 表紙は、クリックで ぴょん
-      if (coverTaps % 3 === 0) bigHop(item); // 3回・6回・9回…めは、もっと高く
+      if (coverTaps % 3 === 0) bigHop(item); // 見えた ぴょん の3回・6回・9回…めは、もっと高く
     });
   }
   mounts.set(img, item);
