@@ -5,7 +5,7 @@
 // 辞書(furigana-data.js)の読みで <ruby> をつける。設定が変わったら、包んだ文字を作りなおす。
 // 辞書にない漢字は、ふりがながつかない(開発用の確認で、画面の文字は全部当てはまることを確かめてある)。
 
-import { ENTRIES, KYOIKU_BY_GRADE } from "./furigana-data.js?v=20261119c";
+import { ENTRIES, KYOIKU_BY_GRADE } from "./furigana-data.js?v=20261119d";
 
 const STORAGE_KEY = "floriQuiz.furigana";
 export const MODES = ["all", "many", "few", "none"];
@@ -166,6 +166,9 @@ const DIGIT_COUNTERS = {
   歩目: (n, base) => ([1, 6, 8, 0].includes(n % 10) && n ? [shorten(base), "ぽめ"] : n % 10 === 3 ? [base, "ぽめ"] : [base, "ほめ"]),
   万: plainCnt("まん"), 千: (n, base) => (n === 3 ? [base, "ぜん"] : n === 8 ? [shorten("はち"), "せん"] : [base, "せん"]),
   大庭園: plainCnt("だいていえん"), 都道府県: plainCnt("とどうふけん"),
+  // 位(1位=いちい・第2位=だいにい。「10の位」の「くらい」は、数字の直後ではないので、辞書のまま)・階・歳・杯・冊
+  位: plainCnt("い"), 歳: kai("さい", false), 冊: kai("さつ", false), 杯: sound(["はい", "ぱい", "ばい"]),
+  階: (n, base) => ([1, 6, 8, 0].includes(n % 10) && n ? [shorten(base), "かい"] : n % 10 === 3 ? [base, "がい"] : [base, "かい"]),
   人: (n, base) => (n === 1 ? ["", "ひとり"] : n === 2 ? ["", "ふたり"] : [swapEnd(base, "よん", "よ"), "にん"]),
   日: (n, base, o) => {
     if (n === 1) return ["", o.span ? "いちにち" : "ついたち"];
