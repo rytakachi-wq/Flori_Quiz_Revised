@@ -600,3 +600,30 @@ html body { letter-spacing: 0.03em; }
 html body rt { letter-spacing: 0; }
 /* せまい画面(幅360px以下):図鑑のカードの「NEW!」の札が、カテゴリの文字にかぶるので、文字を右へよせる */
 @media (max-width: 360px) { #screen-dex .dex-card:has(.dex-new) .dex-cat, #screen-note .dex-card:has(.dex-new) .dex-cat { padding-left: 24px; } #screen-dex .dex-new, #screen-note .dex-new { font-size: 8px; padding: 0 3px; } }
+
+/* ===== フロリのセリフを、吹き出しのデザインに(ホーム・クイズ選択・答えたあと・結果)=====
+   ほかのボタン・枠と、見分けがつくよう:白い地・青い縁・まるい角・しっぽ(フロリの方へ)。ベタ塗り(影・グラデーションなし) */
+#screen-cover .home-speech, .setup-say, #q-verdict, #screen-result #r-comment {
+  position: relative !important; background: #fff !important; color: #274e7a !important; border: 3px solid #3d7bc2 !important;
+  border-radius: 22px !important; box-shadow: none !important; text-shadow: none !important;
+}
+#screen-cover .home-speech::before, #screen-cover .home-speech::after, .setup-say::before, .setup-say::after,
+#q-verdict::before, #q-verdict::after, #screen-result #r-comment::before, #screen-result #r-comment::after {
+  content: "" !important; display: block !important; position: absolute !important; width: 0 !important; height: 0 !important; border-style: solid !important; border-color: transparent !important; transform: none !important; animation: none !important;
+}
+/* ホーム:フロリは、吹き出しの下 → しっぽは、下向き */
+#screen-cover .home-speech { margin-bottom: 14px !important; }
+#screen-cover .home-speech::before { left: 46%; top: auto !important; bottom: -17px !important; border-width: 14px 11px 0 11px !important; border-top-color: #3d7bc2 !important; }
+#screen-cover .home-speech::after { left: calc(46% + 3px); top: auto !important; bottom: -14px !important; border-width: 11px 8px 0 8px !important; border-top-color: #fff !important; }
+/* クイズ選択:フロリは、吹き出しの左 → しっぽは、左向き */
+.setup-say { margin-left: 18px !important; }
+.setup-say::before { left: -17px; top: 50%; margin-top: -11px; border-width: 11px 14px 11px 0 !important; border-right-color: #3d7bc2 !important; }
+.setup-say::after { left: -14px; top: 50%; margin-top: -8px; border-width: 8px 11px 8px 0 !important; border-right-color: #fff !important; }
+/* 答えたあと:フロリは、「正解!」の左 → しっぽは、左向き */
+#q-verdict { padding: 4px 16px !important; margin-left: 18px !important; }
+#q-verdict::before { left: -17px; top: 50%; margin-top: -11px; border-width: 11px 14px 11px 0 !important; border-right-color: #3d7bc2 !important; }
+#q-verdict::after { left: -14px; top: 50%; margin-top: -8px; border-width: 8px 11px 8px 0 !important; border-right-color: #fff !important; }
+/* 結果:フロリは、吹き出しの上 → しっぽは、上向き */
+#screen-result #r-comment { margin-top: 16px !important; }
+#screen-result #r-comment::before { left: 46%; top: -17px; border-width: 0 11px 14px 11px !important; border-bottom-color: #3d7bc2 !important; }
+#screen-result #r-comment::after { left: calc(46% + 3px); top: -14px; border-width: 0 8px 11px 8px !important; border-bottom-color: #fff !important; }
