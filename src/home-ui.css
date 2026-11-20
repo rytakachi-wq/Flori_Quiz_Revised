@@ -630,10 +630,11 @@ html body rt { letter-spacing: 0; }
 
 /* ===== ボス戦:ドラゴンを大きく・「警告! ボス出現!」の大きい表示(利用者の提案) ===== */
 /* ボス戦だけ、場面を高くして、ドラゴンをもっと大きく */
-.rpg-field[data-foe="dragon"] .rpg-foe-icon .foe-img { height: calc(var(--rpg-field-h) * 0.68) !important; max-width: none !important; }
+.rpg-field[data-foe="dragon"] .rpg-foe-icon .foe-img { height: calc(var(--rpg-field-h) * 0.76) !important; max-width: none !important; }
 .rpg-field[data-foe="dragon"] .rpg-foe { justify-items: end; overflow: visible; }
-.rpg-field[data-foe="dragon"] .rpg-foe-icon { justify-self: end; margin-right: 14px; }
-.rpg-field[data-foe="dragon"] .rpg-hero { transform: translateX(-14px); }
+.rpg-field[data-foe="dragon"] .rpg-foe-icon { position: absolute; right: -52px; bottom: 4px; display: block; width: auto; margin: 0; padding: 0; }
+.rpg-field[data-foe="dragon"] .rpg-foe-icon .foe-img { flex: none; }
+.rpg-field[data-foe="dragon"] .rpg-hero { transform: translateX(-28px); }
 .rpg-field[data-foe="dragon"] .rpg-foe-name, .rpg-field[data-foe="dragon"] .rpg-foe-hp { z-index: 3; }
 /* 警告の画面:黄と濃い紺の、しま(工事・警告の印)。赤は使わない。点滅する */
 #announce.is-warn { background: url("../assets/movie/bg_castle_hd.webp") center bottom / cover no-repeat !important; flex-direction: column-reverse !important; justify-content: space-around !important; padding-bottom: 9% !important; }   /* 絵に、色はぬらない。文字は上・フロリは下 */
