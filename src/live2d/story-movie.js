@@ -3,14 +3,14 @@
 // ・見切れない:大きさは、画面の たて・よこの小さいほうに合わせる(--u)。カメラ(ズーム・パン)で、寄り・引きをつくる。
 // ・動きは場面に合わせる:かなしい場面は腕を動かさない(noArms)。ぴょん・ぶるぶるは、ここぞというときだけ。歩くときは、上下にゆれる。
 // ・単調にならない:広い絵・寄りの絵・切りかえ(暗転)・走る/追う/はねる 動き・ふきだしの順番。
-import { loadModel, draw } from './live2d.js?v=20261120i';
-import { createMotion } from './flori-motion.js?v=20261120i';
-import { recolorCanvas } from '../flori-color.js?v=20261120i';
-import { HEADS } from '../badges.js?v=20261120i';
-import { startFurigana } from '../furigana.js?v=20261120i';
-import { MOVIES } from './storyboard.js?v=20261120i';
-import { playStoryBgm } from './story-bgm.js?v=20261120i';
-import { sfx, preloadSfx, SCENE_SFX, MARK_SFX } from './story-sfx.js?v=20261120i';
+import { loadModel, draw } from './live2d.js?v=20261120n';
+import { createMotion } from './flori-motion.js?v=20261120n';
+import { recolorCanvas } from '../flori-color.js?v=20261120n';
+import { HEADS } from '../badges.js?v=20261120n';
+import { startFurigana } from '../furigana.js?v=20261120n';
+import { MOVIES } from './storyboard.js?v=20261120n';
+import { playStoryBgm } from './story-bgm.js?v=20261120n';
+import { sfx, preloadSfx, SCENE_SFX, MARK_SFX } from './story-sfx.js?v=20261120n';
 
 startFurigana();
 
@@ -27,7 +27,7 @@ const ART = {   // 絵(アプリの絵。assets/illust)
   tree: '../assets/illust/tree.webp', hat: '../assets/illust/tophat.webp', ribbon: '../assets/dress/head01.png',
   sparkle: '../assets/illust/sparkle.webp', bulb: '../assets/illust/bulb.webp', key: '../assets/illust/key.webp', heart: '../assets/illust/heart.webp', star: '../assets/illust/star_fill.webp', sweat: '../assets/illust/sweat.webp', fire: '../assets/illust/fire.webp',
 };
-const artUrl = name => new URL(ART[name] ?? `../assets/movie/${name}.webp`, SRC).href + '?v=20261120i';   // ART にないものは、assets/movie/ の絵
+const artUrl = name => new URL(ART[name] ?? `../assets/movie/${name}.webp`, SRC).href + '?v=20261120n';   // ART にないものは、assets/movie/ の絵
 const BGFILE = { home: 'bg_home_hd', night: 'bg_night_hd', castle: 'bg_castle_hd', sunrise: 'bg_sunrise_hd', dusk: 'bg_dusk', forest: 'bg_forest', swamp: 'bg_swamp', gate: 'bg_gate', alert: 'bg_alert' };   // 背景の絵(_hd=高画質。ないものは、小さな見本を のばして使う=仮)
 const loadImg = src => new Promise(ok => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => ok(im); im.src = new URL(src, SRC).href; });
 
