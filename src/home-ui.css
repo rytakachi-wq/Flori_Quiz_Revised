@@ -630,9 +630,9 @@ html body rt { letter-spacing: 0; }
 
 /* ===== ボス戦:ドラゴンを大きく・「警告! ボス出現!」の大きい表示(利用者の提案) ===== */
 /* ボス戦だけ、場面を高くして、ドラゴンをもっと大きく */
-.rpg-field[data-foe="dragon"] .rpg-foe-icon .foe-img { height: calc(var(--rpg-field-h) * 0.76) !important; max-width: none !important; }
+.rpg-field[data-foe="dragon"] .rpg-foe-icon .foe-img { height: calc(var(--rpg-field-h) * 0.62) !important; max-width: none !important; }
 .rpg-field[data-foe="dragon"] .rpg-foe { justify-items: end; overflow: visible; }
-.rpg-field[data-foe="dragon"] .rpg-foe-icon { position: absolute; right: -52px; bottom: 4px; display: block; width: auto; margin: 0; padding: 0; }
+.rpg-field[data-foe="dragon"] .rpg-foe-icon { position: absolute; right: -36px; bottom: -6px; display: block; width: auto; margin: 0; padding: 0; }
 .rpg-field[data-foe="dragon"] .rpg-foe-icon .foe-img { flex: none; }
 .rpg-field[data-foe="dragon"] .rpg-hero { transform: translateX(-28px); }
 .rpg-field[data-foe="dragon"] .rpg-foe-name, .rpg-field[data-foe="dragon"] .rpg-foe-hp { z-index: 3; }
