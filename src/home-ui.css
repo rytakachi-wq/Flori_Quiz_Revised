@@ -649,3 +649,22 @@ html body rt { letter-spacing: 0; }
 /* RPGの選択肢:長い選択肢(ふりがなで高くなる)が、枠で切れないよう、行の高さを、中身にあわせて のばす(上の高さの上限を、なくす)。入りきらないときは、main.js の fitRpgWindow が、文字を小さくする */
 #screen-rpg .rpg-window > .rpg-choices, .rpg-screen:has(.rpg-warn:not([hidden])) .rpg-window > .rpg-choices { grid-auto-rows: minmax(calc(34px * var(--rpg-scale, 1)), auto) !important; }
 #screen-rpg .rpg-choice { height: auto; overflow: visible; }
+
+/* ===== オープニングの2つのボタンを、見栄えよく ===== */
+/* 「画面をタッチしてスタート!」:大きい黄色のまるいボタン。指の絵つき。ゆっくり、ふくらむ(目立たせる) */
+.opening .opening-hint { display: inline-flex; align-items: center; gap: 10px; padding: 12px 30px !important; font-size: 22px !important; letter-spacing: 0.04em; color: #4a3200 !important;
+  background: #ffd84a !important; border: 4px solid #fff !important; border-radius: 999px !important; box-shadow: 0 6px 0 #d49a14 !important; text-shadow: none !important; animation: op-pulse 1.5s ease-in-out infinite !important; }
+.opening .opening-hint::before { content: "👆"; font-size: 28px; line-height: 1; }
+@keyframes op-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+@media (prefers-reduced-motion: reduce) { .opening .opening-hint { animation: none !important; } }
+/* 「遊び方を見る」:白い地・青い縁・本の絵のボタン(スタートの黄色より、静かに) */
+.opening .opening-tutorial { background: #fff !important; border: 4px solid #3d7bc2 !important; border-radius: 999px !important; box-shadow: 0 5px 0 #2a5a96 !important; width: min(70vw, 270px) !important; justify-content: center; gap: 10px; }
+.opening .opening-tutorial::before { content: "📖"; font-size: 26px; line-height: 1; }
+.opening .opening-tutorial .pb-text b { color: #274e7a !important; text-shadow: none !important; font-size: 22px; letter-spacing: 0.06em; }
+.opening .opening-tutorial .pb-arrow { display: none; }
+.opening .opening-tutorial:active { transform: translateY(4px); box-shadow: 0 1px 0 #2a5a96 !important; }
+.opening .opening-hint { width: auto !important; max-width: 92vw; white-space: nowrap; justify-content: center; padding: 10px 24px !important; font-size: 20px !important; box-sizing: border-box; }
+.opening .opening-hint > span { display: inline-block; white-space: nowrap; }
+.opening .opening-hint::before { font-size: 26px; }
+@media (max-width: 360px) { .opening .opening-hint { font-size: 17px !important; padding: 8px 16px !important; gap: 6px; } .opening .opening-hint::before { font-size: 22px; } }
+@media (max-width: 360px) { .opening .opening-tutorial { width: min(80vw, 270px) !important; } .opening .opening-tutorial .pb-text b { font-size: 19px; white-space: nowrap; } .opening .opening-tutorial::before { font-size: 22px; } }
