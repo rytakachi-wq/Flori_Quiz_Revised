@@ -632,8 +632,11 @@ html body rt { letter-spacing: 0; }
 .rpg-field[data-foe="dragon"] .rpg-foe-icon .foe-img { height: clamp(80px, calc(var(--rpg-field-h) - 16px), 210px) !important; }
 .rpg-field[data-foe="dragon"] .rpg-foe-name, .rpg-field[data-foe="dragon"] .rpg-foe-hp { z-index: 3; }
 /* 警告の画面:黄と濃い紺の、しま(工事・警告の印)。赤は使わない。点滅する */
-#announce.is-warn { background: repeating-linear-gradient(-45deg, #ffd25a 0 28px, #22304f 28px 56px) !important; }
+#announce.is-warn { background: #22304f !important; }
+#announce.is-warn .confetti { display: none !important; }   /* 背景の絵(ふわふわ飛ぶ絵)は、出さない */
 #announce.is-warn .announce-text { white-space: pre-line; text-align: center; line-height: 1.15; padding: 14px 26px; font-size: clamp(44px, calc(14 * var(--vw)), 96px);
-  color: #fff !important; background: #22304f; border: 6px solid #ffd25a; border-radius: 18px; text-shadow: none !important; animation: warn-blink 0.42s steps(2, jump-none) infinite !important; }
+  color: #fff !important; background: transparent; border: 0; border-radius: 18px; text-shadow: none !important; animation: warn-blink 0.42s steps(2, jump-none) infinite !important; }
 @keyframes warn-blink { 0% { opacity: 1; } 100% { opacity: 0.35; } }
 @media (prefers-reduced-motion: reduce) { #announce.is-warn .announce-text { animation: none !important; } }
+/* ボス(ドラゴン)のときは、フロリを小さく(ドラゴンが、大きく見える) */
+.rpg-field[data-foe="dragon"] .rpg-flori { height: calc(var(--rpg-field-h) - 62px) !important; }
