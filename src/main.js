@@ -23,7 +23,7 @@ import {
   previousDateKey,
   shuffleChoices,
   totalScore,
-} from "./game.js?v=20261120f";
+} from "./game.js?v=20261120h";
 import {
   addStars,
   loadStats,
@@ -37,21 +37,21 @@ import {
   recordWrong,
   recordRpg,
   recordRound,
-} from "./storage.js?v=20261120f";
-import { illustrationFor, explanationArtFor } from "./illustrations.js?v=20261120f";
-import { createTalker } from "./talk.js?v=20261120f";
-import { initTutorial, openTutorial } from "./tutorial.js?v=20261120f";
-import { initRules, openRules as resetRules } from "./rules.js?v=20261120f";
-import { openCredits, closeCredits } from "./credits.js?v=20261120f";
-import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js?v=20261120f";
-import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js?v=20261120f";
-import { hopFlori, startFamilyVisits, startLiveFlori } from "./live-flori.js?v=20261120f";
-import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js?v=20261120f";
-import { getVolume, holdBgm, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js?v=20261120f";
-import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=20261120f";
+} from "./storage.js?v=20261120h";
+import { illustrationFor, explanationArtFor } from "./illustrations.js?v=20261120h";
+import { createTalker } from "./talk.js?v=20261120h";
+import { initTutorial, openTutorial } from "./tutorial.js?v=20261120h";
+import { initRules, openRules as resetRules } from "./rules.js?v=20261120h";
+import { openCredits, closeCredits } from "./credits.js?v=20261120h";
+import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js?v=20261120h";
+import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js?v=20261120h";
+import { hopFlori, startFamilyVisits, startLiveFlori } from "./live-flori.js?v=20261120h";
+import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js?v=20261120h";
+import { getVolume, holdBgm, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js?v=20261120h";
+import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=20261120h";
 
 
-const QUESTIONS_URL = "../data/questions/questions.json?v=20261120f"; // 問題を変えたら、この値と index.html の ?v= を変える
+const QUESTIONS_URL = "../data/questions/questions.json?v=20261120h"; // 問題を変えたら、この値と index.html の ?v= を変える
 const ONI_TAPS = 5; // 表紙のすみのフロリを、この回数押すと、オニ問題が出る
 const IMG = {
   think: "../assets/flori/m/book_pen.png",
@@ -355,7 +355,7 @@ function setFlori(src, alt) {
 
 // 画面いっぱいに、ひとことを出して、短い曲を鳴らしてから、次へ進む(「それでは、スタート!」など)。
 let announcing = false; // 大きな表示を出している間は、他の操作(キーボードの連打など)を受け付けない
-function announce(text, jingle, then, image) {
+function announce(text, jingle, then, image, variant = "") {
   if (announcing) return;
   announcing = true;
   $("announce-text").textContent = text;
@@ -365,10 +365,12 @@ function announce(text, jingle, then, image) {
   flori.style.animation = "none";
   void flori.offsetWidth; // フロリの登場を、初めから動かす
   flori.style.animation = "";
+  $("announce").classList.toggle("is-warn", variant === "warn"); // 警告の画面(ボス出現)
   $("announce").hidden = false;
-  const length = Math.max(1600, playJingle(jingle) + 300);
+  const length = jingle ? Math.max(1600, playJingle(jingle) + 300) : 2400;
   setTimeout(() => {
     $("announce").hidden = true;
+    $("announce").classList.remove("is-warn");
     announcing = false;
     then();
   }, length);
@@ -469,6 +471,7 @@ function startPlayNow(nextMode, startMessage = null) {
   } else if (mode === "rpg") {
     play = rpgOni ? new RpgRound(oniPool(), Math.random, new Set(), ONI_STAGES) : new RpgRound(adventurePool(), Math.random, new Set(loadStats().right));
     rpgShownStage = -1;
+    rpgBossWarned = -1;
     announce(rpgOni ? "オニ戦 スタート!" : "クエスト スタート!", "start", showRpg, "../assets/flori/m/body_wave.webp");
     return;
   }
@@ -1447,7 +1450,7 @@ $("btn-credits").addEventListener("click", showCredits);
 // プロローグは、はじめて開いたとき、だれにでも見せる。①〜⑤は、総合得点が 20・40・60・80・100点になったあと、つぎにゲームを始める前に、1回だけ見せる。
 // 「その他」の「ものがたり」では、見られるようになったものを、いつでも見られる。
 const MOVIE_SEEN_KEY = "floriQuiz.movieSeen";
-const MOVIE_VER = "20261120f";
+const MOVIE_VER = "20261120h";
 const MOVIE_INFO = [
   { id: "pro", need: 0 },
   { id: "ep1", need: 20 },
@@ -2672,7 +2675,18 @@ function rpgIntro(stage, retries) {
   return lines[(retries - 1) % lines.length];
 }
 
+// ボスが出てくる直前に、「警告! ボス出現!」を、大きく出す(そのボスのマスで、1回だけ)
+let rpgBossWarned = -1;
 function showRpg() {
+  if (mode === "rpg" && play.current.kind === "boss" && rpgBossWarned !== play.stage && !announcing) {
+    rpgBossWarned = play.stage;
+    playSe("rpgGuard");
+    announce("警告!\nボス出現!", null, showRpg, IMG.surprised, "warn");
+    return;
+  }
+  showRpgBody();
+}
+function showRpgBody() {
   const question = shuffleChoices(play.nextQuestion().question); // 選択肢は、出すたびに、ランダムな順番
   rpgQuestion = question;
   rpgAnswered = false;
