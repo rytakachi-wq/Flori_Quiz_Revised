@@ -632,10 +632,11 @@ html body rt { letter-spacing: 0; }
 /* ボス戦だけ、場面を高くして、ドラゴンをもっと大きく */
 .rpg-field[data-foe="dragon"] .rpg-foe-icon .foe-img { height: calc(var(--rpg-field-h) * 0.68) !important; max-width: none !important; }
 .rpg-field[data-foe="dragon"] .rpg-foe { justify-items: end; overflow: visible; }
-.rpg-field[data-foe="dragon"] .rpg-foe-icon { justify-self: end; margin-right: -4px; }
+.rpg-field[data-foe="dragon"] .rpg-foe-icon { justify-self: end; margin-right: 14px; }
+.rpg-field[data-foe="dragon"] .rpg-hero { transform: translateX(-14px); }
 .rpg-field[data-foe="dragon"] .rpg-foe-name, .rpg-field[data-foe="dragon"] .rpg-foe-hp { z-index: 3; }
 /* 警告の画面:黄と濃い紺の、しま(工事・警告の印)。赤は使わない。点滅する */
-#announce.is-warn { background: linear-gradient(rgba(176, 20, 36, 0.62), rgba(176, 20, 36, 0.62)), url("../assets/movie/bg_castle_hd.webp") center bottom / cover no-repeat !important; }
+#announce.is-warn { background: url("../assets/movie/bg_castle_hd.webp") center bottom / cover no-repeat !important; flex-direction: column-reverse !important; justify-content: space-around !important; padding-bottom: 9% !important; }   /* 絵に、色はぬらない。文字は上・フロリは下 */
 #announce.is-warn .confetti { display: none !important; }   /* 背景の絵(ふわふわ飛ぶ絵)は、出さない */
 #announce.is-warn .announce-text { white-space: pre-line; text-align: center; line-height: 1.15; padding: 14px 26px; font-size: clamp(44px, calc(14 * var(--vw)), 96px);
   color: #fff !important; background: transparent; border: 0; border-radius: 18px; text-shadow: 0 4px 0 #4a0a12, 3px 0 0 #4a0a12, -3px 0 0 #4a0a12, 0 -3px 0 #4a0a12 !important; animation: warn-blink 0.42s steps(2, jump-none) infinite !important; }
