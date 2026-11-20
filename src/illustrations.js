@@ -181,6 +181,15 @@ const AUTO_ART = {
 const AUTO_ANIM = ["ia-bob", "ia-pop", "ia-sway", "ia-bob", "ia-pop"];
 const autoRow = (emojis) => row(...emojis.map((emoji, i) => e(emoji, AUTO_ANIM[i % AUTO_ANIM.length], (i % 5) * 0.2)));
 
+// 解説に出す図(答えのあとに見せるので、答えが分かってもよい)。uid でひもづける。
+const EXPLAIN_ART = {
+  // q43 ピザを3回切って7切れ
+  u00127559: `<svg viewBox="0 0 300 300" class="ex-svg" role="img" aria-label="3本の線が、たがいに交わって、ピザが7切れに分かれた図"><circle cx="150" cy="150" r="140" fill="#FAEEDA" stroke="#854F0B" stroke-width="4"/><g stroke="#C0392B" stroke-width="4" stroke-linecap="round"><line x1="22" y1="182" x2="278" y2="182"/><line x1="195" y1="18" x2="68" y2="238"/><line x1="105" y1="18" x2="232" y2="238"/></g><g font-size="22" font-weight="700" text-anchor="middle" fill="#5a3410"><text x="150" y="158">1</text><text x="150" y="232">2</text><text x="86" y="112">3</text><text x="214" y="112">4</text><text x="150" y="66">5</text><text x="236" y="206">6</text><text x="64" y="206">7</text></g></svg>`,
+};
+export function explanationArtFor(question) {
+  return EXPLAIN_ART[question.uid ?? question.id] ?? "";
+}
+
 // その問題の、イラストのHTML(ないときは、空)
 export function illustrationFor(question) {
   const uid = question.uid ?? question.id;

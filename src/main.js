@@ -38,7 +38,7 @@ import {
   recordRpg,
   recordRound,
 } from "./storage.js?v=20261120f";
-import { illustrationFor } from "./illustrations.js?v=20261120f";
+import { illustrationFor, explanationArtFor } from "./illustrations.js?v=20261120f";
 import { createTalker } from "./talk.js?v=20261120f";
 import { initTutorial, openTutorial } from "./tutorial.js?v=20261120f";
 import { initRules, openRules as resetRules } from "./rules.js?v=20261120f";
@@ -511,6 +511,7 @@ function showQuestion() {
   const art = illustrationFor(question);
   $("q-art").innerHTML = art;
   $("q-art").hidden = art === "";
+  $("q-explain-art").hidden = true; // 解説の図は、答えたあとに出す
   $("q-text").textContent = question.text;
   $("q-text").classList.toggle("long", question.text.length > 70); // 長い問題は、文字を少し小さくして、画面に収める
   $("screen-question").classList.toggle("is-long", question.text.length > 100); // とても長い問題は、もっとぎゅっと
@@ -806,6 +807,9 @@ function answer(response) {
   verdict.className = `verdict ${correct ? "is-right" : "is-wrong"}`;
   const rightText = renderers[current.type].correctText(current);
   $("q-explanation").textContent = `正解は「${rightText}」\n${current.explanation}`;
+  const exArt = explanationArtFor(current);
+  $("q-explain-art").innerHTML = exArt;
+  $("q-explain-art").hidden = exArt === "";
   $("btn-next").textContent = play.roundFinished ? "結果を見る" : "次へ";
   $("screen-question").classList.add("is-answered"); // 答えたあとは、上のフロリや、ヒントを、かくして、場所をあける
   // まず、全身のフロリを見せる(大きくはしない)。そのあとで、解説と「次へ」の所まで、画面を動かす。
@@ -2787,6 +2791,9 @@ function rpgAnswer(index, timedUp = false) {
   $("rpg-hint").hidden = true;
   $("rpg-choices").hidden = true; // 答えたあとは、答えと解説だけ(問題文と選択肢は、かくす。1画面に収めるため)
   $("rpg-text").hidden = true;
+  const exArtR = rpgOni && !correct ? "" : explanationArtFor(question);
+  $("rpg-explain-art").innerHTML = exArtR;
+  $("rpg-explain-art").hidden = exArtR === "";
   $("rpg-verdict").textContent = `${correct ? "正解!" : timedUp ? "時間切れ…" : "残念…"} ${message}${correct && rpgHinted ? "(ヒントを使ったヨ)" : ""}`;
   $("rpg-explain").textContent = rpgOni && !correct ? "答えは ヒミツ! もう1度 同じ問題に挑戦だ!" : `正解は「${question.choices[question.answer]}」\n${question.explanation}`;
   $("rpg-after").hidden = false;
