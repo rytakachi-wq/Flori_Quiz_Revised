@@ -5,7 +5,7 @@
 // 辞書(furigana-data.js)の読みで <ruby> をつける。設定が変わったら、包んだ文字を作りなおす。
 // 辞書にない漢字は、ふりがながつかない(開発用の確認で、画面の文字は全部当てはまることを確かめてある)。
 
-import { ENTRIES, KYOIKU_BY_GRADE } from "./furigana-data.js?v=20261120c";
+import { ENTRIES, KYOIKU_BY_GRADE } from "./furigana-data.js?v=20261120d";
 
 const STORAGE_KEY = "floriQuiz.furigana";
 export const MODES = ["all", "many", "few", "none"];
@@ -274,6 +274,12 @@ export function segments(text, digitMode = false, allowAnswer = false) {
       continue;
     }
     const found = matchAt(text, i, digitMode);
+    // 「〜の日」「晴れた日」のように、ひらがなのあとの「日」(辞書に長い語がないとき)は「ひ」(「にち」ではない)
+    if (found && found.length === 1 && text[i] === "日" && /[ぁ-ん]/.test(text[i - 1] ?? "") && !KANJI.test(text[i + 1] ?? "") && found.segs.length === 1 && found.segs[0][0] === "日") {
+      push("日", "ひ");
+      i += 1;
+      continue;
+    }
     if (found) {
       for (const [t, reading] of found.segs) push(t, reading);
       i += found.length;
