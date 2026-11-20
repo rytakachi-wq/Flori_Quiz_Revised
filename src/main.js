@@ -23,7 +23,7 @@ import {
   previousDateKey,
   shuffleChoices,
   totalScore,
-} from "./game.js?v=20261120y";
+} from "./game.js?v=20261121d";
 import {
   addStars,
   loadStats,
@@ -37,21 +37,21 @@ import {
   recordWrong,
   recordRpg,
   recordRound,
-} from "./storage.js?v=20261120y";
-import { illustrationFor, explanationArtFor } from "./illustrations.js?v=20261120y";
-import { createTalker } from "./talk.js?v=20261120y";
-import { initTutorial, openTutorial } from "./tutorial.js?v=20261120y";
-import { initRules, openRules as resetRules } from "./rules.js?v=20261120y";
-import { openCredits, closeCredits } from "./credits.js?v=20261120y";
-import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js?v=20261120y";
-import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js?v=20261120y";
-import { hopFlori, startFamilyVisits, startLiveFlori } from "./live-flori.js?v=20261120y";
-import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js?v=20261120y";
-import { getVolume, holdBgm, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js?v=20261120y";
-import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=20261120y";
+} from "./storage.js?v=20261121d";
+import { illustrationFor, explanationArtFor } from "./illustrations.js?v=20261121d";
+import { createTalker } from "./talk.js?v=20261121d";
+import { initTutorial, openTutorial } from "./tutorial.js?v=20261121d";
+import { initRules, openRules as resetRules } from "./rules.js?v=20261121d";
+import { openCredits, closeCredits } from "./credits.js?v=20261121d";
+import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js?v=20261121d";
+import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js?v=20261121d";
+import { hopFlori, startFamilyVisits, startLiveFlori } from "./live-flori.js?v=20261121d";
+import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js?v=20261121d";
+import { getVolume, holdBgm, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js?v=20261121d";
+import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=20261121d";
 
 
-const QUESTIONS_URL = "../data/questions/questions.json?v=20261120y"; // 問題を変えたら、この値と index.html の ?v= を変える
+const QUESTIONS_URL = "../data/questions/questions.json?v=20261121d"; // 問題を変えたら、この値と index.html の ?v= を変える
 const ONI_TAPS = 5; // 表紙のすみのフロリを、この回数押すと、オニ問題が出る
 const IMG = {
   think: "../assets/flori/m/book_pen.png",
@@ -1450,7 +1450,7 @@ $("btn-credits").addEventListener("click", showCredits);
 // プロローグは、はじめて開いたとき、だれにでも見せる。①〜⑤は、総合得点が 20・40・60・80・100点になったあと、つぎにゲームを始める前に、1回だけ見せる。
 // 「その他」の「ものがたり」では、見られるようになったものを、いつでも見られる。
 const MOVIE_SEEN_KEY = "floriQuiz.movieSeen";
-const MOVIE_VER = "20261120y";
+const MOVIE_VER = "20261121d";
 const MOVIE_INFO = [
   { id: "pro", need: 0 },
   { id: "ep1", need: 20 },
@@ -2643,20 +2643,31 @@ function updateRpgHintButton() {
 function fitRpgWindow() {
   const win = $("screen-rpg").querySelector(".rpg-window");
   const screen = $("screen-rpg");
+  const choices = $("rpg-choices");
   win.style.removeProperty("--rpg-scale");
   screen.style.removeProperty("--rpg-field-h");
+  // 収まっていないか:窓がはみ出す・選択肢の入れ物がはみ出す・選択肢の中の文字が、ボタンからはみ出す(問題文が長いと、選択肢が つぶされて、文字が切れる)
+  const over = () =>
+    win.scrollHeight > win.clientHeight + 1 ||
+    (!$("rpg-text").hidden && ($("rpg-text").scrollHeight > $("rpg-text").clientHeight + 1 || (!choices.hidden && choices.children[0] && $("rpg-text").getBoundingClientRect().bottom > choices.children[0].getBoundingClientRect().top + 1))) ||
+    (!choices.hidden && (choices.scrollHeight > choices.clientHeight + 1 || [...choices.children].some((b) => b.scrollHeight > b.clientHeight + 1)));
   let scale = 1;
-  while (win.scrollHeight > win.clientHeight + 1 && scale > 0.6) {
+  while (over() && scale > 0.6) {
     scale -= 0.05;
     win.style.setProperty("--rpg-scale", scale.toFixed(2));
   }
-  // それでも収まらないとき(小さい画面)は、上の戦いの場面を、少しずつ低くして、スクロールなしで全部見えるようにする
-  if (win.scrollHeight > win.clientHeight + 1) {
+  // それでも収まらないとき(長い問題・小さい画面)は、上の戦いの場面を、少しずつ低くして、スクロールなしで全部見えるようにする
+  if (over()) {
     let h = parseFloat(getComputedStyle($("rpg-field")).height);
-    while (win.scrollHeight > win.clientHeight + 1 && h > 56) {
+    while (over() && h > 56) {
       h -= 6;
       screen.style.setProperty("--rpg-field-h", `${h}px`);
     }
+  }
+  // 場面を低くしても収まらないときは、文字を、さらに(5割まで)小さくする
+  while (over() && scale > 0.5) {
+    scale -= 0.05;
+    win.style.setProperty("--rpg-scale", scale.toFixed(2));
   }
 }
 
