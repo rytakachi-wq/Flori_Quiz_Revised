@@ -5,7 +5,7 @@
 // 辞書(furigana-data.js)の読みで <ruby> をつける。設定が変わったら、包んだ文字を作りなおす。
 // 辞書にない漢字は、ふりがながつかない(開発用の確認で、画面の文字は全部当てはまることを確かめてある)。
 
-import { ENTRIES, KYOIKU_BY_GRADE } from "./furigana-data.js?v=20261124e";
+import { ENTRIES, KYOIKU_BY_GRADE } from "./furigana-data.js?v=20261124m";
 
 const STORAGE_KEY = "floriQuiz.furigana";
 export const MODES = ["all", "many", "few", "none"];
@@ -452,9 +452,50 @@ function overhang(host) {
     if (left > 0.02) ruby.style.marginLeft = `${-left.toFixed(2)}em`;
     if (right > 0.02) ruby.style.marginRight = `${-right.toFixed(2)}em`;
   }
+  alignBase(host);
+}
+
+// ふりがなが、漢字より横に長いとき、漢字が、ふりがなの幅いっぱいに、ばらけて(挑 戦)、ひらがなと、字の間が ちがって見える。
+// 漢字は、いつもの間隔でつめて(ruby-align: start)、ふりがなを、漢字の真ん中に ずらして かさねる(漢字の幅は、ふえない)。
+// 画面に出ているときだけ、はかれる(出ていない画面は、出たときに、もう1度、呼ぶ)
+function alignBase(host) {
+  for (const ruby of host.querySelectorAll("ruby")) {
+    if (ruby.dataset.aligned === "1") continue;
+    const rt = ruby.querySelector("rt");
+    const base = ruby.firstChild;
+    if (!rt || !base || base.nodeType !== Node.TEXT_NODE || !rt.getClientRects().length) continue;
+    ruby.dataset.aligned = "1";
+    ruby.style.whiteSpace = [...base.textContent].length <= 5 ? "nowrap" : ""; // みじかい語は、途中で、折り返さない(「0 / 問」のように、わかれない)。長い語(ヘリウムガス など)は、折り返せる
+    const fs = parseFloat(getComputedStyle(ruby).fontSize);
+    // いったん、漢字を、つめて(ruby-align: start)・余白なしにして、実際の幅を、はかる
+    ruby.style.rubyAlign = "start";
+    ruby.style.marginLeft = "";
+    ruby.style.marginRight = "";
+    rt.style.position = "";
+    rt.style.left = "";
+    const range = document.createRange();
+    range.selectNodeContents(base);
+    const baseWidth = [...base.textContent].length * fs * 1.0; // 字間なしの、漢字の幅(めやす。1文字=1em。字間の指定は、その分、足す)
+    void range;
+    const boxWidth = ruby.getBoundingClientRect().width; // ふりがなを ふくんだ、全体の幅
+    const gap = boxWidth - baseWidth - (parseFloat(getComputedStyle(ruby).letterSpacing) || 0) * [...base.textContent].length; // ふりがなが、漢字より、長い分
+    if (gap > 1) {
+      // となりが、ふつうの文字のときだけ、ふりがなを、そちらへ、かぶせる(となりにも ふりがながあるときは、ぶつからないよう、場所をあける)
+      const room = (node) => (node && node.nodeType === Node.TEXT_NODE && node.textContent.trim() ? Math.min(0.9 * fs, node.textContent.length * 0.45 * fs) : 0);
+      const overL = Math.min(gap / 2, room(ruby.previousSibling));
+      const overR = Math.min(gap / 2, room(ruby.nextSibling));
+      ruby.style.marginLeft = `${(gap / 2 - overL).toFixed(1)}px`;
+      ruby.style.marginRight = `${(-(gap / 2) - overR).toFixed(1)}px`;
+      rt.style.position = "relative";
+      rt.style.left = `${(-gap / 2).toFixed(1)}px`;
+    } else {
+      ruby.style.rubyAlign = "";
+    }
+  }
 }
 
 function render(host) {
+  host.style.whiteSpace = host.dataset.plain.trim().length <= 6 ? "nowrap" : ""; // みじかい文字(「0問」「毎日1問」)は、行の途中で、折り返さない
   host.innerHTML = rubyHtml(host.dataset.plain, mode, host.dataset.kana === "1", host.dataset.answer === "1");
   if (host.isConnected) overhang(host);
 }
@@ -492,9 +533,13 @@ export function startFurigana(root = document.body) {
   new MutationObserver((mutations) => {
     for (const mutation of mutations) {
       if (mutation.type === "characterData") hostify(mutation.target);
-      else mutation.addedNodes.forEach(scan);
+      else if (mutation.type === "attributes") {
+        // 画面・ダイアログが、出たとき:出ていなくて、はかれなかった ふりがなを、そろえなおす
+        const target = mutation.target;
+        if (target.nodeType === Node.ELEMENT_NODE && !target.hidden) requestAnimationFrame(() => alignBase(target));
+      } else mutation.addedNodes.forEach(scan);
     }
-  }).observe(root, { childList: true, subtree: true, characterData: true });
+  }).observe(root, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["hidden", "open"] });
 }
 
 // 画面に出ている、もとの文字(ルビの読みをのぞいた文字)を取り出す。テストや確認用。

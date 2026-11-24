@@ -556,7 +556,7 @@ html:not(.zz) body:not(.zz) rt:not(.zz) { color: inherit !important; text-shadow
 @media (max-width: 360px) {
   .weak-box > *, .weak-list li > * { min-width: 0; }
   .weak-msg { overflow-wrap: anywhere; word-break: break-all; }
-  #screen-records .scores dd { min-width: 0; overflow-wrap: anywhere; word-break: break-all; line-height: 1.3; }
+  #screen-records .scores dd { min-width: 0; line-height: 1.3; white-space: nowrap; }
   #screen-rpg .rpg-window > .rpg-choices { grid-auto-rows: auto !important; }
   #screen-rpg .rpg-choice { min-height: 28px; padding-top: 2px; padding-bottom: 2px; }
 }
@@ -565,7 +565,7 @@ html:not(.zz) body:not(.zz) rt:not(.zz) { color: inherit !important; text-shadow
 }
 @media (max-width: 360px) {
   #screen-records .scores dd, #s-daily { font-size: 13px; letter-spacing: -0.02em; }
-  #screen-records .scores dd ruby { white-space: normal; }
+  
   .home-help > span { font-size: 9.5px; letter-spacing: -0.03em; }
   .home-help .hub-ico { width: 22px; height: 22px; }
 }
