@@ -686,3 +686,6 @@ ruby { white-space: normal; }
   #screen-cover #btn-hub-records > span ruby rt { font-size: 5.5px; }
   #screen-cover #btn-hub-records .hub-ico { width: 18px !important; height: 18px !important; }
 }
+
+/* 文字の大きさ「大」「特大」でも、ランクの表示は、枠からはみ出さない大きさにとどめる */
+@media (min-width: 361px) { #screen-cover .home-rank { font-size: calc(16px / var(--ui-zoom)) !important; } }

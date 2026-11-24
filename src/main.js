@@ -23,7 +23,7 @@ import {
   previousDateKey,
   shuffleChoices,
   totalScore,
-} from "./game.js?v=20261124m";
+} from "./game.js?v=20261124n";
 import {
   addStars,
   loadStats,
@@ -37,21 +37,21 @@ import {
   recordWrong,
   recordRpg,
   recordRound,
-} from "./storage.js?v=20261124m";
-import { illustrationFor, explanationArtFor } from "./illustrations.js?v=20261124m";
-import { createTalker } from "./talk.js?v=20261124m";
-import { initTutorial, openTutorial } from "./tutorial.js?v=20261124m";
-import { initRules, openRules as resetRules } from "./rules.js?v=20261124m";
-import { openCredits, closeCredits } from "./credits.js?v=20261124m";
-import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js?v=20261124m";
-import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js?v=20261124m";
-import { hopFlori, startFamilyVisits, startLiveFlori } from "./live-flori.js?v=20261124m";
-import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js?v=20261124m";
-import { getVolume, holdBgm, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js?v=20261124m";
-import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=20261124m";
+} from "./storage.js?v=20261124n";
+import { illustrationFor, explanationArtFor } from "./illustrations.js?v=20261124n";
+import { createTalker } from "./talk.js?v=20261124n";
+import { initTutorial, openTutorial } from "./tutorial.js?v=20261124n";
+import { initRules, openRules as resetRules } from "./rules.js?v=20261124n";
+import { openCredits, closeCredits } from "./credits.js?v=20261124n";
+import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js?v=20261124n";
+import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js?v=20261124n";
+import { hopFlori, startFamilyVisits, startLiveFlori } from "./live-flori.js?v=20261124n";
+import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js?v=20261124n";
+import { getVolume, holdBgm, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js?v=20261124n";
+import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=20261124n";
 
 
-const QUESTIONS_URL = "../data/questions/questions.json?v=20261124m"; // 問題を変えたら、この値と index.html の ?v= を変える
+const QUESTIONS_URL = "../data/questions/questions.json?v=20261124n"; // 問題を変えたら、この値と index.html の ?v= を変える
 const ONI_TAPS = 5; // 表紙のすみのフロリを、この回数押すと、オニ問題が出る
 const IMG = {
   think: "../assets/flori/m/book_pen.png",
@@ -1450,7 +1450,7 @@ $("btn-credits").addEventListener("click", showCredits);
 // プロローグは、はじめて開いたとき、だれにでも見せる。①〜⑤は、総合得点が 20・40・60・80・100点になったあと、つぎにゲームを始める前に、1回だけ見せる。
 // 「その他」の「ものがたり」では、見られるようになったものを、いつでも見られる。
 const MOVIE_SEEN_KEY = "floriQuiz.movieSeen";
-const MOVIE_VER = "20261124m";
+const MOVIE_VER = "20261124n";
 const MOVIE_INFO = [
   { id: "pro", need: 0 },
   { id: "ep1", need: 20 },
@@ -3049,6 +3049,8 @@ function hideTip() {
 }
 function showTip(button, text) {
   tipBox.textContent = text;
+  tipBox.hidden = true; // いちど かくして、出しなおす(つづけて出すときも、毎回、同じ出かたの アニメーションにするため)
+  void tipBox.offsetWidth;
   tipBox.hidden = false;
   const rect = button.getBoundingClientRect();
   const left = Math.min(Math.max(6, rect.left + rect.width / 2 - tipBox.offsetWidth / 2), innerWidth - tipBox.offsetWidth - 6);
@@ -3347,7 +3349,7 @@ function effectiveZoom(want) {
 // 大きくして、「ちいさい画面用のくふう」が、大きくした文字でも、同じ場面で効くようにする(もとの値は覚えておく)
 const mediaOriginal = new WeakMap();
 const scaleMediaText = (text, zoom) =>
-  text.replace(/\((min|max)-(width|height):\s*([0-9.]+)px\)/g, (_, edge, axis, px) => `(${edge}-${axis}: ${Math.round(Number(px) * zoom * 100) / 100}px)`);
+  text.replace(/\((min|max)-(width|height):\s*([0-9.]+)px\)/g, (all, edge, axis, px) => (axis === "width" ? all : `(${edge}-${axis}: ${Math.round(Number(px) * zoom * 100) / 100}px)`));
 function scaleMediaQueries(zoom) {
   const walk = (rules) => {
     for (const rule of rules) {

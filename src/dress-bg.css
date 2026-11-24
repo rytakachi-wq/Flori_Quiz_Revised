@@ -42,3 +42,10 @@
 #screen-dress .dress-legend span.rare-3 { box-shadow: none; text-shadow: none; border-color: #d9488f; color: #c0397f; }
 /* 一番上の★の説明:文字(ふりがな)の まわりに、灰色の丸い枠が出ていたので、外側の1つだけを枠にして、中の文字には、枠・余白・影をつけない */
 #screen-dress .dress-legend span span { border: 0 !important; padding: 0 !important; background: none !important; box-shadow: none !important; border-radius: 0 !important; }
+
+/* 着せ替え:ロック中の吹き出しは、毎回、同じ出かた(ふわっと)。前は、つづけて押すと、いきなり出ていた */
+.dress-tipbox { animation: tipIn 0.18s ease-out both; }
+@keyframes tipIn { from { opacity: 0; transform: translateY(4px) scale(0.96); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .dress-tipbox { animation: none; } }
+/* 着せ替え:一覧のいちばん上のカードを、なでても(ういて・大きくなっても)、上が見切れないように、上に余白 */
+#screen-dress #dress-list { padding-top: 14px; }

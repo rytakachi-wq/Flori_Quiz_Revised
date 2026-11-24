@@ -5,7 +5,7 @@
 // 辞書(furigana-data.js)の読みで <ruby> をつける。設定が変わったら、包んだ文字を作りなおす。
 // 辞書にない漢字は、ふりがながつかない(開発用の確認で、画面の文字は全部当てはまることを確かめてある)。
 
-import { ENTRIES, KYOIKU_BY_GRADE } from "./furigana-data.js?v=20261124m";
+import { ENTRIES, KYOIKU_BY_GRADE } from "./furigana-data.js?v=20261124n";
 
 const STORAGE_KEY = "floriQuiz.furigana";
 export const MODES = ["all", "many", "few", "none"];
@@ -477,7 +477,9 @@ function alignBase(host) {
     range.selectNodeContents(base);
     const baseWidth = [...base.textContent].length * fs * 1.0; // 字間なしの、漢字の幅(めやす。1文字=1em。字間の指定は、その分、足す)
     void range;
-    const boxWidth = ruby.getBoundingClientRect().width; // ふりがなを ふくんだ、全体の幅
+    const boxRect = ruby.getBoundingClientRect().width;
+    const zoomRatio = ruby.offsetWidth ? boxRect / ruby.offsetWidth : 1; // 画面の拡大(文字の大きさ設定)ぶんを戻す
+    const boxWidth = zoomRatio > 0 ? boxRect / zoomRatio : boxRect; // ふりがなを ふくんだ、全体の幅
     const gap = boxWidth - baseWidth - (parseFloat(getComputedStyle(ruby).letterSpacing) || 0) * [...base.textContent].length; // ふりがなが、漢字より、長い分
     if (gap > 1) {
       // となりが、ふつうの文字のときだけ、ふりがなを、そちらへ、かぶせる(となりにも ふりがながあるときは、ぶつからないよう、場所をあける)
