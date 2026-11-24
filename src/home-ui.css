@@ -622,7 +622,9 @@ html body rt { letter-spacing: 0; }
 /* クイズ選択・答えたあと:フロリは左 → しっぽは、左向き */
 .setup-say, #q-verdict { margin-left: 18px !important; }
 #q-verdict { padding: 4px 16px !important; }
-.setup-say::after, #q-verdict::after { left: -11px !important; top: calc(50% - 9px) !important; border-left-width: 3px !important; border-bottom-width: 3px !important; border-radius: 0 0 0 4px !important; }
+/* 左むきのしっぽ:吹き出しの左の辺は、まっすぐな部分に、しっぽを付ける(角の丸みを小さく・しっぽを小さく。枠の線の真ん中に、しっぽの中心を合わせる) */
+.setup-say, #q-verdict { border-radius: 14px !important; }
+.setup-say::after, #q-verdict::after { width: 14px !important; height: 14px !important; left: -8.5px !important; top: calc(50% - 7px) !important; border-left-width: 3px !important; border-bottom-width: 3px !important; border-radius: 0 0 0 3px !important; }
 /* 結果:しっぽは、上向き */
 #screen-result #r-comment { margin-top: 16px !important; }
 #screen-result #r-comment::after { left: 46% !important; top: -11px !important; border-left-width: 3px !important; border-top-width: 3px !important; border-radius: 4px 0 0 0 !important; }
