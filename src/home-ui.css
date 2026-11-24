@@ -26,7 +26,7 @@
 /* ===== クイズの えらぶ画面 ===== */
 #screen-setup .mode-list { gap: 12px; }
 .mode-btn.m-rpg { min-height: 96px; padding-top: 10px; padding-bottom: 10px; }
-.mode-btn.m-rpg .tile-label { font-size: clamp(22px, calc(3.8 * var(--dvh)), 28px); }
+.mode-btn.m-rpg .tile-label { font-size: clamp(22px, calc(3.8 * var(--fdvh)), 28px); }
 .mode-btn.m-rpg .tile-icon { width: 64px; height: 64px; }
 .mode-btn.m-rpg .mode-ico { width: 60px; height: 60px; }
 .mode-btn { transition: transform 0.12s; }
@@ -127,7 +127,7 @@
 #screen-rules.rf-rpg .rf-next { color: #6a1a16; }
 #screen-rules.rf-review .rf-next { color: #14286a; }
 #screen-rules .rf-skip { text-shadow: none; }
-#screen-rules .rf-title { white-space: nowrap; overflow: hidden; height: 1.4em; font-size: clamp(18px, calc(3 * var(--dvh)), 24px); }
+#screen-rules .rf-title { white-space: nowrap; overflow: hidden; height: 1.4em; font-size: clamp(18px, calc(3 * var(--fdvh)), 24px); }
 #screen-rules .rf-caption { box-sizing: border-box; height: 116px; min-height: 116px; overflow: hidden; }
 
 /* ===== 2回目のまとめ ===== */
@@ -177,8 +177,8 @@
 .rpg-choices, .choices { justify-items: stretch; }
 .rpg-choice, .choice { width: 100%; box-sizing: border-box; }
 .rpg-text { font-size: calc(17.5px * var(--rpg-scale, 1)); line-height: 1.5; }
-#screen-question .question { font-size: clamp(18px, calc(3 * var(--dvh)), 25px); }
-#screen-question .question.long { font-size: clamp(16px, calc(2.6 * var(--dvh)), 21px); }
+#screen-question .question { font-size: clamp(18px, calc(3 * var(--fdvh)), 25px); }
+#screen-question .question.long { font-size: clamp(16px, calc(2.6 * var(--fdvh)), 21px); }
 
 /* ===== 3回目のまとめ ===== */
 /* オープニングの「遊び方を見る」:クイズ スタートと おなじ 見た目(金のボタン+茶色の▶) */
@@ -222,7 +222,7 @@
 .mode-btn.m-rpg { min-height: 92px; }
 .mode-btn.m-rpg .tile-icon { width: 54px; height: 54px; }
 .mode-btn.m-rpg .mode-ico { width: 52px; height: 52px; }
-.mode-btn.m-rpg .tile-label { font-size: clamp(20px, calc(3.2 * var(--dvh)), 25px); white-space: nowrap; }
+.mode-btn.m-rpg .tile-label { font-size: clamp(20px, calc(3.2 * var(--fdvh)), 25px); white-space: nowrap; }
 .mode-btn .tile-sub { font-size: 12px; }
 .mode-btn.m-rpg { min-height: 118px; }
 .mode-btn.m-daily, .mode-btn.m-review { min-height: 96px; }
@@ -239,7 +239,7 @@
 .rf-scene .rf-side { overflow: hidden; }
 .rf-scene .rf-seq-item small { white-space: normal; }
 #screen-rules .rf-stage { height: clamp(150px, calc(27 * var(--dvh)), 260px); }
-#screen-rules .rf-caption { height: auto; min-height: 96px; overflow: visible; font-size: clamp(14px, calc(2.1 * var(--dvh)), 17px); }
+#screen-rules .rf-caption { height: auto; min-height: 96px; overflow: visible; font-size: clamp(14px, calc(2.1 * var(--fdvh)), 17px); }
 #screen-rules .rf-buttons { height: 60px; flex: none; }
 #screen-rules .rf-next, #screen-rules .rf-prev { height: 60px; min-height: 60px; white-space: nowrap; font-size: 17px; padding: 0 6px; }
 .rf-tag { display: inline-flex; align-items: center; gap: 4px; }
@@ -640,7 +640,7 @@ html body rt { letter-spacing: 0; }
 /* 警告の画面:黄と濃い紺の、しま(工事・警告の印)。赤は使わない。点滅する */
 #announce.is-warn { background: url("../assets/movie/bg_castle_hd.webp") center bottom / cover no-repeat !important; flex-direction: column-reverse !important; justify-content: space-around !important; padding-bottom: 9% !important; }   /* 絵に、色はぬらない。文字は上・フロリは下 */
 #announce.is-warn .confetti { display: none !important; }   /* 背景の絵(ふわふわ飛ぶ絵)は、出さない */
-#announce.is-warn .announce-text { white-space: pre-line; text-align: center; line-height: 1.15; padding: 14px 26px; font-size: clamp(44px, calc(14 * var(--vw)), 96px);
+#announce.is-warn .announce-text { white-space: pre-line; text-align: center; line-height: 1.15; padding: 14px 26px; font-size: clamp(44px, calc(14 * var(--fvw)), 96px);
   color: #fff !important; background: transparent; border: 0; border-radius: 18px; text-shadow: 0 4px 0 #4a0a12, 3px 0 0 #4a0a12, -3px 0 0 #4a0a12, 0 -3px 0 #4a0a12 !important; animation: warn-blink 0.42s steps(2, jump-none) infinite !important; }
 @keyframes warn-blink { 0% { opacity: 1; } 100% { opacity: 0.35; } }
 @media (prefers-reduced-motion: reduce) { #announce.is-warn .announce-text { animation: none !important; } }
