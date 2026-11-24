@@ -127,6 +127,16 @@ const ART = {
   u1ba4bd48: `<svg class="iclock" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#fff" stroke="#46555e" stroke-width="4"/><g stroke="#46555e" stroke-width="3" stroke-linecap="round"><line x1="50" y1="8" x2="50" y2="14"/><line x1="92" y1="50" x2="86" y2="50"/><line x1="50" y1="92" x2="50" y2="86"/><line x1="8" y1="50" x2="14" y2="50"/></g><line class="ih-hour" x1="50" y1="50" x2="50" y2="26" stroke="#d8504a" stroke-width="6" stroke-linecap="round"/><line class="ih-min" x1="50" y1="50" x2="50" y2="14" stroke="#4a78d8" stroke-width="4" stroke-linecap="round"/><circle cx="50" cy="50" r="4" fill="#46555e"/></svg>`,
   // o05 夜に橋をわたる4人
   u0222dcac: row(e(imgHtml("stand_a"), "ia-bob"), e(imgHtml("stand_b"), "ia-bob", 0.15), e(imgHtml("stand_c"), "ia-bob", 0.3), e(imgHtml("stand_d"), "ia-bob", 0.45), e("🔦", "ia-flicker"), e("🌉", "ia-sway")),
+  // q02 海に面していない県
+  u27ca5490: row(e("🗾", "ia-bob"), e("🌊", "ia-sway"), e("🚫", "ia-pop", 0.3), e("❓", "ia-pop", 0.5)),
+  // q15 凍らせたペットボトル
+  uc7504b1f: row(e("🥤", "ia-bob"), e("❄️", "ia-spin-slow"), e("❓", "ia-pop", 0.4)),
+  // q17 3人の握手
+  u909462da: row(e("🙂", "ia-bob"), e("🤝", "ia-pop", 0.2), e("🙂", "ia-bob", 0.3), e("🤝", "ia-pop", 0.5), e("🙂", "ia-bob", 0.6), e("❓", "ia-pop", 0.8)),
+  // q20 時計の針が重なる
+  uabc123c2: row(e("🕛", "ia-sway"), e("🔁", "ia-spin-slow"), e("❓", "ia-pop", 0.4)),
+  // q98 丸太を切り分ける
+  ubd71027a: row(box("20m"), e("✂️", "ia-sway"), box("5m"), box("5m"), e("❓", "ia-pop", 0.4)),
 };
 
 
