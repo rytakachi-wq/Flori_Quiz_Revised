@@ -699,3 +699,6 @@ ruby { white-space: normal; }
   #rotate-guard .rg-sub { margin: 0; font-size: 15px; opacity: 0.9; }
   #rotate-guard rt { color: inherit; }
 }
+
+/* 表紙(画面をタッチしてスタート):縦向きで遊ぶ案内 */
+.opening .opening-note { position: relative; z-index: 4; margin: 10px 0 0; padding: 4px 14px; font-size: 14px; font-weight: bold; color: #1c4a78; background: rgba(255, 255, 255, 0.85); border-radius: 999px; }
