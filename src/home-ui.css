@@ -689,3 +689,13 @@ ruby { white-space: normal; }
 
 /* 文字の大きさ「大」「特大」でも、ランクの表示は、枠からはみ出さない大きさにとどめる */
 @media (min-width: 361px) { #screen-cover .home-rank { font-size: calc(16px / var(--ui-zoom)) !important; } }
+
+/* 縦画面専用:スマホを横にすると、「縦にしてね」を出して、遊べなくする(画面のむきが、ロックできる端末では、ロックする) */
+#rotate-guard { display: none; }
+@media (orientation: landscape) and (max-height: 520px) and (pointer: coarse) {
+  #rotate-guard { position: fixed; inset: 0; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; background: #2c5c9a; color: #fff; text-align: center; font-weight: bold; }
+  #rotate-guard .rg-icon { margin: 0; font-size: 44px; line-height: 1; }
+  #rotate-guard .rg-text { margin: 0; font-size: 24px; }
+  #rotate-guard .rg-sub { margin: 0; font-size: 15px; opacity: 0.9; }
+  #rotate-guard rt { color: inherit; }
+}
