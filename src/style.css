@@ -2887,7 +2887,9 @@ button:focus:not(:focus-visible) { outline: none; }
   .q-row .stage .bubble { font-size: 12px; padding: 2px 6px; }
 }
 @media (max-height: 600px) { #screen-question[data-player=""] #q-message { display: none; } }
-#screen-question.is-tight1 .q-art { display: none; }
+#screen-question.is-tight1 .q-art { min-height: 34px; max-height: 42px; padding-top: 1px; padding-bottom: 1px; border-width: 2px; }
+#screen-question.is-tight1 .q-art .qa-in { font-size: clamp(18px, 3.6vh, 26px); }
+#screen-question.is-tight2 .q-art { display: none; }
 #screen-question.is-tight2 .q-row .flori-small { height: 64px; }
 #screen-question.is-tight2 #q-message { display: none; }
 #screen-question.is-tight3 .q-row, #screen-question.is-tight3 #q-timer, #screen-question.is-tight3 .q-art { display: none; }
