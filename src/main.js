@@ -2691,7 +2691,7 @@ let rpgBossWarned = -1;
 function showRpg() {
   if (mode === "rpg" && play.current.kind === "boss" && rpgBossWarned !== play.stage && !announcing) {
     rpgBossWarned = play.stage;
-    playSe("rpgGuard");
+    playSe("whistle"); // 警告の音(敵の攻撃を受けた音とは、別の音にする)
     announce("警告!\nボス出現!", null, showRpg, IMG.surprised, "warn");
     return;
   }
@@ -2908,7 +2908,7 @@ $("btn-rpg-hint-yes").addEventListener("click", () => {
   play.useHint();
   renderRpgHearts();
   playHeartHalf(); // ハートが半分減った音(攻撃・ダメージの音とは別の、やわらかい2音)
-  rpgFx("💔 ハート半分減った");
+  rpgFx("ハート半分減った");
   $("screen-rpg").classList.add("is-hinted"); // 低い画面では、上の絵を小さくして、ヒントの場所をあける
   $("rpg-hint").textContent = `💡 ${rpgQuestion.hint}`;
   $("rpg-hint").hidden = false;

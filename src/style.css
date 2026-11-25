@@ -3847,3 +3847,12 @@ html[data-pattern] :is(#screen-menu, #screen-note, #screen-credits, #screen-dex,
 .explain-art[hidden] { display: none; }
 .explain-art .ex-svg { width: auto; height: clamp(84px, calc(15 * var(--vh, 1vh)), 130px); max-width: 100%; }
 @media (max-height: 700px) { .explain-art .ex-svg { height: clamp(70px, calc(12 * var(--vh, 1vh)), 96px); } }
+
+/* RPGの「分からない」の確認:2つのボタンを横に並べる */
+#dlg-rpg-giveup .buttons { flex-wrap: nowrap; }
+#dlg-rpg-giveup .buttons .btn { flex: 1 1 0; min-width: 0; min-height: 56px; padding: 0 8px; font-size: 17px; }
+#dlg-rpg-giveup b { color: #c0394f; }
+
+/* RPGの解説:読みやすく(こい色・大きめの字) */
+.rpg-explain { color: #14304d; font-size: calc(15.5px * var(--rpg-scale, 1)); line-height: 1.6; font-weight: 500; }
+@media (max-height: 700px) { .rpg-screen.is-answered .rpg-explain { font-size: calc(14.5px * var(--rpg-scale, 1)); line-height: 1.5; } }
