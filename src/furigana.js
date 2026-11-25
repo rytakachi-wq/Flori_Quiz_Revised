@@ -5,7 +5,7 @@
 // 辞書(furigana-data.js)の読みで <ruby> をつける。設定が変わったら、包んだ文字を作りなおす。
 // 辞書にない漢字は、ふりがながつかない(開発用の確認で、画面の文字は全部当てはまることを確かめてある)。
 
-import { ENTRIES, KYOIKU_BY_GRADE } from "./furigana-data.js?v=20261124r";
+import { ENTRIES, KYOIKU_BY_GRADE } from "./furigana-data.js?v=20261124s";
 
 const STORAGE_KEY = "floriQuiz.furigana";
 export const MODES = ["all", "many", "few", "none"];
@@ -460,11 +460,13 @@ function overhang(host) {
 // 画面に出ているときだけ、はかれる(出ていない画面は、出たときに、もう1度、呼ぶ)
 function alignBase(host) {
   for (const ruby of host.querySelectorAll("ruby")) {
-    if (ruby.dataset.aligned === "1") continue;
     const rt = ruby.querySelector("rt");
     const base = ruby.firstChild;
     if (!rt || !base || base.nodeType !== Node.TEXT_NODE || !rt.getClientRects().length) continue;
-    ruby.dataset.aligned = "1";
+    // 文字の大きさが、あとで変わったとき(収まるように小さくした・文字の大きさの設定)は、はかりなおす
+    const sizeKey = getComputedStyle(ruby).fontSize;
+    if (ruby.dataset.aligned === sizeKey) continue;
+    ruby.dataset.aligned = sizeKey;
     ruby.style.whiteSpace = [...base.textContent].length <= 5 ? "nowrap" : ""; // みじかい語は、途中で、折り返さない(「0 / 問」のように、わかれない)。長い語(ヘリウムガス など)は、折り返せる
     const fs = parseFloat(getComputedStyle(ruby).fontSize);
     // いったん、漢字を、つめて(ruby-align: start)・余白なしにして、実際の幅を、はかる
@@ -484,7 +486,8 @@ function alignBase(host) {
     if (gap > 1) {
       // となりが、ふつうの文字のときだけ、ふりがなを、そちらへ、かぶせる(となりにも ふりがながあるときは、ぶつからないよう、場所をあける)
       const room = (node) => (node && node.nodeType === Node.TEXT_NODE && node.textContent.trim() ? Math.min(0.9 * fs, node.textContent.length * 0.45 * fs) : 0);
-      const overL = Math.min(gap / 2, room(ruby.previousSibling));
+      // 行の始め(前に字がない)は、ふりがなを、外の余白へ はみ出させて、漢字を字下げしない
+      const overL = ruby.previousSibling ? Math.min(gap / 2, room(ruby.previousSibling)) : gap / 2;
       const overR = Math.min(gap / 2, room(ruby.nextSibling));
       ruby.style.marginLeft = `${(gap / 2 - overL).toFixed(1)}px`;
       ruby.style.marginRight = `${(-(gap / 2) - overR).toFixed(1)}px`;
@@ -528,6 +531,11 @@ function scan(root) {
     while (walker.nextNode()) nodes.push(walker.currentNode);
     nodes.forEach(hostify);
   }
+}
+
+// 画面の文字の大きさが変わったあと(main.js の、収める調整のあと)に、ふりがなの位置を、そろえなおす
+export function realignFurigana(root = document.body) {
+  alignBase(root);
 }
 
 export function startFurigana(root = document.body) {

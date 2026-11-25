@@ -702,3 +702,15 @@ ruby { white-space: normal; }
 
 /* 表紙(画面をタッチしてスタート):縦向きで遊ぶ案内 */
 .opening .opening-note { position: relative; z-index: 4; margin: 10px 0 0; padding: 4px 14px; font-size: 14px; font-weight: bold; color: #1c4a78; background: rgba(255, 255, 255, 0.85); border-radius: 999px; }
+
+/* 文字の大きさ「大」「特大」:画面全体を大きくしきれないスマホでは、読む文字(問題・選択肢・ヒント・解説)だけ、のこりの分を大きくする(main.js の --read-boost) */
+#q-text, #q-choices, #q-hint, #q-explanation { zoom: var(--read-boost, 1); } /* RPG は、--rpg-scale を、この倍率から始める(main.js の fitRpgWindow) */
+/* 問題の画面の上の「毎日1問」「難しさ★」は、横に並ぶ場所がせまいので、文字の大きさ「大」「特大」でも、ふだんの大きさのまま(はみ出し・重なりを防ぐ) */
+#screen-question .q-chip { zoom: calc(1 / var(--ui-zoom, 1)); }
+/* 成績の科目の四角:科目名が長いとき(文字の大きさ「大」「特大」・3列)、となりに重ならないよう、折り返す */
+#screen-records .group-box .gb-name { white-space: normal; min-width: 0; line-height: 1.2; }
+/* クイズ選択:文字の大きさ「大」「特大」で、タイルがつぶれて、下のごほうびの札に重ならないよう、タイルは縮めず、はみ出す分は、画面をスクロールで見せる */
+#screen-setup .mode-list { min-height: min-content !important; }
+#screen-setup.screen:not([hidden]) { overflow-y: auto; overflow-x: clip; }
+/* 「RPGクエスト」は、横に長いので、拡大しても、ふだんの大きさまで(右のルールのボタンに切られないように) */
+#screen-setup .mode-btn.m-rpg .tile-label { zoom: calc(1 / var(--ui-zoom, 1)); }

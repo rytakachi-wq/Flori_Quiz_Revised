@@ -2893,7 +2893,10 @@ button:focus:not(:focus-visible) { outline: none; }
 #screen-question.is-tight2 .q-art { display: none; }
 #screen-question.is-tight2 .q-row .flori-small { height: 64px; }
 #screen-question.is-tight2 #q-message { display: none; }
-#screen-question.is-tight3 .q-row, #screen-question.is-tight3 #q-timer, #screen-question.is-tight3 .q-art { display: none; }
+/* 問題文をかくすのは、答えたあと(解説に場所を回すとき)だけ。答える前に問題文を消すと、問題が読めない(文字の大きさ「特大」で起きていた) */
+#screen-question.is-answered.is-tight3 .q-row, #screen-question.is-answered.is-tight3 #q-timer, #screen-question.is-tight3 .q-art { display: none; }
+#screen-question:not(.is-answered).is-tight3 .q-row .stage { display: none; }
+#screen-question:not(.is-answered).is-tight3 .q-row .question { max-width: none; flex: 1 1 auto; }
 @media (max-height: 700px) {
   #screen-question.is-answered .q-timer, #screen-question.is-answered #q-timer { display: none; }
   #screen-question .q-react .verdict { font-size: 17px; line-height: 1.3; }

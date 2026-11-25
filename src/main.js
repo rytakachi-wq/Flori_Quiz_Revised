@@ -23,7 +23,7 @@ import {
   previousDateKey,
   shuffleChoices,
   totalScore,
-} from "./game.js?v=20261124r";
+} from "./game.js?v=20261124s";
 import {
   addStars,
   loadStats,
@@ -37,21 +37,21 @@ import {
   recordWrong,
   recordRpg,
   recordRound,
-} from "./storage.js?v=20261124r";
-import { illustrationFor, explanationArtFor } from "./illustrations.js?v=20261124r";
-import { createTalker } from "./talk.js?v=20261124r";
-import { initTutorial, openTutorial } from "./tutorial.js?v=20261124r";
-import { initRules, openRules as resetRules } from "./rules.js?v=20261124r";
-import { openCredits, closeCredits } from "./credits.js?v=20261124r";
-import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js?v=20261124r";
-import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js?v=20261124r";
-import { hopFlori, startFamilyVisits, startLiveFlori } from "./live-flori.js?v=20261124r";
-import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js?v=20261124r";
-import { getVolume, holdBgm, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js?v=20261124r";
-import { getFuriganaMode, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=20261124r";
+} from "./storage.js?v=20261124s";
+import { illustrationFor, explanationArtFor } from "./illustrations.js?v=20261124s";
+import { createTalker } from "./talk.js?v=20261124s";
+import { initTutorial, openTutorial } from "./tutorial.js?v=20261124s";
+import { initRules, openRules as resetRules } from "./rules.js?v=20261124s";
+import { openCredits, closeCredits } from "./credits.js?v=20261124s";
+import { BGS, BODIES, COLORS, FACES, HEADS, RANKS, RARITY_NAMES, THEMES, earnedBadges, keepOwned, getText, groupLabel, canWear, isOpen, loadDress, progressOf, rankOf, saveDress, todoText } from "./badges.js?v=20261124s";
+import { refreshDecor, setAutoDecor, tiltable } from "./decor-overlay.js?v=20261124s";
+import { hopFlori, startFamilyVisits, startLiveFlori } from "./live-flori.js?v=20261124s";
+import { applyFloriSrc, recolor, setFloriColor, setWarmList } from "./flori-color.js?v=20261124s";
+import { getVolume, holdBgm, loopName, playHeartHalf, playJingle, playJump, playSe, playWear, resetVolumes, setScene, setVolume, startLoop, stopLoop, unlock } from "./audio.js?v=20261124s";
+import { getFuriganaMode, realignFurigana, setFuriganaMode, speechOf, startFurigana } from "./furigana.js?v=20261124s";
 
 
-const QUESTIONS_URL = "../data/questions/questions.json?v=20261124r"; // 問題を変えたら、この値と index.html の ?v= を変える
+const QUESTIONS_URL = "../data/questions/questions.json?v=20261124s"; // 問題を変えたら、この値と index.html の ?v= を変える
 const ONI_TAPS = 5; // 表紙のすみのフロリを、この回数押すと、オニ問題が出る
 const IMG = {
   think: "../assets/flori/m/book_pen.png",
@@ -566,12 +566,13 @@ function fitQuestion(screenId = "screen-question") {
   const screen = $(screenId);
   if (screen.hidden || screen.classList.contains("is-answered")) return;
   screen.classList.remove("is-tight1", "is-tight2", "is-tight3");
-  if (screen.scrollHeight <= screen.clientHeight + 1) return;
+  if (screen.scrollHeight <= screen.clientHeight + 1) return realignFurigana(screen);
   screen.classList.add("is-tight1");
   if (screen.scrollHeight <= screen.clientHeight + 1) return;
   screen.classList.add("is-tight2");
   if (screen.scrollHeight <= screen.clientHeight + 1) return;
-  screen.classList.add("is-tight3"); // 長い選択肢は、文字と行の間を、さらに小さくする
+  screen.classList.add("is-tight3"); // 長い選択肢は、文字と行の間を、さらに小さくする(問題文は、かくさない。フロリをかくす)
+  realignFurigana(screen);
 }
 window.addEventListener("resize", () => fitQuestion());
 
@@ -1450,7 +1451,7 @@ $("btn-credits").addEventListener("click", showCredits);
 // プロローグは、はじめて開いたとき、だれにでも見せる。①〜⑤は、総合得点が 20・40・60・80・100点になったあと、つぎにゲームを始める前に、1回だけ見せる。
 // 「その他」の「ものがたり」では、見られるようになったものを、いつでも見られる。
 const MOVIE_SEEN_KEY = "floriQuiz.movieSeen";
-const MOVIE_VER = "20261124r";
+const MOVIE_VER = "20261124s";
 const MOVIE_INFO = [
   { id: "pro", need: 0 },
   { id: "ep1", need: 20 },
@@ -2651,25 +2652,34 @@ function fitRpgWindow() {
     win.scrollHeight > win.clientHeight + 1 ||
     (!$("rpg-text").hidden && ($("rpg-text").scrollHeight > $("rpg-text").clientHeight + 1 || (!choices.hidden && choices.children[0] && $("rpg-text").getBoundingClientRect().bottom > choices.children[0].getBoundingClientRect().top + 1))) ||
     (!choices.hidden && (choices.scrollHeight > choices.clientHeight + 1 || [...choices.children].some((b) => b.scrollHeight > b.clientHeight + 1)));
-  let scale = 1;
-  while (over() && scale > 0.6) {
-    scale -= 0.05;
-    win.style.setProperty("--rpg-scale", scale.toFixed(2));
-  }
-  // それでも収まらないとき(長い問題・小さい画面)は、上の戦いの場面を、少しずつ低くして、スクロールなしで全部見えるようにする
-  if (over()) {
-    let h = parseFloat(getComputedStyle($("rpg-field")).height);
-    while (over() && h > 56) {
+  // 文字の大きさ「大」「特大」で、画面全体を大きくしきれないスマホは、文字を、のこりの分(--read-boost)だけ大きくして始める
+  let scale = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--read-boost")) || 1;
+  if (scale !== 1) win.style.setProperty("--rpg-scale", scale.toFixed(2));
+  const field = () => parseFloat(getComputedStyle($("rpg-field")).height);
+  const lower = (min) => {
+    let h = field();
+    while (over() && h > min) {
       h -= 6;
       screen.style.setProperty("--rpg-field-h", `${h}px`);
     }
-  }
-  // 場面を低くしても収まらないときは、文字を、さらに(5割まで)小さくする
-  while (over() && scale > 0.4) {
-    scale -= 0.05;
-    win.style.setProperty("--rpg-scale", scale.toFixed(2));
-  }
+  };
+  const shrink = (min) => {
+    while (over() && scale > min) {
+      scale -= 0.05;
+      win.style.setProperty("--rpg-scale", scale.toFixed(2));
+    }
+  };
+  // 文字を小さくする前に、まず、上の戦いの場面を(もとの高さの6割まで)低くする。文字の大きさ「大」「特大」で、文字が小さくされてしまわないように
+  if (over()) lower(Math.max(56, field() * 0.6));
+  shrink(0.6); // それでも収まらないとき(長い問題・小さい画面)は、文字と選択肢を、少しずつ小さく(6割まで)
+  if (over()) lower(56); // 場面を、さらに低く
+  shrink(0.4); // 最後に、文字を、さらに(4割まで)小さく
+  realignFurigana($("screen-rpg")); // 文字の大きさが変わったので、ふりがなの位置を、そろえなおす
 }
+
+window.addEventListener("resize", () => {
+  if (!$("screen-rpg").hidden) fitRpgWindow();
+});
 
 // 「現れた!」の文。同じ敵に、間違えるたびに、ちがう文にする
 function rpgIntro(stage, retries) {
@@ -3341,8 +3351,11 @@ const MIN_VIEW_H = 568;
 const tabletZoom = () => (innerWidth > 600 && innerWidth < 901 ? 1.2 : 1); // style.css の --tablet-zoom と同じ
 function effectiveZoom(want) {
   if (want <= 1) return want;
-  const room = Math.min(innerWidth / MIN_VIEW_W, innerHeight / MIN_VIEW_H) / tabletZoom();
-  return Math.max(1, Math.min(want, Math.floor(room * 100) / 100));
+  const room = Math.max(1, Math.floor((Math.min(innerWidth / MIN_VIEW_W, innerHeight / MIN_VIEW_H) / tabletZoom()) * 100) / 100);
+  if (room >= SIZES.xlarge) return want; // 大きい画面は、そのまま
+  // スマホは、大きくできる幅がせまい(「大」も「特大」も、同じ大きさになっていた)。「特大」は、できるだけ大きく、「大」は、その半分強にして、ちがいが分かるようにする
+  if (want >= SIZES.xlarge) return room;
+  return Math.min(want, Math.round((1 + (room - 1) * 0.6) * 100) / 100);
 }
 
 // 画面を zoom で大きくすると、画面が「ちいさくなった」のと同じ。style.css の @media の幅・高さのしきい値を、zoom ぶんだけ
@@ -3376,6 +3389,9 @@ function scaleMediaQueries(zoom) {
 function applyTextSize() {
   const zoom = effectiveZoom(SIZES[textSize()]);
   document.documentElement.style.setProperty("--ui-zoom", String(zoom));
+  // 画面全体を、それ以上大きくできない(せまいスマホ)ときは、問題・選択肢・解説の文字だけを、のこりの分、大きくする(最大1.2倍)
+  const want = SIZES[textSize()];
+  document.documentElement.style.setProperty("--read-boost", String(want > 1 ? Math.min(1.2, Math.round((want / zoom) * 100) / 100) : 1));
   scaleMediaQueries(zoom);
   for (const radio of document.querySelectorAll('input[type="radio"][name^="size-"]')) radio.checked = radio.value === textSize();
 }
